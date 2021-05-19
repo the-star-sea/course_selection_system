@@ -16,31 +16,28 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public interface StudentService {
     enum EnrollResult {
-        /**
-         * Enrolled successfully
-         */
+
+         // Enrolled successfully
+
         SUCCESS,
-        /**
-         * Cannot found the course section
-         */
+        //Cannot found the course section
+
         COURSE_NOT_FOUND,
-        /**
-         * The course section is full
-         */
+
+        //The course section is full
+
         COURSE_IS_FULL,
-        /**
-         * The course section is already enrolled by the student
-         */
+
+         // The course section is already enrolled by the student
+
         ALREADY_ENROLLED,
-        /**
-         * The course (of the section) is already passed by the student
-         */
+        //The course (of the section) is already passed by the student
+
         ALREADY_PASSED,
-        /**
-         * The student misses prerequisites for the course
-         */
+        //The student misses prerequisites for the course
+
         PREREQUISITES_NOT_FULFILLED,
-        /**
+        /*
          * The student's enrolled courses has time conflicts with the section,
          * or has course conflicts (same course) with the section.
          */
