@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="project@10.16.153.230">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.20">
+    <root id="1">
+      <ServerVersion>11.12</ServerVersion>
+      <StartupTime>1621320398</StartupTime>
+    </root>
+    <database id="2" parent="1" name="gitlab">
+      <ObjectId>16500</ObjectId>
+      <Owner>postgres</Owner>
+    </database>
+    <database id="3" parent="1" name="postgres">
+      <ObjectId>13112</ObjectId>
+      <Comment>default administrative connection database</Comment>
+      <Owner>postgres</Owner>
+    </database>
+    <database id="4" parent="1" name="project">
+      <ObjectId>16385</ObjectId>
+      <Owner>stone</Owner>
+      <Current>1</Current>
+    </database>
+    <database id="5" parent="1" name="test">
+      <ObjectId>28885</ObjectId>
+      <Owner>postgres</Owner>
+    </database>
+    <schema id="6" parent="4" name="information_schema">
+      <ObjectId>12816</ObjectId>
+      <StateNumber>365</StateNumber>
+      <Owner>postgres</Owner>
+    </schema>
+    <schema id="7" parent="4" name="pg_catalog">
+      <ObjectId>11</ObjectId>
+      <Comment>system catalog schema</Comment>
+      <StateNumber>358</StateNumber>
+      <Owner>postgres</Owner>
+    </schema>
+    <schema id="8" parent="4" name="public">
+      <ObjectId>2200</ObjectId>
+      <Comment>standard public schema</Comment>
+      <StateNumber>205341</StateNumber>
+      <Owner>postgres</Owner>
+      <Current>1</Current>
+    </schema>
+  </database-model>
+</dataSource>
