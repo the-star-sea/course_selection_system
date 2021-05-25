@@ -1,4 +1,5 @@
 package cn.edu.sustech.cs307.serviceinstance;
+import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Course;
 import cn.edu.sustech.cs307.dto.CourseSearchEntry;
 import cn.edu.sustech.cs307.dto.CourseTable;
@@ -7,7 +8,10 @@ import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,17 @@ public class mystudent implements StudentService{
 
     @Override
     public void dropCourse(int studentId, int sectionId) throws IllegalStateException {
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "delete from Coures where id=? and section =?"
+            )){
+            stmt.setInt(1, studentId);
+            stmt.setInt(2, sectionId);
+            stmt.execute();
+            }catch (SQLException e){
+                e.printStackTrace();
+        }
 
     }
 
