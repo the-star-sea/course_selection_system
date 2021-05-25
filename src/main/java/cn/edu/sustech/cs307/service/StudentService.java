@@ -15,29 +15,37 @@ import java.util.Map;
  */
 @ParametersAreNonnullByDefault
 public interface StudentService {
+    /**
+     * The priority of EnrollResult should be (if not SUCCESS):
+     *
+     * COURSE_NOT_FOUND > ALREADY_ENROLLED > ALREADY_PASSED > PREREQUISITES_NOT_FULFILLED > COURSE_CONFLICT_FOUND > COURSE_IS_FULL > UNKNOWN_ERROR
+     */
     enum EnrollResult {
-
-         // Enrolled successfully
-
+        /**
+         * Enrolled successfully
+         */
         SUCCESS,
-        //Cannot found the course section
-
+        /**
+         * Cannot found the course section
+         */
         COURSE_NOT_FOUND,
-
-        //The course section is full
-
+        /**
+         * The course section is full
+         */
         COURSE_IS_FULL,
-
-         // The course section is already enrolled by the student
-
+        /**
+         * The course section is already enrolled by the student
+         */
         ALREADY_ENROLLED,
-        //The course (of the section) is already passed by the student
-
+        /**
+         * The course (of the section) is already passed by the student
+         */
         ALREADY_PASSED,
-        //The student misses prerequisites for the course
-
+        /**
+         * The student misses prerequisites for the course
+         */
         PREREQUISITES_NOT_FULFILLED,
-        /*
+        /**
          * The student's enrolled courses has time conflicts with the section,
          * or has course conflicts (same course) with the section.
          */
@@ -85,6 +93,7 @@ public interface StudentService {
 
     /**
      * Search available courses (' sections) for the specified student in the semester with extra conditions.
+     * The result should be first sorted by course ID, and then sorted by course full name (course.name[section.name]).
      *
      * @param studentId
      * @param semesterId
@@ -101,10 +110,13 @@ public interface StudentService {
      * @param searchCourseType           search course type. See {@link cn.edu.sustech.cs307.service.StudentService.CourseType}
      * @param ignoreFull                 whether or not to ignore full course sections.
      * @param ignoreConflict             whether or not to ignore course or time conflicting course sections.
+     *                                   Note that a section is both course and time conflicting with itself.
      * @param ignorePassed               whether or not to ignore the student's passed courses.
      * @param ignoreMissingPrerequisites whether or not to ignore courses with missing prerequisites.
      * @param pageSize                   the page size, effectively `limit pageSize`.
+     *                                   It is the number of {@link cn.edu.sustech.cs307.dto.CourseSearchEntry}
      * @param pageIndex                  the page index, effectively `offset pageIndex * pageSize`.
+     *                                   If the page index is so large that there is no message,return an empty list
      * @return a list of search entries. See {@link cn.edu.sustech.cs307.dto.CourseSearchEntry}
      */
     List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid,
@@ -120,6 +132,13 @@ public interface StudentService {
      * It is the course selection function according to the studentId and courseId.
      * The test case can be invalid data or conflict info, so that it can return 8 different
      * types of enroll results.
+     *
+     * It is possible for a student-course have ALREADY_SELECTED and ALREADY_PASSED or PREREQUISITES_NOT_FULFILLED.
+     * Please make sure the return priority is the same as above in similar cases.
+     * {@link cn.edu.sustech.cs307.service.StudentService.EnrollResult}
+     *
+     * To check whether prerequisite courses are available for current one, only check the
+     * grade of prerequisite courses are >= 60 or PASS
      *
      * @param studentId
      * @param sectionId the id of CourseSection
@@ -143,8 +162,12 @@ public interface StudentService {
      * prerequisite fulfillment check to directly enroll a student in a course
      * and assign him/her a grade.
      *
+     *If the scoring scheme of a course is one type in pass-or-fail and hundredmark grade,
+     * your system should not accept the other type of grade.
+     *
      * @param studentId
-     * @param sectionId
+     * @param sectionId We will get the sectionId of one section first
+     *                  and then invoke the method by using the sectionId.
      * @param grade     Can be null
      */
     void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade);
@@ -160,6 +183,10 @@ public interface StudentService {
 
     /**
      * Queries grades of all enrolled courses in the given semester for the given student
+     *
+     * If a student selected one course for over one times, for example
+     * failed the course and passed it in the next semester,
+     * in the {@Code Map<Course, Grade>}, it only record the latest grade.
      *
      * @param studentId
      * @param semesterId the semester id, null means return all semesters' result.
@@ -187,7 +214,7 @@ public interface StudentService {
      *
      * @param studentId
      * @param courseId
-     * @return
+     * @return true if the student has any course score record that is passed (>=60 or PASS), which means he has passed the course.
      */
     boolean passedPrerequisitesForCourse(int studentId, String courseId);
 
