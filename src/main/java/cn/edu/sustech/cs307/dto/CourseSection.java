@@ -8,7 +8,7 @@ public class CourseSection {
      */
     public int id;
     /**
-     * if the course name is n "database principle", the name here could be "No.1 Chinese class", "No.1 English class" ...
+     * if the course name is "database principle", the name here could be "No.1 Chinese class", "No.1 English class" ...
      */
     public String name;
     public int totalCapacity, leftCapacity;
