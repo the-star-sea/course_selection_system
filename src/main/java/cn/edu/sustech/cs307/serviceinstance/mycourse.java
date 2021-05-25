@@ -44,6 +44,11 @@ public class mycourse implements CourseService {
     }
 
     @Override
+    public List<Course> getAllCourses() {
+        return null;
+    }
+
+    @Override
     public List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
         return null;
     }
