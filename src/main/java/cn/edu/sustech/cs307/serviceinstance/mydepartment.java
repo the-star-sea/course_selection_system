@@ -35,10 +35,7 @@ public class mydepartment implements  DepartmentService {
         List<Department>departments=new ArrayList<>();
         resultSet=statement.executeQuery("select * from department;");
         while(resultSet.next()){
-            Department department=new Department();
-            department.id=resultSet.getInt("id");
-            department.name=resultSet.getString("name");
-            departments.add(department);
+            departments.add(getDepartment(resultSet.getInt("id")));
         }
         return departments;
     }

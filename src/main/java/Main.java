@@ -15,9 +15,9 @@ public class Main {
         InstructorService instructorService=serviceFactory.createService(InstructorService.class);
         CourseService courseService=serviceFactory.createService(CourseService.class);
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
-        instructorService.addInstructor(1,"sb","ssbb");
+        //instructorService.addInstructor(1,"sb","ssbb");
         //List<Department> departments=departmentService.getAllDepartments();
-        //System.out.println( departmentService.addDepartment("jj"));
+       System.out.println( departmentService.addDepartment("jj"));
        // MajorService majorService=serviceFactory.createService(MajorService.class);
         //System.out.println( majorService.addMajor("jj",3));
         //User user=userService.getUser(1);
