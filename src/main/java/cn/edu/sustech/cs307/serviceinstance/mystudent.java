@@ -8,18 +8,21 @@ import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
 
 public class mystudent implements StudentService{
+    ResultSet resultSet;
     @Override
-    public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
-
+    public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        PreparedStatement  statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
+                "insert into student(id,enrolled_date,major_id) values (" +userId+
+                ",?,"+majorId+");");
+        statement.setDate(1,enrolledDate);
+        statement.execute();
     }
 
     @Override

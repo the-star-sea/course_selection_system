@@ -18,7 +18,7 @@ public class mymajor implements MajorService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
-        resultSet=statement.executeQuery("SELECT currval(pg_get_serial_sequence('department', 'id'));");
+        resultSet=statement.executeQuery("SELECT currval(pg_get_serial_sequence('major', 'id'));");
         resultSet.next();
         return resultSet.getInt("id");
     }

@@ -6,6 +6,7 @@ import cn.edu.sustech.cs307.dto.grade.Grade;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public interface StudentService {
      * @param lastName
      * @param enrolledDate
      */
-    void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate);
+    void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException;
 
     /**
      * Search available courses (' sections) for the specified student in the semester with extra conditions.
