@@ -1,13 +1,15 @@
 package cn.edu.sustech.cs307.serviceinstance;
+
 import cn.edu.sustech.cs307.database.SQLDataSource;
-import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Instructor;
 import cn.edu.sustech.cs307.dto.Student;
 import cn.edu.sustech.cs307.dto.User;
-import cn.edu.sustech.cs307.service.*;
+import cn.edu.sustech.cs307.service.UserService;
 
-import javax.jws.soap.SOAPBinding;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
