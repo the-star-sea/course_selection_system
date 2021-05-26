@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class mydepartment implements  DepartmentService {
-    private int num=0;
+
     @Override
     public int addDepartment(String name) {
 
@@ -18,8 +18,8 @@ public class mydepartment implements  DepartmentService {
             PreparedStatement stmt=connection.prepareStatement(
                     "insert into department values (?,?);"
             )){
-            stmt.setInt(1, num);
-            num++;
+            stmt.setInt(1, );
+
             stmt.setString(2, name);
             stmt.execute();
         }catch (SQLException e){
