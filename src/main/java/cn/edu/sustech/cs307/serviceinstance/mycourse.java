@@ -1,4 +1,5 @@
 package cn.edu.sustech.cs307.serviceinstance;
+import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Course;
 import cn.edu.sustech.cs307.dto.CourseSection;
 import cn.edu.sustech.cs307.dto.CourseSectionClass;
@@ -7,6 +8,9 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 
@@ -40,7 +44,16 @@ public class mycourse implements CourseService {
 
     @Override
     public void removeCourseSectionClass(int classId) {
-
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "delete from class where id=?"
+            )){
+            stmt.setInt(1, classId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

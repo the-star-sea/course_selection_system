@@ -9,16 +9,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class mydepartment implements  DepartmentService {
+    private int num=0;
     @Override
     public int addDepartment(String name) {
 
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
-                    "INSERT INTO department VALUES (1,'sb')"
+                    "insert into department values (?,?);"
             )){
-            //stmt.setInt(1, userId);
-//          stmt.setInt(2, userId);
+            stmt.setInt(1, num);
+            num++;
+            stmt.setString(2, name);
             stmt.execute();
         }catch (SQLException e){
             e.printStackTrace();
@@ -30,7 +32,18 @@ public class mydepartment implements  DepartmentService {
 
     @Override
     public void removeDepartment(int departmentId) {
-
+        try(
+            Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "delete from department where id =?;"
+            )){
+            stmt.setInt(1,departmentId);
+            //stmt.setInt(2, departmentId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

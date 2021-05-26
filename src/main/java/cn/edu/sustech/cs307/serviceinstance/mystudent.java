@@ -19,7 +19,18 @@ import java.util.Map;
 public class mystudent implements StudentService{
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
-
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "insert into student(?,?,?)"
+            )){
+            stmt.setInt(1, userId);
+            stmt.setDate(2, enrolledDate);
+            stmt.setInt(3,majorId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -44,7 +55,7 @@ public class mystudent implements StudentService{
             stmt.execute();
             }catch (SQLException e){
                 e.printStackTrace();
-        }
+            }
 
     }
 
