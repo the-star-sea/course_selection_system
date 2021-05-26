@@ -28,10 +28,8 @@ public class mysemester implements SemesterService{
         List<Semester>semesters=new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("select * from department;");
         while(resultSet.next()){
-            Semester semester=new Semester();
-            semester.id=resultSet.getInt("id");
-            semester.name=resultSet.getString("name");
-            semesters.add(semester);
+
+            semesters.add(getSemester(resultSet.getInt("id")));
         }
         return semesters;
     }
