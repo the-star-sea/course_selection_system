@@ -13,7 +13,7 @@ public class myinstructor implements InstructorService{
     public void addInstructor(int userId, String firstName, String lastName) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        statement.execute("insert into users values ("+userId+",'"+firstName+"','"+lastName+"');");
+        statement.execute("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',1);");
     }
 
     @Override
@@ -22,11 +22,13 @@ public class myinstructor implements InstructorService{
         Statement statement = connection.createStatement();
 
         List<CourseSection>courseSections=new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery("select * from ;");
+        ResultSet resultSet = statement.executeQuery("select * from (select  * from class join users u on u.id = class.instructor_id where u.id="+instructorId+" )aa join coursesection on aa.coursesection_id=coursesection.id where kind=1 and semester_id="+semesterId+";");
         while(resultSet.next()){
             CourseSection courseSection= new CourseSection();
             courseSection.id=resultSet.getInt("id");
             courseSection.name=resultSet.getString("name");
+            courseSection.totalCapacity=resultSet.getInt("totcapcity");
+            courseSection.leftCapacity=resultSet.getInt("leftcapcity");
             courseSections.add(courseSection);
         }
         return courseSections;
