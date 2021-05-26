@@ -4,7 +4,8 @@ create table if not exists semester
     id    serial primary key,
     name varchar(20),
     semester_begin date,
-    semester_end   date
+    semester_end   date,
+    unique (name,semester_begin,semester_end)
 
 );
 create table if not exists users
@@ -12,19 +13,22 @@ create table if not exists users
     id   integer primary key,
     firstname  varchar(20),
     lastname varchar(20),
-    kind integer--0学生，1老师
+    kind integer,--0学生，1老师
+    unique (firstname,lastname,kind)
 );
 create table if not exists department
 (
     id   serial primary key,
-    name varchar(20)
+    name varchar(20),
+    unique (name)
 );
 create table if not exists major
 (
     id            serial primary key,
     name          varchar(20),
     department_id integer
-        constraint uuu references department (id) ON DELETE cascade
+        constraint uuu references department (id) ON DELETE cascade,
+    unique (name)
 
 );
 
@@ -40,10 +44,11 @@ create table if not exists student
 
 );
 create table if not exists prerequisite(
-                                           id integer primary key ,
+                                           id serial primary key ,
                                            fid integer ,
                                            sid integer,
-                                           kind integer--0课1和2或
+                                           kind integer,--0课1和2或
+                                           unique (fid,sid,kind)
 );
 create table if not exists course
 (
@@ -72,7 +77,8 @@ create table if not exists coursesection
         constraint wwwwd references course (id) ON DELETE cascade,
     totcapcity  int,
     leftcapcity int,
-    conflictsection_id int[]
+    conflictsection_id int[],
+    unique (semester_id,course_id)
 );
 create table if not exists class
 (
@@ -85,18 +91,18 @@ create table if not exists class
     class_end              int,
     dayofweek        varchar(20),
     weeklist         int[],
-    location         varchar(20)
-
+    location         varchar(20),
+    unique (instructor_id,coursesection_id,class_begin,class_end,dayofweek,weeklist,location)
 );
 create table if not exists student_grade
 (
-    id         serial unique,
+    id         serial primary key ,
     student_id integer
         constraint ii references student (id) ON DELETE cascade,
     section_id  integer
         constraint mmm references coursesection (id) ON DELETE cascade,
     kind integer,--0百分制1pf制
-    primary key (student_id, section_id,kind)
+    unique (student_id, section_id,kind)
 );
 
 create table if not exists student_grade_hundred
