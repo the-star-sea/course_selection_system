@@ -8,15 +8,14 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Map;
 
 public class mycourse implements CourseService {
 
-
+ResultSet resultSet;
     @Override
     public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) {
 
@@ -34,18 +33,20 @@ public class mycourse implements CourseService {
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert into class values (?,?,?,?,?,?,?,?)"
+                    "insert into class(instructor_id,coursesection_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?,?);" +
+                            "SELECT currval(pg_get_serial_sequence('class', 'id'));"
             )){
-            stmt.setInt(1, num);
-            num++;
-            stmt.setInt(2, instructorId);
-            stmt.setInt(3, sectionId);
-            stmt.setShort(4, classStart);
-            stmt.setInt(5, classEnd);
+            stmt.setInt(1, instructorId);
+            stmt.setInt(2, sectionId);
+            stmt.setInt(3, classStart);
+            stmt.setInt(4, classEnd);
             stmt.setString(5, dayOfWeek.toString());
-            stmt.setString(5, weekList.toString());
-            stmt.setString(5, location);
-            stmt.execute();
+            Array week = connection.createArrayOf("int", weekList.toArray());
+            stmt.setArray(6, week);
+            stmt.setString(7, location);
+           resultSet= stmt.executeQuery();
+           resultSet.next();
+           return resultSet.getInt("id");
         }catch (SQLException e){
             e.printStackTrace();
         }
