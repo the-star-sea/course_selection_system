@@ -42,7 +42,9 @@ public class mydepartment implements  DepartmentService {
     public Department getDepartment(int departmentId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+
         resultSet=statement.executeQuery("select * from department where id ="+departmentId+";");
+        resultSet.next();
         Department department=new Department();
         department.id=departmentId;
         department.name=resultSet.getString("name");

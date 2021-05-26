@@ -31,6 +31,7 @@ public class mymajor implements MajorService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
+        resultSet.next();
         Major major=new Major();
         major.id=majorId;
         major.name=resultSet.getString("name");

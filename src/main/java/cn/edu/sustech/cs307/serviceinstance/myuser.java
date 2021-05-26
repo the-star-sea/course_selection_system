@@ -35,9 +35,11 @@ public class myuser implements UserService {
       Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
          resultSet=statement.executeQuery("select * from users where id ="+userId+";");
+         resultSet.next();
         int kind=resultSet.getInt("kind");
-        String name=resultSet.getString("firstname")+" "+resultSet.getString("nextname");
+        String name=resultSet.getString("firstname")+" "+resultSet.getString("lastname");
         if(kind==0){resultSet=statement.executeQuery("select * from student where id ="+userId+";");
+        resultSet.next();
         Student student= new Student();
         student.enrolledDate=resultSet.getDate("enrolled_date");
         student.id=userId;
