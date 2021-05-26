@@ -1,4 +1,5 @@
 package cn.edu.sustech.cs307.serviceinstance;
+import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Course;
 import cn.edu.sustech.cs307.dto.CourseSection;
 import cn.edu.sustech.cs307.dto.CourseSectionClass;
@@ -7,6 +8,9 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 
@@ -20,11 +24,31 @@ public class mycourse implements CourseService {
 
     @Override
     public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+
+
         return 0;
     }
-
+    private int num=0;
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "insert into class values (?,?,?,?,?,?,?,?)"
+            )){
+            stmt.setInt(1, num);
+            num++;
+            stmt.setInt(2, instructorId);
+            stmt.setInt(3, sectionId);
+            stmt.setShort(4, classStart);
+            stmt.setInt(5, classEnd);
+            stmt.setString(5, dayOfWeek.toString());
+            stmt.setString(5, weekList.toString());
+            stmt.setString(5, location);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -40,7 +64,16 @@ public class mycourse implements CourseService {
 
     @Override
     public void removeCourseSectionClass(int classId) {
-
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "delete from class where id=?"
+            )){
+            stmt.setInt(1, classId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

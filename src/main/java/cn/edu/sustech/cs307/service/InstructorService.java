@@ -8,7 +8,6 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public interface InstructorService {
     void addInstructor(int userId, String firstName, String lastName);
-
     /**
      *
      * @param instructorId
