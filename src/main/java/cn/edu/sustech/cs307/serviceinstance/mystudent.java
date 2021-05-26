@@ -22,7 +22,7 @@ public class mystudent implements StudentService{
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert into student(?,?,?)"
+                    "insert into student values (?,?,?)"
             )){
             stmt.setInt(1, userId);
             stmt.setDate(2, enrolledDate);

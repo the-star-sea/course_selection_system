@@ -16,7 +16,7 @@ public class mymajor implements MajorService{
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert major values (?,?,?);"
+                    "insert into major values (?,?,?);"
             )){
             stmt.setInt(1, num);
             num++;

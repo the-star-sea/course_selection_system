@@ -24,11 +24,31 @@ public class mycourse implements CourseService {
 
     @Override
     public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+
+
         return 0;
     }
-
+    private int num=0;
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "insert into class values (?,?,?,?,?,?,?,?)"
+            )){
+            stmt.setInt(1, num);
+            num++;
+            stmt.setInt(2, instructorId);
+            stmt.setInt(3, sectionId);
+            stmt.setShort(4, classStart);
+            stmt.setInt(5, classEnd);
+            stmt.setString(5, dayOfWeek.toString());
+            stmt.setString(5, weekList.toString());
+            stmt.setString(5, location);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
         return 0;
     }
 
