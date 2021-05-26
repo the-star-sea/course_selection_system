@@ -15,13 +15,12 @@ public class myinstructor implements InstructorService{
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
                     "insert into users values (?,?,?);" +
-                            "insert into instructor values (?,?)"
+                            "insert into instructor values (?);"
             )){
             stmt.setInt(1, userId);
             stmt.setString(2, firstName);
             stmt.setString(3, lastName);
-            stmt.setInt(3, userId);
-            stmt.setString(4, firstName);
+            stmt.setInt(4, userId);
             stmt.execute();
         }catch (SQLException e){
             e.printStackTrace();
