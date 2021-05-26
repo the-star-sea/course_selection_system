@@ -3,6 +3,7 @@ package cn.edu.sustech.cs307.service;
 import cn.edu.sustech.cs307.dto.Department;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -24,5 +25,5 @@ public interface DepartmentService {
      * @param departmentId
      * @return
      */
-    Department getDepartment(int departmentId);
+    Department getDepartment(int departmentId) throws SQLException;
 }

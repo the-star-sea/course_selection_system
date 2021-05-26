@@ -1,26 +1,17 @@
 import cn.edu.sustech.cs307.config.Config;
-import cn.edu.sustech.cs307.dto.Course;
-import cn.edu.sustech.cs307.dto.CourseSection;
+import cn.edu.sustech.cs307.dto.*;
 import cn.edu.sustech.cs307.factory.*;
 import cn.edu.sustech.cs307.service.*;
+
+import java.sql.SQLException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         ServiceFactory serviceFactory= Config.getServiceFactory();
-        DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
-        InstructorService instructorService=serviceFactory.createService(InstructorService.class);
         UserService userService=serviceFactory.createService(UserService.class);
-        MajorService majorService=serviceFactory.createService(MajorService.class);
-        StudentService studentService=serviceFactory.createService(StudentService.class);
         CourseService courseService=serviceFactory.createService(CourseService.class);
-
-        userService.removeUser(1);
-        //departmentService.removeDepartment(0);
-        //departmentService.removeDepartment(1);
-
-        //departmentService.addDepartment("CS");
-        //departmentService.addDepartment("EE");
-
-        //instructorService.addInstructor(1,"zhang","tong");
+        User user=userService.getUser(1);
+        System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);
         //System.out.println(result);
     }

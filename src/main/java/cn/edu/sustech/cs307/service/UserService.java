@@ -3,6 +3,7 @@ package cn.edu.sustech.cs307.service;
 import cn.edu.sustech.cs307.dto.User;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -11,5 +12,5 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    User getUser(int userId);
+    User getUser(int userId) throws SQLException;
 }

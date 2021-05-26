@@ -3,6 +3,7 @@ package cn.edu.sustech.cs307.service;
 import cn.edu.sustech.cs307.dto.Major;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -25,7 +26,7 @@ public interface MajorService {
      * @param majorId
      * @return
      */
-    Major getMajor(int majorId);
+    Major getMajor(int majorId) throws SQLException;
 
     /**
      * Binding a course id {@code courseId} to major id {@code majorId}, and the selection is compulsory.

@@ -1,24 +1,24 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Department;
+import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class mydepartment implements  DepartmentService {
-
+    ResultSet resultSet;
     @Override
     public int addDepartment(String name) {
 
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert into department values (1,?);"
+                    "INSERT INTO department VALUES (1,'sb')"
             )){
-            stmt.setString(1, name);
+            //stmt.setInt(1, userId);
+//          stmt.setInt(2, userId);
             stmt.execute();
         }catch (SQLException e){
             e.printStackTrace();
@@ -30,18 +30,7 @@ public class mydepartment implements  DepartmentService {
 
     @Override
     public void removeDepartment(int departmentId) {
-        try(
-            Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "delete from department where id =?;"
-            )){
-            stmt.setInt(1,departmentId);
-            //stmt.setInt(2, departmentId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+
     }
 
     @Override
@@ -50,7 +39,15 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public Department getDepartment(int departmentId) {
-        return null;
+    public Department getDepartment(int departmentId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+
+        resultSet=statement.executeQuery("select * from department where id ="+departmentId+";");
+        resultSet.next();
+        Department department=new Department();
+        department.id=departmentId;
+        department.name=resultSet.getString("name");
+        return department;
     }
 }

@@ -4,28 +4,15 @@ import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class mymajor implements MajorService{
-    private int num=0;
+    ResultSet resultSet;
     @Override
-    public int addMajor(String name, int departmentId)
-    {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "insert into major values (?,?,?);"
-            )){
-            stmt.setInt(1, num);
-            num++;
-            stmt.setString(2, name);
-            stmt.setInt(3, departmentId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public int addMajor(String name, int departmentId) {
         return 0;
     }
 
@@ -40,39 +27,25 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public Major getMajor(int majorId) {
-        return null;
+    public Major getMajor(int majorId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
+        resultSet.next();
+        Major major=new Major();
+        major.id=majorId;
+        major.name=resultSet.getString("name");
+        major.department=new mydepartment().getDepartment(resultSet.getInt("department_id"));
+        return  major;
     }
 
     @Override
     public void addMajorCompulsoryCourse(int majorId, String courseId) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "insert major_course values (?,?,0);"
-            )){
-            stmt.setInt(1,majorId);
-            stmt.setString(2, courseId);
 
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void addMajorElectiveCourse(int majorId, String courseId) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "insert major_course values (?,?,1);"
-            )){
-            stmt.setInt(1,majorId);
-            stmt.setString(2, courseId);
 
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
     }
 }
