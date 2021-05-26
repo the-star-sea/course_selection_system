@@ -10,8 +10,18 @@ import java.util.List;
 
 public class myuser implements UserService {
     @Override
-    public void removeUser(int userId) {
-
+    public void removeUser(int userId) {//--------------
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "delete from users where id=?;"
+            )){
+            stmt.setInt(1, userId);
+//          stmt.setInt(2, userId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -21,8 +31,18 @@ public class myuser implements UserService {
     }
 
     @Override
-    public User getUser(int userId) {
-
+    public User getUser(int userId) {//--------------
+        try(Connection connection=
+                    SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement stmt=connection.prepareStatement(
+                    "select * from users where id=?;"
+            )){
+            stmt.setInt(1, userId);
+//          stmt.setInt(2, userId);
+            stmt.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 }
