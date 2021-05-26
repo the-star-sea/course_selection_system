@@ -1,5 +1,6 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
+import cn.edu.sustech.cs307.dto.Student;
 import cn.edu.sustech.cs307.dto.User;
 import cn.edu.sustech.cs307.service.*;
 
@@ -17,7 +18,6 @@ public class myuser implements UserService {
                     "delete from users where id=?;"
             )){
             stmt.setInt(1, userId);
-//          stmt.setInt(2, userId);
             stmt.execute();
         }catch (SQLException e){
             e.printStackTrace();
@@ -38,11 +38,10 @@ public class myuser implements UserService {
                     "select * from users where id=?;"
             )){
             stmt.setInt(1, userId);
-//          stmt.setInt(2, userId);
             stmt.execute();
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
+        return null ;
     }
 }
