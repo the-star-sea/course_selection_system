@@ -5,37 +5,42 @@ import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     @Override
-    public int addDepartment(String name) {
+    public int addDepartment(String name) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into department(name) values ('"+name+"');");
+        resultSet=statement.executeQuery("select id from department where name='"+name+"';");
+        resultSet.next();
+        return resultSet.getInt("id");
+    }
 
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "INSERT INTO department VALUES (1,'sb')"
-            )){
-            //stmt.setInt(1, userId);
-//          stmt.setInt(2, userId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
+    @Override
+    public void removeDepartment(int departmentId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from department where id="+departmentId+";");
+    }
+
+    @Override
+    public List<Department> getAllDepartments() throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+
+        List<Department>departments=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from department;");
+        while(resultSet.next()){
+            Department department=new Department();
+            department.id=resultSet.getInt("id");
+            department.name=resultSet.getString("name");
+            departments.add(department);
         }
-
-
-        return 0;
-    }
-
-    @Override
-    public void removeDepartment(int departmentId) {
-
-    }
-
-    @Override
-    public List<Department> getAllDepartments() {
-        return null;
+        return departments;
     }
 
     @Override

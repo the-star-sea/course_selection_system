@@ -1,5 +1,6 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
+import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
@@ -7,23 +8,41 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class mymajor implements MajorService{
     ResultSet resultSet;
     @Override
-    public int addMajor(String name, int departmentId) {
-        return 0;
+    public int addMajor(String name, int departmentId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
+        resultSet=statement.executeQuery("select id from major where name='"+name+"'and department_id="+departmentId+";");
+        resultSet.next();
+        return resultSet.getInt("id");
     }
 
     @Override
-    public void removeMajor(int majorId) {
-
+    public void removeMajor(int majorId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from major where id="+majorId+";");
     }
 
     @Override
-    public List<Major> getAllMajors() {
-        return null;
+    public List<Major> getAllMajors() throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        List<Major>majors=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from major;");
+        while(resultSet.next()){
+            Major major=new Major();
+            major.id=resultSet.getInt("id");
+            major.name=resultSet.getString("name");
+            majors.add(major);
+        }
+        return majors;
     }
 
     @Override
@@ -36,7 +55,7 @@ public class mymajor implements MajorService{
         major.id=majorId;
         major.name=resultSet.getString("name");
         major.department=new mydepartment().getDepartment(resultSet.getInt("department_id"));
-        return  major;
+        return major;
     }
 
     @Override

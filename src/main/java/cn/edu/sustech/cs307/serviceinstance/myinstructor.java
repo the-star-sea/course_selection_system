@@ -1,34 +1,34 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.CourseSection;
+import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.service.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class myinstructor implements InstructorService{
     @Override
-    public void addInstructor(int userId, String firstName, String lastName) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "insert into users values (?,?,?);" +
-                            "insert into instructor values (?);"
-            )){
-            stmt.setInt(1, userId);
-            stmt.setString(2, firstName);
-            stmt.setString(3, lastName);
-            stmt.setInt(4, userId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public void addInstructor(int userId, String firstName, String lastName) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into users values ("+userId+",'"+firstName+"','"+lastName+"');");
     }
 
     @Override
-    public List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) {
-        return null;
+    public List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+
+        List<CourseSection>courseSections=new ArrayList<>();
+        ResultSet resultSet = statement.executeQuery("select * from ;");
+        while(resultSet.next()){
+            CourseSection courseSection= new CourseSection();
+            courseSection.id=resultSet.getInt("id");
+            courseSection.name=resultSet.getString("name");
+            courseSections.add(courseSection);
+        }
+        return courseSections;
     }
 }

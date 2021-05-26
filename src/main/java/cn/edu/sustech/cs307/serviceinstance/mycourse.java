@@ -54,27 +54,24 @@ ResultSet resultSet;
     }
 
     @Override
-    public void removeCourse(String courseId) {
-
+    public void removeCourse(String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from course where id='"+courseId+"';");
     }
 
     @Override
-    public void removeCourseSection(int sectionId) {
-
+    public void removeCourseSection(int sectionId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from coursesection where id="+sectionId+";");
     }
 
     @Override
-    public void removeCourseSectionClass(int classId) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "delete from class where id=?"
-            )){
-            stmt.setInt(1, classId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public void removeCourseSectionClass(int classId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from class where id="+classId+";");
     }
 
     @Override
