@@ -8,7 +8,7 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public interface MajorService {
-    int addMajor(String name, int departmentId);
+    int addMajor(String name, int departmentId) throws SQLException;
 
     /**
      * To remove an entity from the system, related entities dependent on this entity
@@ -17,9 +17,9 @@ public interface MajorService {
      * More specifically, when remove a major, the related students should be removed accordingly
      * @param majorId
      */
-    void removeMajor(int majorId);
+    void removeMajor(int majorId) throws SQLException;
 
-    List<Major> getAllMajors();
+    List<Major> getAllMajors() throws SQLException;
 
     /**
      * If there is no Major about specific id, throw EntityNotFoundException.

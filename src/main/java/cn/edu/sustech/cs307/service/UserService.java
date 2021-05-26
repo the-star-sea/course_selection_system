@@ -8,9 +8,9 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public interface UserService {
-    void removeUser(int userId);
+    void removeUser(int userId) throws SQLException;
 
-    List<User> getAllUsers();
+    List<User> getAllUsers() throws SQLException;
 
     User getUser(int userId) throws SQLException;
 }

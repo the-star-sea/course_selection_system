@@ -1,37 +1,41 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
+import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Instructor;
 import cn.edu.sustech.cs307.dto.Student;
 import cn.edu.sustech.cs307.dto.User;
 import cn.edu.sustech.cs307.service.*;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class myuser implements UserService {
     ResultSet resultSet;
     @Override
-    public void removeUser(int userId) {//--------------
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "delete from users where id=?;"
-            )){
-            stmt.setInt(1, userId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
+    public void removeUser(int userId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from users where id="+userId+";");
+    }
+
+
+    @Override
+    public List<User> getAllUsers() throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        List<User>users=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from users;");
+        while(resultSet.next()){
+            int id=resultSet.getInt("id");
+            users.add(getUser(id));
         }
-    }
-
-
-    @Override
-    public List<User> getAllUsers() {
-        return null;
+        return users;
     }
 
     @Override
-    public User getUser(int userId) throws SQLException {//--------------
+    public User getUser(int userId) throws SQLException {
       Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
          resultSet=statement.executeQuery("select * from users where id ="+userId+";");
@@ -48,9 +52,6 @@ public class myuser implements UserService {
         Instructor instructor= new Instructor();
         instructor.fullName=name;
         instructor.id=userId;
-
-
-
         return instructor ;
     }
 }

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.DayOfWeek;
 import java.util.List;
 
@@ -28,52 +29,32 @@ public class mycourse implements CourseService {
 
         return 0;
     }
-    private int num=0;
+
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "insert into class values (?,?,?,?,?,?,?,?)"
-            )){
-            stmt.setInt(1, num);
-            num++;
-            stmt.setInt(2, instructorId);
-            stmt.setInt(3, sectionId);
-            stmt.setShort(4, classStart);
-            stmt.setInt(5, classEnd);
-            stmt.setString(5, dayOfWeek.toString());
-            stmt.setString(5, weekList.toString());
-            stmt.setString(5, location);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+
         return 0;
     }
 
     @Override
-    public void removeCourse(String courseId) {
-
+    public void removeCourse(String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from course where id='"+courseId+"';");
     }
 
     @Override
-    public void removeCourseSection(int sectionId) {
-
+    public void removeCourseSection(int sectionId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from coursesection where id="+sectionId+";");
     }
 
     @Override
-    public void removeCourseSectionClass(int classId) {
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
-                    "delete from class where id=?"
-            )){
-            stmt.setInt(1, classId);
-            stmt.execute();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public void removeCourseSectionClass(int classId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("delete from class where id="+classId+";");
     }
 
     @Override

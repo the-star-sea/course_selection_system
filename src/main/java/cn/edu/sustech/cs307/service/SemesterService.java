@@ -4,6 +4,7 @@ import cn.edu.sustech.cs307.dto.Semester;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -25,9 +26,9 @@ public interface SemesterService {
      * More specifically, when remove a semester, the related select course record should be removed accordingly.
      * @param semesterId
      */
-    void removeSemester(int semesterId);
+    void removeSemester(int semesterId) throws SQLException;
 
-    List<Semester> getAllSemesters();
+    List<Semester> getAllSemesters() throws SQLException;
 
-    Semester getSemester(int semesterId);
+    Semester getSemester(int semesterId) throws SQLException;
 }

@@ -5,6 +5,7 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public interface CourseService {
      * when a course has been removed
      * @param courseId
      */
-    void removeCourse(String courseId);
+    void removeCourse(String courseId) throws SQLException;
 
     /**
      *  To remove an entity from the system, related entities dependent on this entity (usually rows referencing the row to remove through foreign keys in a relational database)
@@ -70,7 +71,7 @@ public interface CourseService {
      *   when a courseSection has been removed
      * @param sectionId
      */
-    void removeCourseSection(int sectionId);
+    void removeCourseSection(int sectionId) throws SQLException;
 
     /**
      *  To remove an entity from the system, related entities dependent on this entity (usually rows referencing the row to remove through foreign keys in a relational database)
@@ -78,7 +79,7 @@ public interface CourseService {
      *  More specifically, only remove course section class
      * @param classId
      */
-    void removeCourseSectionClass(int classId);
+    void removeCourseSectionClass(int classId) throws SQLException;
 
     List<Course> getAllCourses();
 

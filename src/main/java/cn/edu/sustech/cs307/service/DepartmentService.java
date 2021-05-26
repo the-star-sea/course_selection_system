@@ -14,11 +14,11 @@ public interface DepartmentService {
      * @param name
      * @return
      */
-    int addDepartment(String name);
+    int addDepartment(String name) throws SQLException;
 
-    void removeDepartment(int departmentId);
+    void removeDepartment(int departmentId) throws SQLException;
 
-    List<Department> getAllDepartments();
+    List<Department> getAllDepartments() throws SQLException;
 
     /**
      * If there is no Department about specific id, throw EntityNotFoundException.
