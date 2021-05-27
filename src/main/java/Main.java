@@ -36,7 +36,5 @@ public class Main {
         //System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);
         //System.out.println(result);
-
-
     }
 }

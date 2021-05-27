@@ -161,8 +161,7 @@ else {int pre_id = addPre(coursePrerequisite);
         Statement statement = connection.createStatement();
        List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
-                "and semester_id=" +semesterId+
-                ";");
+                "and semester_id=" +semesterId+ ";");
         while(resultSet.next()){
 CourseSection courseSection=new CourseSection();
 courseSection.leftCapacity=resultSet.getInt("leftcapcity");
@@ -227,7 +226,17 @@ courseSections.add(courseSection);
     }
 
     @Override
-    public List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) {
-        return null;
+    public List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        List<Student> students=new ArrayList<>();
+        resultSet=statement.executeQuery(
+                "select student_id from (select * from coursesection where semester_id="+semesterId+" and course_id='"+courseId+"')x join student_grade on x.id=student_grade.section_id;"
+        );
+        while (resultSet.next()){
+            Student student= (Student) new myuser().getUser(resultSet.getInt("student_id"));
+            students.add(student);
+        }
+        return students;
     }
 }

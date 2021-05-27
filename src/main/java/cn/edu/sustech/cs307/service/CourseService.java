@@ -120,5 +120,5 @@ public interface CourseService {
      * @param semesterId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId);
+    List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) throws SQLException;
 }
