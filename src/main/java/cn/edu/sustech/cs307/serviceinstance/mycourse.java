@@ -84,10 +84,14 @@ else {int pre_id = addPre(coursePrerequisite);
     }
 
     @Override
-    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into coursesection(semester_id,name,course_id,totcapcity,leftcapcity) values ("+semesterId+",'"+sectionName+"','"+courseId+"',"+totalCapacity+","+totalCapacity+");");
+        ResultSet resultSet = statement.executeQuery("select id from coursesection where course_id='" + courseId + "'and semester_id=" + semesterId + " and name="+sectionName+";");
+        resultSet.next();
+        return resultSet.getInt("id");
 
-
-        return 0;
     }
     private int num=0;
     @Override

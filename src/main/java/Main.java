@@ -19,11 +19,15 @@ public class Main {
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
         StudentService studentService=serviceFactory.createService(StudentService.class);
         SemesterService semesterService=serviceFactory.createService(SemesterService.class);
-        //instructorService.addInstructor(1,"sb","ssbb");
+        //instructorService.addInstructor(2,"sb","ssbb");
         //List<Department> departments=departmentService.getAllDepartments();
-       // departmentService.addDepartment("sb");
-        majorService.addMajor("sd",2);
-        //semesterService.addSemester("Fall1", java.sql.Date.valueOf("2005-12-17"), java.sql.Date.valueOf("2005-12-02"));
+       departmentService.addDepartment("sb3");
+       departmentService.addDepartment("t3");
+        majorService.addMajor("sd",1);
+        majorService.addMajor("gan",2);
+        semesterService.addSemester("Fall1", java.sql.Date.valueOf("2005-12-17"), java.sql.Date.valueOf("2005-12-02"));
+        courseService.addCourseSection("CS333",1,"Fall1",50);
+        majorService.addMajorCompulsoryCourse(2,"CS333");
         //studentService.addStudent(117,1,"ssd","dd",java.sql.Date.valueOf("2005-12-12"));
         //System.out.println( departmentService.addDepartment("jj"));
        // MajorService majorService=serviceFactory.createService(MajorService.class);
@@ -32,5 +36,6 @@ public class Main {
         //System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);
         //System.out.println(result);
+
     }
 }

@@ -33,12 +33,12 @@ public interface MajorService {
      * @param majorId the id of major
      * @param courseId the course id
      */
-    void addMajorCompulsoryCourse(int majorId, String courseId);
+    void addMajorCompulsoryCourse(int majorId, String courseId) throws SQLException;
 
     /**
      * Binding a course id{@code courseId} to major id {@code majorId}, and the selection is elective.
      * @param majorId the id of major
      * @param courseId the course id
      */
-    void addMajorElectiveCourse(int majorId, String courseId);
+    void addMajorElectiveCourse(int majorId, String courseId) throws SQLException;
 }

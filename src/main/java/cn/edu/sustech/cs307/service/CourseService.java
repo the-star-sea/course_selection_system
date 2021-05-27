@@ -35,7 +35,7 @@ public interface CourseService {
      * @param totalCapacity the total capacity of section
      * @return the CourseSection id of new inserted line, if adding process is successful.
      */
-    int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity);
+    int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException;
 
 
     /**

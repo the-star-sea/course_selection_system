@@ -67,7 +67,12 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public Major getStudentMajor(int studentId) {
-        return null;
+    public Major getStudentMajor(int studentId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select major_id from student where id =" + studentId + ";");
+        resultSet.next();
+        Major major=new mymajor().getMajor(resultSet.getInt("major_id"));
+        return major;
     }
 }

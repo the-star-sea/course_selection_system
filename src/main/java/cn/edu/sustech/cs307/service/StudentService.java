@@ -219,5 +219,5 @@ public interface StudentService {
      */
     boolean passedPrerequisitesForCourse(int studentId, String courseId);
 
-    Major getStudentMajor(int studentId);
+    Major getStudentMajor(int studentId) throws SQLException;
 }

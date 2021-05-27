@@ -14,10 +14,12 @@ public class mysemester implements SemesterService{
     public int addSemester(String name, Date begin, Date end) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement statement=connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
-                " values ('"+name+"',?,?);"+"SELECT currval(pg_get_serial_sequence('semester', 'id'));");
+                " values ('"+name+"',?,?);");
         statement.setDate(1,begin);
         statement.setDate(2,end);
-        resultSet = statement.executeQuery();
+        statement.execute();
+        Statement statement1 = connection.createStatement();
+        resultSet = statement1.executeQuery("select id from semester where name='"+name+"';");
         resultSet.next();
         return resultSet.getInt("id");
     }

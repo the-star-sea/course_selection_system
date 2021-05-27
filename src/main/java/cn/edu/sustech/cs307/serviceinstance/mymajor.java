@@ -4,10 +4,7 @@ import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +13,10 @@ public class mymajor implements MajorService{
     @Override
     public int addMajor(String name, int departmentId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
-        resultSet=statement.executeQuery("SELECT currval(pg_get_serial_sequence('major', 'id'));");
+        PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
+        statement.execute();
+        Statement statement1 = connection.createStatement();
+        resultSet = statement1.executeQuery("select id from major where name='"+name+"';");
         resultSet.next();
         return resultSet.getInt("id");
     }
@@ -56,12 +54,24 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public void addMajorCompulsoryCourse(int majorId, String courseId) {
-
+    public void addMajorCompulsoryCourse(int majorId, String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        PreparedStatement statement=connection.prepareStatement(
+                "insert into major_course(courseId,majorId) values ('"+courseId+"',"+majorId+");"+
+                "update course set coursetype='MAJOR_COMPULSORY' where courseId=? and majorId=?");
+        statement.setString(1,courseId);
+        statement.setInt(2,majorId);
+        statement.execute();
     }
 
     @Override
-    public void addMajorElectiveCourse(int majorId, String courseId) {
-
+    public void addMajorElectiveCourse(int majorId, String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        PreparedStatement statement=connection.prepareStatement(
+                "insert into major_course(courseId,majorId) values ('"+courseId+"',"+majorId+");"+
+                        "update course set coursetype='MAJOR_ELECTIVE' where courseId=? and majorId=?");
+        statement.setString(1,courseId);
+        statement.setInt(2,majorId);
+        statement.execute();
     }
 }
