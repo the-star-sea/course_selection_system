@@ -193,13 +193,37 @@ courseSections.add(courseSection);
     }
 
     @Override
-    public List<CourseSectionClass> getCourseSectionClasses(int sectionId) {
-        return null;
+    public List<CourseSectionClass> getCourseSectionClasses(int sectionId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
+        List<CourseSectionClass>courseSectionClasses=new ArrayList<>();
+        while (resultSet.next()){
+            CourseSectionClass courseSectionClass=new CourseSectionClass();
+            courseSectionClass.classBegin= (short) resultSet.getInt("class_begin");
+            courseSectionClass.classEnd= (short) resultSet.getInt("class_end");
+            courseSectionClass.id=resultSet.getInt("c.id");
+            courseSectionClass.dayOfWeek=DayOfWeek.valueOf(resultSet.getString("dayofweek"));
+            courseSectionClass.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
+            courseSectionClass.location=resultSet.getString("location");
+            courseSectionClass.weekList= (List<Short>) resultSet.getArray("weeklist");
+            courseSectionClasses.add(courseSectionClass);
+        }return courseSectionClasses;
     }
 
     @Override
-    public CourseSection getCourseSectionByClass(int classId) {
-        return null;
+    public CourseSection getCourseSectionByClass(int classId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
+        resultSet.next();
+        CourseSection courseSection=new CourseSection();
+        courseSection.id=resultSet.getInt("coursesection.id");
+        courseSection.name=resultSet.getString("name");
+        courseSection.totalCapacity=resultSet.getInt("totcapcity");
+        courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+        return courseSection;
+
     }
 
     @Override
