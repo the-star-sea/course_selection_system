@@ -90,14 +90,14 @@ public interface CourseService {
      * @param semesterId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId);
+    List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) throws SQLException;
 
     /**
      * If there is no Course about specific id, throw EntityNotFoundException.
      * @param sectionId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    Course getCourseBySection(int sectionId);
+    Course getCourseBySection(int sectionId) throws SQLException;
 
     /**
      *

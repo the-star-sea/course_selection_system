@@ -101,7 +101,6 @@ else {int pre_id = addPre(coursePrerequisite);
             stmt.setInt(3, classStart);
             stmt.setInt(4, classEnd);
             stmt.setString(5, dayOfWeek.toString());
-            int[]sb=new int[9];
             Array week = connection.createArrayOf("int", weekList.toArray());
             stmt.setArray(6, week);
             stmt.setString(7, location);
@@ -153,13 +152,40 @@ else {int pre_id = addPre(coursePrerequisite);
     }
 
     @Override
-    public List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
-        return null;
+    public List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+       List<CourseSection>courseSections=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
+                "and semester_id=" +semesterId+
+                ";");
+        while(resultSet.next()){
+CourseSection courseSection=new CourseSection();
+courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+courseSection.totalCapacity=resultSet.getInt("totcapcity");
+courseSection.id=resultSet.getInt("id");
+courseSection.name=resultSet.getString("name");
+courseSections.add(courseSection);
+
+        }
+        return courseSections;
+
     }
 
     @Override
-    public Course getCourseBySection(int sectionId) {
-        return null;
+    public Course getCourseBySection(int sectionId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
+                ";");
+        resultSet.next();
+        Course course=new Course();
+        course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
+        course.id=resultSet.getString("course_id");
+        course.credit=resultSet.getInt("credit");
+        course.classHour=resultSet.getInt("class_hour");
+        course.name=resultSet.getString("course.name");
+        return course;
     }
 
     @Override
