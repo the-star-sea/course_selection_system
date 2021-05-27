@@ -1,9 +1,6 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
-import cn.edu.sustech.cs307.dto.Course;
-import cn.edu.sustech.cs307.dto.CourseSection;
-import cn.edu.sustech.cs307.dto.CourseSectionClass;
-import cn.edu.sustech.cs307.dto.Student;
+import cn.edu.sustech.cs307.dto.*;
 import cn.edu.sustech.cs307.dto.prerequisite.AndPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.CoursePrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.OrPrerequisite;
@@ -13,13 +10,14 @@ import cn.edu.sustech.cs307.service.*;
 import javax.annotation.Nullable;
 import java.sql.*;
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 //todo 日期判断先后
 public class mycourse implements CourseService {
 
 ResultSet resultSet;
-public int addPre(Prerequisite coursePrerequisite) throws SQLException {
+public int addPre(Prerequisite coursePrerequisite) throws Exception {
     Connection connection= SQLDataSource.getInstance().getSQLConnection();
     Statement statement = connection.createStatement();
     if(coursePrerequisite instanceof CoursePrerequisite){
@@ -50,10 +48,10 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         resultSet=stmt.executeQuery();
         resultSet.next();
         return resultSet.getInt("id");}
-    return 0;
+    throw new Exception();
 }
     @Override
-    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) throws SQLException {
+    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement=connection.createStatement();
         resultSet=statement.executeQuery("insert into prerequisite (kind)values(0) ;" +
@@ -104,6 +102,7 @@ else {int pre_id = addPre(coursePrerequisite);
             stmt.setInt(3, classStart);
             stmt.setInt(4, classEnd);
             stmt.setString(5, dayOfWeek.toString());
+            int[]sb=new int[9];
             Array week = connection.createArrayOf("int", weekList.toArray());
             stmt.setArray(6, week);
             stmt.setString(7, location);
@@ -138,8 +137,20 @@ else {int pre_id = addPre(coursePrerequisite);
     }
 
     @Override
-    public List<Course> getAllCourses() {
-        return null;
+    public List<Course> getAllCourses() throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+       List<Course>courses=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from course;");
+        while(resultSet.next()){
+            Course course=new Course();
+            course.classHour=resultSet.getInt("class_hour");
+            course.credit=resultSet.getInt("credit");
+            course.id=resultSet.getString("id");
+            course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
+            courses.add(course);
+        }
+        return courses;
     }
 
     @Override
