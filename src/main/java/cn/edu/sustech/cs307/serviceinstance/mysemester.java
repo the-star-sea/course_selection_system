@@ -9,9 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class mysemester implements SemesterService{
+    ResultSet resultSet;
     @Override
-    public int addSemester(String name, Date begin, Date end) {
-        return 0;
+    public int addSemester(String name, Date begin, Date end) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        PreparedStatement statement=connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
+                " values ('"+name+"',?,?);"+"SELECT currval(pg_get_serial_sequence('semester', 'id'));");
+        statement.setDate(1,begin);
+        statement.setDate(2,end);
+        resultSet = statement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("id");
     }
 
     @Override
@@ -26,7 +34,7 @@ public class mysemester implements SemesterService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<Semester>semesters=new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery("select * from department;");
+       resultSet = statement.executeQuery("select * from department;");
         while(resultSet.next()){
 
             semesters.add(getSemester(resultSet.getInt("id")));
@@ -38,11 +46,13 @@ public class mysemester implements SemesterService{
     public Semester getSemester(int semesterId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from users where id =" + semesterId + ";");
+       resultSet = statement.executeQuery("select * from users where id =" + semesterId + ";");
         resultSet.next();
         Semester semester=new Semester();
         semester.id=resultSet.getInt("id");
         semester.name=resultSet.getString("name");
+        semester.begin=resultSet.getDate("semester_begin");
+        semester.end=resultSet.getDate("semester_end");
         return semester;
     }
 }
