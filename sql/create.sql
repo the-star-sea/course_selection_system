@@ -13,8 +13,7 @@ create table if not exists users
     id   integer primary key,
     firstname  varchar(20),
     lastname varchar(20),
-    kind integer,--0学生，1老师
-    unique (firstname,lastname,kind)
+    kind integer--0学生，1老师
 );
 create table if not exists department
 (
@@ -45,10 +44,9 @@ create table if not exists student
 );
 create table if not exists prerequisite(
                                            id serial primary key ,
-                                           fid integer ,
-                                           sid integer,
+                                           content int[] ,
                                            kind integer,--0课1和2或
-                                           unique (fid,sid,kind)
+                                           unique (content,kind)
 );
 create table if not exists course
 (
@@ -58,8 +56,8 @@ create table if not exists course
     class_hour int,
     coursetype varchar(20),
     grading    varchar(20),
-    prerequisite_id int constraint ppuj references prerequisite(id) ON DELETE cascade
-
+    prerequisite_id int constraint ppuj references prerequisite(id) ON DELETE cascade,
+    pre_base_id int--add course 时加
 );
 create table if not exists major_course
 (
@@ -77,7 +75,6 @@ create table if not exists coursesection
         constraint wwwwd references course (id) ON DELETE cascade,
     totcapcity  int,
     leftcapcity int,
-    conflictsection_id int[],
     unique (semester_id,course_id)
 );
 create table if not exists class
@@ -85,14 +82,14 @@ create table if not exists class
     id               serial primary key,
     instructor_id    integer
         constraint aaa references users (id) ON DELETE cascade,
-    coursesection_id int
+    section_id int
         constraint wwww references coursesection (id) ON DELETE cascade,
     class_begin            int,
     class_end              int,
     dayofweek        varchar(20),
     weeklist         int[],
     location         varchar(20),
-    unique (instructor_id,coursesection_id,class_begin,class_end,dayofweek,weeklist,location)
+    unique (instructor_id,section_id,class_begin,class_end,dayofweek,weeklist,location)
 );
 create table if not exists student_grade
 (
@@ -119,6 +116,17 @@ create table if not exists student_grade_pf
     grade            varchar(20)
 
 );
+SELECT nextval(pg_get_serial_sequence('major', 'id'));
+SELECT nextval(pg_get_serial_sequence('semester', 'id'));
+SELECT nextval(pg_get_serial_sequence('department', 'id'));
+SELECT nextval(pg_get_serial_sequence('major', 'id'));
+SELECT nextval(pg_get_serial_sequence('prerequisite', 'id'));
+SELECT nextval(pg_get_serial_sequence('student_grade', 'id'));
+SELECT nextval(pg_get_serial_sequence('class', 'id'));
+SELECT nextval(pg_get_serial_sequence('coursesection', 'id'));
+
+
+
 
 
 
