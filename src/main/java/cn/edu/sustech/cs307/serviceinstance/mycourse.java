@@ -36,7 +36,7 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         stmt.setArray(1,pres);
         resultSet=stmt.executeQuery();
         resultSet.next();
-        return resultSet.getInt("id");
+        return resultSet.getInt("currval");
     }
     else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((AndPrerequisite) coursePrerequisite).terms.size()];
         for(int i=0;i<((OrPrerequisite) coursePrerequisite).terms.size();i++){
@@ -47,7 +47,7 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         stmt.setArray(1,pres);
         resultSet=stmt.executeQuery();
         resultSet.next();
-        return resultSet.getInt("id");}
+        return resultSet.getInt("currval");}
     throw new Exception();
 }
     @Override
@@ -57,7 +57,7 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         resultSet=statement.executeQuery("insert into prerequisite (kind)values(0) ;" +
                 "SELECT currval(pg_get_serial_sequence('prerequisite', 'id'));");
         resultSet.next();
-        int prebas=resultSet.getInt("id");
+        int prebas=resultSet.getInt("currval");
         if(coursePrerequisite.equals(null)){
             PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id) values (?,?,?,?,?,?);");
     stmt.setString(1,courseId);
@@ -110,7 +110,7 @@ else {int pre_id = addPre(coursePrerequisite);
             stmt.setString(7, location);
            resultSet= stmt.executeQuery();
            resultSet.next();
-           return resultSet.getInt("id");
+           return resultSet.getInt("currval");
         }catch (SQLException e){
             e.printStackTrace();
         }
