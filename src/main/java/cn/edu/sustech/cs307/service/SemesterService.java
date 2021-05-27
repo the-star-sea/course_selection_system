@@ -17,7 +17,7 @@ public interface SemesterService {
      * @param end
      * @return the Semester id of new inserted line, if adding process is successful.
      */
-    int addSemester(String name, Date begin, Date end);
+    int addSemester(String name, Date begin, Date end) throws SQLException;
 
     /**
      *To remove an entity from the system, related entities dependent on this entity

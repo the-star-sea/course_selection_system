@@ -18,7 +18,7 @@ public class mystudent implements StudentService{
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement  statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
+        PreparedStatement statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
                 "insert into student(id,enrolled_date,major_id) values (" +userId+
                 ",?,"+majorId+");");
         statement.setDate(1,enrolledDate);
