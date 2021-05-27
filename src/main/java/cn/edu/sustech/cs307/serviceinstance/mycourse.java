@@ -87,7 +87,6 @@ else {int pre_id = addPre(coursePrerequisite);
 
         return 0;
     }
-    private int num=0;
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
         try(Connection connection=
