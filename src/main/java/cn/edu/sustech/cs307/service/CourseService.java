@@ -23,7 +23,7 @@ public interface CourseService {
      * @param prerequisite The root of a {@link cn.edu.sustech.cs307.dto.prerequisite.Prerequisite} expression tree.
      */
     void addCourse(String courseId, String courseName, int credit, int classHour,
-                   Course.CourseGrading grading, @Nullable Prerequisite prerequisite);
+                   Course.CourseGrading grading, @Nullable Prerequisite prerequisite) throws SQLException;
 
     /**
      * Add one course section according to following parameters:

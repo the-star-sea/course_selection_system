@@ -4,6 +4,8 @@ import cn.edu.sustech.cs307.dto.Course;
 import cn.edu.sustech.cs307.dto.CourseSection;
 import cn.edu.sustech.cs307.dto.CourseSectionClass;
 import cn.edu.sustech.cs307.dto.Student;
+import cn.edu.sustech.cs307.dto.prerequisite.AndPrerequisite;
+import cn.edu.sustech.cs307.dto.prerequisite.CoursePrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.service.*;
 
@@ -16,9 +18,40 @@ import java.util.Map;
 public class mycourse implements CourseService {
 
 ResultSet resultSet;
+public int addPre(Prerequisite coursePrerequisite) throws SQLException {
+    Connection connection= SQLDataSource.getInstance().getSQLConnection();
+    Statement statement = connection.createStatement();
+    if(coursePrerequisite instanceof CoursePrerequisite){
+resultSet=statement.executeQuery("insert into prerequisite(fid,kind) values('"+((CoursePrerequisite) coursePrerequisite).courseID+"',0)");
+   resultSet.next();
+   return resultSet.getInt("id");
+    }
+    else if (coursePrerequisite instanceof AndPrerequisite){
+        resultSet=statement.executeQuery("");
+    }
+    else {}
+}
     @Override
-    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) {
-
+    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(coursePrerequisite.equals(null)){
+            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading) values (?,?,?,?,?);");
+    stmt.setString(1,courseId);
+    stmt.setString(2,courseName);
+    stmt.setInt(3,credit);
+stmt.setInt(4,classHour);
+stmt.setString(5,grading.toString());
+stmt.execute();
+}
+else {int pre_id = addPre(coursePrerequisite);
+            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id) values (?,?,?,?,?,?);");
+            stmt.setString(1,courseId);
+            stmt.setString(2,courseName);
+            stmt.setInt(3,credit);
+            stmt.setInt(4,classHour);
+            stmt.setString(5,grading.toString());
+            stmt.setInt(6,pre_id);
+}
     }
 
     @Override
@@ -32,6 +65,7 @@ ResultSet resultSet;
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
+
             PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,coursesection_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?,?);" +
                             "SELECT currval(pg_get_serial_sequence('class', 'id'));"
