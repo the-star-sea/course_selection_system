@@ -39,7 +39,7 @@ public class mystudent implements StudentService{
     public void dropCourse(int studentId, int sectionId) throws IllegalStateException, SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        statement.execute("delete from student_grade where student_id="+studentId+" and select_id= "+sectionId+";");
+        statement.execute("delete from student_grade where student_id="+studentId+" and selection_id= "+sectionId+";");
     }
 
     @Override
