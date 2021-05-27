@@ -154,7 +154,7 @@ public interface StudentService {
      * @param sectionId
      * @throws IllegalStateException if the student already has a grade for the course section.
      */
-    void dropCourse(int studentId, int sectionId) throws IllegalStateException;
+    void dropCourse(int studentId, int sectionId) throws IllegalStateException, SQLException;
 
     /**
      * It is used for importing existing data from other sources.

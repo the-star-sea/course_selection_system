@@ -11,7 +11,8 @@ import java.util.List;
 public class mysemester implements SemesterService{
     ResultSet resultSet;
     @Override
-    public int addSemester(String name, Date begin, Date end) throws SQLException {
+    public int addSemester(String name, Date begin, Date end) throws Exception {
+        if(begin.after(end))throw new Exception();
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement statement=connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
                 " values ('"+name+"',?,?);");

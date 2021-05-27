@@ -54,7 +54,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public void addMajorCompulsoryCourse(int majorId, String courseId) throws SQLException {
+    public void addMajorCompulsoryCourse(int majorId, String courseId) throws SQLException {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement statement=connection.prepareStatement(
                 "insert into major_course(courseId,majorId) values ('"+courseId+"',"+majorId+");"+
@@ -65,7 +65,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public void addMajorElectiveCourse(int majorId, String courseId) throws SQLException {
+    public void addMajorElectiveCourse(int majorId, String courseId) throws SQLException {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement statement=connection.prepareStatement(
                 "insert into major_course(courseId,majorId) values ('"+courseId+"',"+majorId+");"+
