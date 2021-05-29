@@ -31,7 +31,11 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public EnrollResult enrollCourse(int studentId, int sectionId) {
+    public EnrollResult enrollCourse(int studentId, int sectionId) throws SQLException {//todo
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
+        resultSet.next();
 
 
     }
