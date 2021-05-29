@@ -21,8 +21,6 @@ public class myuser implements UserService {
         Statement statement = connection.createStatement();
         statement.execute("delete from users where id="+userId+";");
     }
-
-
     @Override
     public List<User> getAllUsers() throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -31,7 +29,16 @@ public class myuser implements UserService {
         resultSet=statement.executeQuery("select * from users;");
         while(resultSet.next()){
             int id=resultSet.getInt("id");
-            users.add(getUser(id));
+            int kind =resultSet.getInt("kind");
+            if(kind==0){
+                User student=new Student();
+                student=getUser(id);
+                users.add(student);
+            }else{
+                User instructor=new Instructor();
+                instructor=getUser(id);
+                users.add(instructor);
+            }
         }
         return users;
     }
