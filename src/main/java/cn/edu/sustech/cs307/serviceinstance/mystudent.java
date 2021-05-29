@@ -32,7 +32,8 @@ public class mystudent implements StudentService{
 
     @Override
     public EnrollResult enrollCourse(int studentId, int sectionId) {
-        return null;
+
+
     }
 
     @Override
@@ -158,7 +159,7 @@ if(kind==1) {
             if(resultSet.getString("grade").equals("PASS"))return true;
             return false;
         }
-throw new Exception();
+return false;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
