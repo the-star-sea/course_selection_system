@@ -31,12 +31,10 @@ public class myuser implements UserService {
             int id=resultSet.getInt("id");
             int kind =resultSet.getInt("kind");
             if(kind==0){
-                User student=new Student();
-                student=getUser(id);
+                User student=new myuser().getUser(id);
                 users.add(student);
             }else{
-                User instructor=new Instructor();
-                instructor=getUser(id);
+                User instructor=new myuser().getUser(id);
                 users.add(instructor);
             }
         }

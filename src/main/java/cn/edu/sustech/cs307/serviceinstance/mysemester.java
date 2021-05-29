@@ -39,8 +39,7 @@ public class mysemester implements SemesterService{
         List<Semester>semesters=new ArrayList<>();
        resultSet = statement.executeQuery("select * from department;");
         while(resultSet.next()){
-            Semester semester=new Semester();
-            semester=getSemester(resultSet.getInt("id"));
+            Semester semester=new mysemester().getSemester(resultSet.getInt("id"));
             semesters.add(semester);
         }
         return semesters;
