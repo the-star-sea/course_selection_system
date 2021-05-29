@@ -171,7 +171,7 @@ public interface StudentService {
      *                  and then invoke the method by using the sectionId.
      * @param grade     Can be null
      */
-    void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade);
+    void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade) throws SQLException;
 
     /**
      * For teachers who can give student a grade
@@ -180,7 +180,7 @@ public interface StudentService {
      * @param sectionId section id in test cases that have selected by the student
      * @param grade     a new grade
      */
-    void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade);
+    void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) throws SQLException;
 
     /**
      * Queries grades of all enrolled courses in the given semester for the given student
