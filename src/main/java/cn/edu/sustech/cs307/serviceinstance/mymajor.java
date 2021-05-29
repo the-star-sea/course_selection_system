@@ -35,8 +35,7 @@ public class mymajor implements MajorService{
         List<Major>majors=new ArrayList<>();
         resultSet=statement.executeQuery("select * from major;");
         while(resultSet.next()){
-            Major major=new Major();
-            major=getMajor(resultSet.getInt("id"));
+            Major major=new mymajor().getMajor(resultSet.getInt("id"));
             majors.add(major);
         }
         return majors;
