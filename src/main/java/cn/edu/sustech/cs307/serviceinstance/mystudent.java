@@ -9,11 +9,12 @@ import cn.edu.sustech.cs307.service.*;
 import javax.annotation.Nullable;
 import java.sql.*;
 import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class mystudent implements StudentService{
-    ResultSet resultSet;
+    ResultSet resultSet;//to do 疑似要每次重新定义
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -78,9 +79,29 @@ else if(grade instanceof PassOrFailGrade){
     }
 
     @Override
-    public boolean passedPrerequisitesForCourse(int studentId, String courseId) {
+    public boolean passedPrerequisitesForCourse(int studentId, String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select pre_base_id from course where id="+courseId+";");
+        resultSet.next();
+        int pre_base=resultSet.getInt("pre_base_id");
+        return testpre(pre_base);
+    }
+
+    private boolean testpre(int pre_id) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from prerequisite where id="+pre_id+";");
+        resultSet.next();
+        int[]pres=(int[])resultSet.getArray("content").getArray();
+        int kind=resultSet.getInt("kind");
+        if(kind==0){
+            resultSet=statement.executeQuery("");
+            return passedCourse()
+        }
 
     }
+
     public boolean passedCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
