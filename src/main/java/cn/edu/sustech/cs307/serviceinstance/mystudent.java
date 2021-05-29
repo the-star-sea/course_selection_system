@@ -46,6 +46,16 @@ public class mystudent implements StudentService{
     public void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        if(grade==null){
+            statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
+                    ");");
+        }
+        if(grade instanceof HundredMarkGrade){
+            statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
+                    "0);");
+            resultSet=statement.executeQuery("select ")
+            statement.execute("insert into student_grade_hundred (student_grade_id)")
+        }
     }
 
     @Override
