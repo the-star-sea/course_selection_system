@@ -37,7 +37,7 @@ public class mystudent implements StudentService{
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
 
-
+return null;
     }
 
     @Override
@@ -98,8 +98,10 @@ else if(grade instanceof PassOrFailGrade){
     }
 
     @Override
-    public CourseTable getCourseTable(int studentId, Date date) {
-        return null;
+    public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        
     }
 
     @Override

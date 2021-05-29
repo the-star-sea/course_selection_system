@@ -208,7 +208,7 @@ public interface StudentService {
      * @return the student's course table for the entire week of the date.
      * Regardless which day of week the date is, return Monday-to-Sunday course table for that week.
      */
-    CourseTable getCourseTable(int studentId, Date date);
+    CourseTable getCourseTable(int studentId, Date date) throws SQLException;
 
     /**
      * check whether a student satisfy a certain course's prerequisites.

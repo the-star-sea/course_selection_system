@@ -2,6 +2,7 @@ package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Semester;
+import cn.edu.sustech.cs307.exception.EntityNotFoundException;
 import cn.edu.sustech.cs307.service.*;
 
 import java.sql.*;
@@ -33,7 +34,8 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public List<Semester> getAllSemesters() throws SQLException {
+    public List<Semester> getAllSemesters()  {
+        try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<Semester>semesters=new ArrayList<>();
@@ -42,7 +44,10 @@ public class mysemester implements SemesterService{
             Semester semester=new mysemester().getSemester(resultSet.getInt("id"));
             semesters.add(semester);
         }
-        return semesters;
+        return semesters;}
+        catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
