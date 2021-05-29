@@ -27,15 +27,19 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public void removeSemester(int semesterId) throws SQLException {
+    public void removeSemester(int semesterId) {
+        try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        statement.execute("delete from semester where id="+semesterId+";");
+        statement.execute("delete from semester where id="+semesterId+";");}
+        catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
-    public List<Semester> getAllSemesters()  {
-        try{
+    public List<Semester> getAllSemesters() throws SQLException {
+
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<Semester>semesters=new ArrayList<>();
@@ -44,10 +48,8 @@ public class mysemester implements SemesterService{
             Semester semester=new mysemester().getSemester(resultSet.getInt("id"));
             semesters.add(semester);
         }
-        return semesters;}
-        catch (SQLException exception){
-            throw new EntityNotFoundException();
-        }
+        return semesters;
+
     }
 
     @Override
