@@ -36,7 +36,7 @@ public class mystudent implements StudentService{
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
-
+        return null;
 return null;
     }
 
