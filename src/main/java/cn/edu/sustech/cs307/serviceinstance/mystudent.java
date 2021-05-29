@@ -79,16 +79,16 @@ else if(grade instanceof PassOrFailGrade){
     }
 
     @Override
-    public boolean passedPrerequisitesForCourse(int studentId, String courseId) throws SQLException {
+    public boolean passedPrerequisitesForCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select pre_base_id from course where id="+courseId+";");
+        resultSet=statement.executeQuery("select * from course where id="+courseId+";");
         resultSet.next();
-        int pre_base=resultSet.getInt("pre_base_id");
-        return testpre(pre_base);
+        int pre_id=resultSet.getInt("prerequisite_id");
+        return testpre(studentId,pre_id);
     }
 
-    private boolean testpre(int pre_id) throws SQLException {
+    private boolean testpre(int studentId, int pre_id) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from prerequisite where id="+pre_id+";");
@@ -96,10 +96,25 @@ else if(grade instanceof PassOrFailGrade){
         int[]pres=(int[])resultSet.getArray("content").getArray();
         int kind=resultSet.getInt("kind");
         if(kind==0){
-            resultSet=statement.executeQuery("");
-            return passedCourse();
+            resultSet=statement.executeQuery("select * from course where pre_base_id="+pre_id+";");
+            resultSet.next();
+            return passedCourse(studentId,resultSet.getString("id"));
         }
-
+        else if(kind==1){
+            boolean ans=true;
+            for(int i=0;i<pres.length;i++){
+                ans=ans&testpre(studentId,pres[i]);
+            }
+            return ans;
+        }
+        else if(kind==2){
+            boolean ans=true;
+            for(int i=0;i<pres.length;i++){
+                ans=ans|testpre(studentId,pres[i]);
+            }
+            return ans;
+        }
+throw new Exception();
     }
 
     public boolean passedCourse(int studentId, String courseId) throws Exception {
