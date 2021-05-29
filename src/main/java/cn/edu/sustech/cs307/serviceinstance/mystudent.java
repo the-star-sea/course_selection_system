@@ -97,7 +97,7 @@ else if(grade instanceof PassOrFailGrade){
         int kind=resultSet.getInt("kind");
         if(kind==0){
             resultSet=statement.executeQuery("");
-            return passedCourse()
+            return passedCourse();
         }
 
     }
