@@ -43,7 +43,10 @@ public class myuser implements UserService {
          resultSet=statement.executeQuery("select * from users where id ="+userId+";");
          resultSet.next();
         int kind=resultSet.getInt("kind");
-        String name=resultSet.getString("firstname")+" "+resultSet.getString("lastname");
+        String firstname=resultSet.getString("firstname");
+        String lastname=resultSet.getString("lastname");
+        String name=firstname+lastname;
+        if(name.matches("[a-zA-Z]+"))name=firstname+" "+lastname;
         if(kind==0){resultSet=statement.executeQuery("select * from student where id ="+userId+";");
         resultSet.next();
         Student student= new Student();

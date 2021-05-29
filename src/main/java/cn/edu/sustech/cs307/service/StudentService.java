@@ -90,7 +90,7 @@ public interface StudentService {
      * @param lastName
      * @param enrolledDate
      */
-    void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException;
+    void  addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException;
 
     /**
      * Search available courses (' sections) for the specified student in the semester with extra conditions.

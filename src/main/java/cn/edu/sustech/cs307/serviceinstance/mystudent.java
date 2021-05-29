@@ -66,7 +66,11 @@ public class mystudent implements StudentService{
     public boolean passedPrerequisitesForCourse(int studentId, String courseId) {
         return false;
     }
+    public boolean passedCourse(int studentId, String courseId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
 
+    }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
