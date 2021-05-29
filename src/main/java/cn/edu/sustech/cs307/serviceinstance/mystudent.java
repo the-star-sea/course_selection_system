@@ -53,8 +53,17 @@ public class mystudent implements StudentService{
         if(grade instanceof HundredMarkGrade){
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
                     "0);");
-            resultSet=statement.executeQuery("select ")
-            statement.execute("insert into student_grade_hundred (student_grade_id)")
+            resultSet=statement.executeQuery("select max(id)as id from student_grade;");
+            resultSet.next();
+            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((HundredMarkGrade) grade).mark+")");
+
+        }
+        if(grade instanceof PassOrFailGrade){
+            statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
+                    "1);");
+            resultSet=statement.executeQuery("select max(id)as id from student_grade;");
+            resultSet.next();
+            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((PassOrFailGrade) grade).name()+")");
         }
     }
 
