@@ -1,9 +1,6 @@
 package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
-import cn.edu.sustech.cs307.dto.Course;
-import cn.edu.sustech.cs307.dto.CourseSearchEntry;
-import cn.edu.sustech.cs307.dto.CourseTable;
-import cn.edu.sustech.cs307.dto.Major;
+import cn.edu.sustech.cs307.dto.*;
 import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.service.*;
 
@@ -69,7 +66,24 @@ public class mystudent implements StudentService{
     public boolean passedCourse(int studentId, String courseId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
+                " and student_id=" +studentId+
+                ";");
+        resultSet.next();
+        int sgi=resultSet.getInt("student_grade.id");
+        if(resultSet.getInt("kind")==0){
+           resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+           resultSet.next();
+           if(resultSet.getInt("grade")>=60)return true;
+           return false;
 
+        }
+else {
+            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
+            resultSet.next();
+            if(resultSet.getString("grade").equals("PASS"))return true;
+            return false;
+        }
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
