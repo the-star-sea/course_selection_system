@@ -66,22 +66,22 @@ public class mymajor implements MajorService{
     @Override
     public void addMajorCompulsoryCourse(int majorId, String courseId) throws SQLException {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement statement=connection.prepareStatement(
-                "insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");"+
-                "update course set coursetype='MAJOR_COMPULSORY' where course_id=? and major_id=?");
-        statement.setString(1,courseId);
-        statement.setInt(2,majorId);
-        statement.execute();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
+        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where course_id=? and major_id=?");
+        statement1.setString(1,courseId);
+        statement1.setInt(2,majorId);
+        statement1.execute();
     }
 
     @Override
     public void addMajorElectiveCourse(int majorId, String courseId) throws SQLException {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement statement=connection.prepareStatement(
-                "insert into major_course(major_id,course_id) values ("+majorId+",'"+courseId+"');"+
-                        "update course set coursetype='MAJOR_ELECTIVE' where course_id=? and major_id=?");
-        statement.setString(1,courseId);
-        statement.setInt(2,majorId);
-        statement.execute();
+        Statement statement = connection.createStatement();
+        statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
+        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where course_id=? and major_id=?");
+        statement1.setString(1,courseId);
+        statement1.setInt(2,majorId);
+        statement1.execute();
     }
 }
