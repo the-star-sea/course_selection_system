@@ -134,7 +134,7 @@ public class Main {
 //        Major m = new Major();
 //        m = studentService.getStudentMajor(20190521);
 //        System.out.println(m.toString());
-        studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
+        //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
 
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
