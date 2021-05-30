@@ -14,8 +14,9 @@ public class myinstructor implements InstructorService{
     public void addInstructor(int userId, String firstName, String lastName) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-
-        statement.execute("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',1);");
+        String name=firstName+lastName;
+        if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
+        statement.execute("insert into users(id,name,kind) values ("+userId+",'"+name+"',1);");
     }
 
     @Override
@@ -25,8 +26,9 @@ public class myinstructor implements InstructorService{
 
         List<CourseSection>courseSections=new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("select * from (select  * from class join users u on u.id = class.instructor_id where u.id="+instructorId+" )aa join coursesection on aa.coursesection_id=coursesection.id where kind=1 and semester_id="+semesterId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             CourseSection courseSection= new CourseSection();
             courseSection.id=resultSet.getInt("id");
             courseSection.name=resultSet.getString("name");

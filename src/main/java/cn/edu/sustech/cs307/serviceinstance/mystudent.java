@@ -19,7 +19,9 @@ public class mystudent implements StudentService{
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
+        String name=firstName+lastName;
+        if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
+        PreparedStatement statement = connection.prepareStatement("insert into users(id,name,kind) values ("+userId+",'"+name+"',0);" +
                 "insert into student(id,enrolled_date,major_id) values (" +userId+
                 ",?,"+majorId+");");
         statement.setDate(1,enrolledDate);
@@ -94,7 +96,6 @@ catch (Exception exception){
         List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
         resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
-
         while(resultSet.next()){
             String location=resultSet.getString("location");
             int[]weeklists=(int[])resultSet.getArray("weeklist").getArray();
@@ -102,18 +103,18 @@ catch (Exception exception){
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
-//if(classes.get(i).location==location)return false;
-if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
-if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
+            //if(classes.get(i).location==location)return false;
+            if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
+            if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
 
-for(int j=0;j<classes.get(i).weekList.size();j++){
-    for(int k=0;k<weeklists.length;k++){
-        if(classes.get(i).weekList.get(j)==weeklists[k])
-        return true;
-    }
-}
-
-                return false;    }
+            for(int j=0;j<classes.get(i).weekList.size();j++){
+                for(int k=0;k<weeklists.length;k++){
+                    if(classes.get(i).weekList.get(j)==weeklists[k])
+                    return true;
+                }
+            }
+                return false;
+            }
         }throw new Exception();
     }
 
@@ -332,8 +333,9 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
         List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
                  "';");
-        if (resultSet.getRow()==0)return false;
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)return false;
             CourseSection courseSection=new CourseSection();
             courseSection.leftCapacity=resultSet.getInt("leftcapcity");
             courseSection.totalCapacity=resultSet.getInt("totcapcity");

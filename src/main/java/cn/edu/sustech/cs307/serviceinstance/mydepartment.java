@@ -30,6 +30,7 @@ public class mydepartment implements  DepartmentService {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
         }catch (SQLException exception){
@@ -44,8 +45,9 @@ public class mydepartment implements  DepartmentService {
 
         List<Department>departments=new ArrayList<>();
         resultSet=statement.executeQuery("select * from department;");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Department department=new mydepartment().getDepartment(resultSet.getInt("id"));
             departments.add(department);
         }

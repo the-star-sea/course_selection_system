@@ -33,8 +33,9 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
             resultSet=statement.executeQuery("select * from users;");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
             while(resultSet.next()){
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 int id=resultSet.getInt("id");
                 int kind =resultSet.getInt("kind");
                 if(kind==0){
@@ -53,18 +54,15 @@ public class myuser implements UserService {
 
     @Override
     public User getUser(int userId) throws SQLException {
-        try {
+
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from users where id ="+userId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
-
             int kind=resultSet.getInt("kind");
-            String firstname=resultSet.getString("firstname");
-            String lastname=resultSet.getString("lastname");
-            String name=firstname+lastname;
-            if(name.matches("[a-zA-Z]+"))name=firstname+" "+lastname;
+            String name=resultSet.getString("name");
+
             if(kind==0){
                 resultSet=statement.executeQuery("select * from student where id ="+userId+";");
                 resultSet.next();
@@ -77,9 +75,5 @@ public class myuser implements UserService {
             instructor.fullName=name;
             instructor.id=userId;
             return instructor ;
-        }catch (SQLException exception){
-            throw new EntityNotFoundException();
-        }
-
     }
 }
