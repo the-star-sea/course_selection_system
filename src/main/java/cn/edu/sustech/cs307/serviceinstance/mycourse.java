@@ -172,7 +172,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
     public List<Course> getAllCourses() throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-       List<Course>courses=new ArrayList<>();
+        List<Course>courses=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course;");
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
