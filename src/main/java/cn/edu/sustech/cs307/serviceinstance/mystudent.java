@@ -199,8 +199,6 @@ return maps;
             resultSet.next();
             return new HundredMarkGrade((short) resultSet.getInt("grade"));
 
-
-
         }
         if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
