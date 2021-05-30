@@ -36,8 +36,8 @@ public class mystudent implements StudentService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection where id="+sectionId+";");
-        if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
         resultSet.next();
+        if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
         int left=resultSet.getInt("leftcapcity");
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
@@ -96,8 +96,8 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             if(resultSet.getInt("kind")==2)throw new IllegalStateException();
             statement.execute("delete from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
         }catch (SQLException exception){
@@ -187,8 +187,9 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
         preparedStatement1.setDate(1,date);
         preparedStatement1.setDate(2,date);
         resultSet=preparedStatement1.executeQuery();
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         int week=resultSet.getInt(1)/7+1;
         PreparedStatement preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
            preparedStatement.setInt(1,week);
@@ -255,8 +256,9 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
         resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id='" +courseId+
                 " and student_id=" +studentId+
                 "';");
-        if(resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if(resultSet.getRow()==0)throw new EntityNotFoundException();
+
         int sgi=resultSet.getInt("student_grade.id");
         int kind=resultSet.getInt("kind");
         if(kind==0){
@@ -322,8 +324,9 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select major_id from student where id =" + studentId + ";");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
             Major major=new mymajor().getMajor(resultSet.getInt("major_id"));
             return major;
         }catch (SQLException exception){

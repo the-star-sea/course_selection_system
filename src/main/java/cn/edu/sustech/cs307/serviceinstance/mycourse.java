@@ -35,18 +35,21 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
        }Array pres=connection.createArrayOf("int",pre);
         PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1);");
         stmt.setArray(1,pres);
-        resultSet=stmt.executeQuery("select max(id) as id from prerequisite;");
+        stmt.execute();
+        Statement statement1=connection.createStatement();
+        resultSet=statement1.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         return resultSet.getInt("id");
     }
-    else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((AndPrerequisite) coursePrerequisite).terms.size()];
+    else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((OrPrerequisite) coursePrerequisite).terms.size()];
         for(int i=0;i<((OrPrerequisite) coursePrerequisite).terms.size();i++){
             pre[i]=addPre(((OrPrerequisite) coursePrerequisite).terms.get(i));
         }Array pres=connection.createArrayOf("int",pre);
-        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,2)" +
-                "select max(id) as id from prerequisite;");
+        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,2)");
         stmt.setArray(1,pres);
-        resultSet=stmt.executeQuery();
+        stmt.execute();
+        Statement statement1=connection.createStatement();
+        resultSet=statement1.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         return resultSet.getInt("id");}
     throw new Exception();
@@ -212,8 +215,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                 ";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         Course course=new Course();
         course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
         course.id=resultSet.getString("course_id");
@@ -248,8 +251,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         CourseSection courseSection=new CourseSection();
         courseSection.id=resultSet.getInt("coursesection.id");
         courseSection.name=resultSet.getString("name");

@@ -57,8 +57,9 @@ public class myuser implements UserService {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from users where id ="+userId+";");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
             int kind=resultSet.getInt("kind");
             String firstname=resultSet.getString("firstname");
             String lastname=resultSet.getString("lastname");

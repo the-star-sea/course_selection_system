@@ -58,8 +58,8 @@ public class mydepartment implements  DepartmentService {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Department department = new Department();
             department.id = departmentId;
             department.name = resultSet.getString("name");

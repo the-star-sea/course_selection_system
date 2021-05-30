@@ -68,8 +68,8 @@ public class mysemester implements SemesterService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         Semester semester=new Semester();
         semester.id=resultSet.getInt("id");
         semester.name=resultSet.getString("name");

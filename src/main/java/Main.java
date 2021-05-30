@@ -19,7 +19,9 @@ public class Main {
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
         StudentService studentService=serviceFactory.createService(StudentService.class);
         SemesterService semesterService=serviceFactory.createService(SemesterService.class);
-        semesterService.addSemester("fall",java.sql.Date.valueOf("2005-12-19"),java.sql.Date.valueOf("2005-12-16"));
+
+
+        //semesterService.addSemester("fall",java.sql.Date.valueOf("2005-12-19"),java.sql.Date.valueOf("2005-12-16"));
         //instructorService.addInstructor(3123123,"tong","zhang");
         //List<User> users=new ArrayList<>();
         //users=userService.getAllUsers();
