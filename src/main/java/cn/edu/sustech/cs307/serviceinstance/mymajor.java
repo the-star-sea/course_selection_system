@@ -40,11 +40,12 @@ public class mymajor implements MajorService{
     public List<Major> getAllMajors() throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+
         List<Major>majors=new ArrayList<>();
         resultSet=statement.executeQuery("select * from major;");
-        resultSet.next();
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Major major=new mymajor().getMajor(resultSet.getInt("id"));
             majors.add(major);
         }

@@ -33,6 +33,7 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
             resultSet=statement.executeQuery("select * from users;");
+
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 int id=resultSet.getInt("id");
