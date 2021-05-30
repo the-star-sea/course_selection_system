@@ -19,6 +19,9 @@ public class Main {
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
         StudentService studentService=serviceFactory.createService(StudentService.class);
         SemesterService semesterService=serviceFactory.createService(SemesterService.class);
+//        List<Semester> semesters=semesterService.getAllSemesters();
+//        System.out.println(semesters);
+        //userService.removeUser(11911607);
 //        User user= userService.getUser(20190621);
 //        System.out.println(user);
         //semesterService.addSemester("fall",java.sql.Date.valueOf("2005-12-19"),java.sql.Date.valueOf("2005-12-16"));
@@ -28,18 +31,12 @@ public class Main {
 //        System.out.println(users);
 //        Major major=studentService.getStudentMajor(20221208);
 //        System.out.println(major);
-        //List<Department> departments=departmentService.getAllDepartments();
-       //departmentService.addDepartment("sb3");
-       //departmentService.addDepartment("t3");
-        //majorService.addMajor("sd",1);
-        //majorService.addMajor("gan",2);
-        //semesterService.addSemester("Fall1", java.sql.Date.valueOf("2005-12-17"), java.sql.Date.valueOf("2005-12-02"));
-        //courseService.addCourseSection("CS333",1,"Fall1",50);
-        //majorService.addMajorCompulsoryCourse(2,"CS333");
-        //studentService.addStudent(117,1,"ssd","dd",java.sql.Date.valueOf("2005-12-12"));
-        //System.out.println( departmentService.addDepartment("jj"));
-       // MajorService majorService=serviceFactory.createService(MajorService.class);
-        //System.out.println( majorService.addMajor("jj",3));
+//        List<Department> departments=departmentService.getAllDepartments();
+//        System.out.println(departments);
+//        Department department=departmentService.getDepartment(1);
+//        System.out.println(department);
+
+
         //User user=userService.getUser(1);
         //System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);

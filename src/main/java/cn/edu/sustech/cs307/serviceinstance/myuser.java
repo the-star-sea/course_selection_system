@@ -21,6 +21,9 @@ public class myuser implements UserService {
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from users where id="+userId+";");
+            resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from users where id=" + userId + ";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
