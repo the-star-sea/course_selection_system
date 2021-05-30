@@ -105,6 +105,14 @@ else if(grade instanceof PassOrFailGrade){
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement preparedStatement= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
+preparedStatement.setDate(1,date);
+preparedStatement.setDate(2,date);
+resultSet=preparedStatement.executeQuery();
+resultSet.next();
+int week=resultSet.getInt(1)/7+1;
+Statement statement=connection.createStatement();
+statement.execute("select id from class where " +week+
+        "=any(weeklist) ;");
 
     }
 

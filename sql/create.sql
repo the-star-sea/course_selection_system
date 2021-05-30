@@ -4,7 +4,6 @@ create table if not exists semester
     name varchar(20),
     semester_begin date,
     semester_end   date,
-    check ( semester_begin<=semester_end ),
     unique (name,semester_begin,semester_end)
 
 );
@@ -69,13 +68,14 @@ create table if not exists major_course
 create table if not exists coursesection
 (
     id          serial primary key,
+    name varchar(20),
     semester_id int
         constraint ooi references semester(id) ON DELETE cascade,
     course_id   varchar(20)
         constraint wwwwd references course (id) ON DELETE cascade,
     totcapcity  int,
     leftcapcity int,
-    unique (semester_id,course_id)
+    unique (semester_id,name,course_id)
 );
 create table if not exists class
 (

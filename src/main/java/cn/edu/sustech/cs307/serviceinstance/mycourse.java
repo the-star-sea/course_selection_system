@@ -14,7 +14,7 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-//todo 日期判断先后
+
 public class mycourse implements CourseService {
 
 ResultSet resultSet;
