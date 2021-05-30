@@ -36,7 +36,7 @@ public class mysemester implements SemesterService{
         try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet = statement.executeQuery("select * from department where id="+semesterId+";");
+        resultSet = statement.executeQuery("select * from semester where id="+semesterId+";");
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         statement.execute("delete from semester where id="+semesterId+";");
         }
