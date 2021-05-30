@@ -85,7 +85,12 @@ public class Main {
         //courseService.addCourse("LL104", "Lang", 3, 64, PASS_OR_FAIL, null);
         //courseService.addCourse("LL304", "Uage", 3, 64, HUNDRED_MARK_SCORE, pre_4_5);
         //courseService.addCourse("WP117", "Ana", 3, 64, HUNDRED_MARK_SCORE, pre_4_5_wp);
-        courseService.removeCourse("ME101");
+        //courseService.removeCourse("ME101");
+        //courseService.removeCourse("ABC");
+        //courseService.removeCourseSection(4);
+        //courseService.removeCourseSectionClass(6);
+        List<Course> dd = new ArrayList<>();
+        dd = courseService.getAllCourses();
 
         //courseService.addCourseSection("CS202", 1, "Lecture", 80);
         //courseService.addCourseSection("CS202", 1, "Lab01", 40);
@@ -93,6 +98,8 @@ public class Main {
         //courseService.addCourseSection("WP908", 3, "Lecture", 100);
         //courseService.addCourseSection("WP908", 3, "Outdoor01", 50);
         //courseService.addCourseSection("WP908", 3, "Outdoor02", 50);
+        courseService.addCourseSection("MA203", 2, "Lecture", 80);
+
 
         List<Short> li = new LinkedList<>() {{add((short) 1); add((short) 2); add((short) 3); add((short) 4);}};
         //courseService.addCourseSectionClass(4, 11912301, DayOfWeek.THURSDAY, li, (short)10, (short)50, "LycheeHill");
@@ -101,11 +108,12 @@ public class Main {
         //courseService.addCourseSectionClass(7, 12003467, DayOfWeek.MONDAY, li, (short)5, (short)55, "TeachingBuildingOne");
 
         HundredMarkGrade grade_1 = new HundredMarkGrade((short)96);
-        //studentService.addEnrolledCourseWithGrade(20191208, 1, grade_1);
-        //studentService.addEnrolledCourseWithGrade(20181023, 1, PASS);
-        //studentService.addEnrolledCourseWithGrade(20210509, 5, PASS);
-        //studentService.addEnrolledCourseWithGrade(20190621, 5, PASS);
-        //studentService.addEnrolledCourseWithGrade(20221208, 1, PASS);
+
+//        studentService.addEnrolledCourseWithGrade(20191208, 1, grade_1);
+//        studentService.addEnrolledCourseWithGrade(20181023, 1, PASS);
+//        studentService.addEnrolledCourseWithGrade(20210509, 5, PASS);
+//        studentService.addEnrolledCourseWithGrade(20190621, 5, PASS);
+//        studentService.addEnrolledCourseWithGrade(20221208, 1, PASS);
 
         //majorService.addMajorElectiveCourse(3, "CS202");
         //majorService.addMajorCompulsoryCourse(10, "LL103");

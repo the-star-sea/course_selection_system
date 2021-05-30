@@ -150,6 +150,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from coursesection where id="+sectionId+";");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from coursesection where id="+sectionId+";");
         }catch (SQLException exception){
@@ -163,6 +164,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from class where id="+classId+";");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from class where id="+classId+";");
         }catch (SQLException exception){
