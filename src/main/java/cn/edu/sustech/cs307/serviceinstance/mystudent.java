@@ -4,6 +4,7 @@ import cn.edu.sustech.cs307.dto.*;
 import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.dto.grade.HundredMarkGrade;
 import cn.edu.sustech.cs307.dto.grade.PassOrFailGrade;
+import cn.edu.sustech.cs307.exception.EntityNotFoundException;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
@@ -101,7 +102,7 @@ else if(grade instanceof PassOrFailGrade){
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        
+
     }
 
     @Override
@@ -140,7 +141,7 @@ else if(grade instanceof PassOrFailGrade){
             }
             return ans;
         }
-throw new Exception();
+return false;
     }
 
     public boolean passedCourse(int studentId, String courseId) throws Exception {
