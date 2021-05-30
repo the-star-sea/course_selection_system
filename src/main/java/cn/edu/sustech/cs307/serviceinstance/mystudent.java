@@ -31,14 +31,23 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public EnrollResult enrollCourse(int studentId, int sectionId) throws SQLException {//todo
+    public EnrollResult enrollCourse(int studentId, int sectionId) throws Exception {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from coursesection where id="+sectionId+";");
+        if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
+        resultSet.next();
+        int left=resultSet.getInt("leftcapcity");
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
+        int kind=resultSet.getInt("kind");
         if(resultSet.getRow()>0){
-
+   if(kind==2)return EnrollResult.ALREADY_ENROLLED;
+if(new mystudent().passedSection(studentId,sectionId))return  EnrollResult.ALREADY_PASSED;
         }
+        if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
+
+
     }
 
     @Override
@@ -213,7 +222,27 @@ return maps;
         }
         return null;
     }
-
+    public boolean passedSection(int studentId, int sectionId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section _id="+sectionId+";");
+        resultSet.next();
+        int sgi=resultSet.getInt("id");
+        int kind=resultSet.getInt("kind");
+        if(kind==0){
+            resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+            resultSet.next();
+            if(resultSet.getInt("grade")>=60)return true;
+            return false;
+        }
+        if(kind==1) {
+            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
+            resultSet.next();
+            if(resultSet.getString("grade").equals("PASS"))return true;
+            return false;
+        }
+        return false;
+    }
     public boolean passedCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
