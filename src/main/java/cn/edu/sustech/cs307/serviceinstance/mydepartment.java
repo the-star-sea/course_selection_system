@@ -12,7 +12,7 @@ import java.util.List;
 public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     @Override
-    public int addDepartment(String name) throws SQLException {
+    public int addDepartment(String name) throws SQLException {//ok
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into department(name) values ('"+name+"');");
@@ -26,6 +26,8 @@ public class mydepartment implements  DepartmentService {
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
@@ -33,7 +35,7 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public List<Department> getAllDepartments() throws SQLException {
+    public List<Department> getAllDepartments() throws SQLException {//ok
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
 
@@ -47,7 +49,7 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public Department getDepartment(int departmentId) throws SQLException {
+    public Department getDepartment(int departmentId) throws SQLException {//ok
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
