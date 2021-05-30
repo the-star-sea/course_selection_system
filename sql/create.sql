@@ -98,7 +98,7 @@ create table if not exists student_grade
         constraint ii references student (id) ON DELETE cascade,
     section_id  integer
         constraint mmm references coursesection (id) ON DELETE cascade,
-    kind integer,--0百分制1pf制
+    kind integer,--0百分制1pf制2没分
     unique (student_id, section_id,kind)
 );
 

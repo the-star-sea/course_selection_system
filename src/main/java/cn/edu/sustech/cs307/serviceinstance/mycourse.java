@@ -93,7 +93,7 @@ else {int pre_id = addPre(coursePrerequisite);
 
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) {
+    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) throws Exception {
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
 
@@ -115,7 +115,7 @@ else {int pre_id = addPre(coursePrerequisite);
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return 0;
+        throw new Exception();
     }
 
     @Override

@@ -100,8 +100,15 @@ else if(grade instanceof PassOrFailGrade){
     }
 
     @Override
-    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) {
-        return null;
+    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        if(semesterId == null){
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+";");
+        }
+        else{
+        resultSet=statement.executeQuery("select * from student_grade where ");
+        }
     }
 
     @Override
