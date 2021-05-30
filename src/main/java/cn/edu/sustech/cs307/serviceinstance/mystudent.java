@@ -29,14 +29,32 @@ public class mystudent implements StudentService{
     @Override
     public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        String sql="";
-        String searchc=" and course_id='"+searchCid+"'";
-        String searchname=" and course_name='"+searchName+"'";
-        String searchins=" and instructor_name='"+searchInstructor+"'";
-        String searchday=" and dayofweek='"+searchDayOfWeek+"'";
-        String searchfull=" and leftcapcity>0";
-        //String
+        String sql="select * from course,coursesection,users,class  where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id";
+        if(searchCid!=null)
+        sql+=" and course_id='"+searchCid+"'";
+        if(searchName!=null)
+       sql+=" and course_name='"+searchName+"'";
+        if(searchInstructor!=null)
+        sql+=" and instructor_name='"+searchInstructor;
+        if(searchDayOfWeek!=null)
+        sql+=" and dayofweek='"+searchDayOfWeek+"'";
+        if(!ignorePassed)
+        sql+=" and leftcapcity>0";
+        if(searchClassLocations!=null)
+        sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
+        if(searchClassLocations!=null){
+        sql+=" and location in (";
+sql+=searchClassLocations.get(0);
+for(int i=1;i<searchClassLocations.size();i++){
+    sql+=(","+searchClassLocations.get(i));
+}
+sql+=")";
+        }
+sql+=";";
         Statement statement=connection.createStatement();
+        resultSet=statement.executeQuery(sql);
+        if(searchCourseType==CourseType.MAJOR_COMPULSORY){}
+        if(searchCourseType==CourseType.MAJOR_ELECTIVE){}
 return null;
     }
 

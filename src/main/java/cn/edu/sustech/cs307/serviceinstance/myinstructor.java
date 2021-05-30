@@ -14,6 +14,7 @@ public class myinstructor implements InstructorService{
     public void addInstructor(int userId, String firstName, String lastName) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+
         statement.execute("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',1);");
     }
 

@@ -10,8 +10,7 @@ create table if not exists semester
 create table if not exists users
 (
     id   integer primary key,
-    firstname  varchar(20),
-    lastname varchar(20),
+    name  varchar(20),
     kind integer--0学生，1老师
 );
 create table if not exists department
