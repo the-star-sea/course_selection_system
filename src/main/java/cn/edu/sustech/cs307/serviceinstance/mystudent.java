@@ -68,7 +68,7 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
             statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((HundredMarkGrade) grade).mark+")");
-
+            //return null;
         }
         if(grade instanceof PassOrFailGrade){
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
@@ -108,7 +108,9 @@ else if(grade instanceof PassOrFailGrade){
         }
         else{
         resultSet=statement.executeQuery("select * from student_grade where ");
+
         }
+        return null;
     }
 
     @Override
@@ -194,7 +196,7 @@ return false;
            resultSet.next();
            if(resultSet.getInt("grade")>=60)return true;
            return false;
-
+            //return null;
         }
 if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
