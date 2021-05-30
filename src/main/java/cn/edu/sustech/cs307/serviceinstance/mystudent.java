@@ -100,10 +100,10 @@ else if(grade instanceof PassOrFailGrade){
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         if(semesterId == null){
-
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+";");
         }
         else{
-
+        resultSet=statement.executeQuery("select * from student_grade where ");
         }
     }
 
