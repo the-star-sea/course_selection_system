@@ -37,6 +37,7 @@ public class mysemester implements SemesterService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet = statement.executeQuery("select * from semester where id="+semesterId+";");
+        resultSet.next();
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         statement.execute("delete from semester where id="+semesterId+";");
         }
@@ -52,8 +53,8 @@ public class mysemester implements SemesterService{
             Statement statement = connection.createStatement();
             List<Semester> semesters = new ArrayList<>();
             resultSet = statement.executeQuery("select * from semester;");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             while (resultSet.next()) {
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 Semester semester = new mysemester().getSemester(resultSet.getInt("id"));
                 semesters.add(semester);
             }

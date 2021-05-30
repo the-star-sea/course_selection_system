@@ -314,8 +314,9 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
         List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
                  "';");
-        if (resultSet.getRow()==0)return false;
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)return false;
             CourseSection courseSection=new CourseSection();
             courseSection.leftCapacity=resultSet.getInt("leftcapcity");
             courseSection.totalCapacity=resultSet.getInt("totcapcity");

@@ -41,5 +41,8 @@ public class Main {
         //System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);
         //System.out.println(result);
+        List<User> users=new ArrayList<>();
+        users=userService.getAllUsers();
+        System.out.println(users);
     }
 }

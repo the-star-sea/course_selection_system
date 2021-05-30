@@ -33,8 +33,8 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
             resultSet=statement.executeQuery("select * from users;");
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             while(resultSet.next()){
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 int id=resultSet.getInt("id");
                 int kind =resultSet.getInt("kind");
                 if(kind==0){
@@ -59,7 +59,6 @@ public class myuser implements UserService {
             resultSet=statement.executeQuery("select * from users where id ="+userId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
-
             int kind=resultSet.getInt("kind");
             String firstname=resultSet.getString("firstname");
             String lastname=resultSet.getString("lastname");
