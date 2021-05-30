@@ -67,7 +67,7 @@ public class mysemester implements SemesterService{
     public Semester getSemester(int semesterId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-       resultSet = statement.executeQuery("select * from users where id =" + semesterId + ";");
+        resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
         resultSet.next();
         Semester semester=new Semester();
         semester.id=resultSet.getInt("id");
