@@ -72,16 +72,13 @@ public class mystudent implements StudentService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         if(grade==null){
-            statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
-                    ");");
+            statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+");");
         }
         if(grade instanceof HundredMarkGrade){
-            statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
-                    "0);");
+            statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+",0);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
             statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((HundredMarkGrade) grade).mark+")");
-
         }
         if(grade instanceof PassOrFailGrade){
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
