@@ -49,7 +49,7 @@ public class mystudent implements StudentService{
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
 if(new mystudent().enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-if(new mystudent().timeconflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
+if(new mystudent().conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
 if(left<=0)return EnrollResult.COURSE_IS_FULL;
 try{
 statement.execute("insert into student_grade(student_id,section_id)values (" +studentId+","+sectionId+
@@ -61,7 +61,7 @@ catch (Exception exception){
 }
     }
 
-    private boolean timeconflict(int studentId,int sectionId ) throws Exception {
+    private boolean conflict(int studentId,int sectionId ) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
