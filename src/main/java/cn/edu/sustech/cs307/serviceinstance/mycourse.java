@@ -224,7 +224,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         course.id=resultSet.getString("course_id");
         course.credit=resultSet.getInt("credit");
         course.classHour=resultSet.getInt("class_hour");
-        course.name=resultSet.getString("course.name");
+        course.name=resultSet.getString("name");
         return course;
     }
 

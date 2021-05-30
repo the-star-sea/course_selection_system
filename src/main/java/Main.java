@@ -19,12 +19,15 @@ public class Main {
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
         StudentService studentService=serviceFactory.createService(StudentService.class);
         SemesterService semesterService=serviceFactory.createService(SemesterService.class);
-
-
+//        User user= userService.getUser(20190621);
+//        System.out.println(user);
         //semesterService.addSemester("fall",java.sql.Date.valueOf("2005-12-19"),java.sql.Date.valueOf("2005-12-16"));
         //instructorService.addInstructor(3123123,"tong","zhang");
-        //List<User> users=new ArrayList<>();
-        //users=userService.getAllUsers();
+//        List<User> users=new ArrayList<>();
+//        users=userService.getAllUsers();
+//        System.out.println(users);
+//        Major major=studentService.getStudentMajor(20221208);
+//        System.out.println(major);
         //List<Department> departments=departmentService.getAllDepartments();
        //departmentService.addDepartment("sb3");
        //departmentService.addDepartment("t3");
@@ -41,8 +44,6 @@ public class Main {
         //System.out.println(user.fullName);
         //StudentService.EnrollResult result=studentService.enrollCourse(3,2);
         //System.out.println(result);
-        List<User> users=new ArrayList<>();
-        users=userService.getAllUsers();
-        System.out.println(users);
+
     }
 }
