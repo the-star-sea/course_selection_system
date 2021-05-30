@@ -48,7 +48,7 @@ public class mystudent implements StudentService{
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
 if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-return null;
+
 
     }
 
@@ -114,7 +114,6 @@ return null;
     public boolean enrolledcourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        Map<Course, Grade>maps=new HashMap<>();
         resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id=" +courseId+" and  student_id="+studentId+
                 " order by semester_begin;");
         if(resultSet.getRow()==0)return false;
