@@ -61,15 +61,15 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         int prebas=resultSet.getInt("id");
         if(coursePrerequisite.equals(null)){
             PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id) values (?,?,?,?,?,?);");
-    stmt.setString(1,courseId);
-    stmt.setString(2,courseName);
-    stmt.setInt(3,credit);
-stmt.setInt(4,classHour);
-stmt.setString(5,grading.toString());
-stmt.setInt(6,prebas);
-stmt.execute();
-}
-else {int pre_id = addPre(coursePrerequisite);
+            stmt.setString(1,courseId);
+            stmt.setString(2,courseName);
+            stmt.setInt(3,credit);
+            stmt.setInt(4,classHour);
+            stmt.setString(5,grading.toString());
+            stmt.setInt(6,prebas);
+            stmt.execute();
+        }
+        else {int pre_id = addPre(coursePrerequisite);
             PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id,pre_base_id) values (?,?,?,?,?,?,?);");
             stmt.setString(1,courseId);
             stmt.setString(2,courseName);
@@ -123,6 +123,8 @@ else {int pre_id = addPre(coursePrerequisite);
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from course where id='"+courseId+"';");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from course where id='"+courseId+"';");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
@@ -134,6 +136,8 @@ else {int pre_id = addPre(coursePrerequisite);
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from coursesection where id="+sectionId+";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from coursesection where id="+sectionId+";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
@@ -161,6 +165,7 @@ else {int pre_id = addPre(coursePrerequisite);
         Statement statement = connection.createStatement();
        List<Course>courses=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course;");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
             Course course=new Course();
             course.classHour=resultSet.getInt("class_hour");
@@ -179,6 +184,7 @@ else {int pre_id = addPre(coursePrerequisite);
        List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
                 "and semester_id=" +semesterId+ ";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
         CourseSection courseSection=new CourseSection();
         courseSection.leftCapacity=resultSet.getInt("leftcapcity");
@@ -197,6 +203,7 @@ else {int pre_id = addPre(coursePrerequisite);
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                 ";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         Course course=new Course();
         course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
@@ -212,6 +219,7 @@ else {int pre_id = addPre(coursePrerequisite);
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         List<CourseSectionClass>courseSectionClasses=new ArrayList<>();
         while (resultSet.next()){
             CourseSectionClass courseSectionClass=new CourseSectionClass();
@@ -231,6 +239,7 @@ else {int pre_id = addPre(coursePrerequisite);
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         CourseSection courseSection=new CourseSection();
         courseSection.id=resultSet.getInt("coursesection.id");
@@ -249,6 +258,7 @@ else {int pre_id = addPre(coursePrerequisite);
         resultSet=statement.executeQuery(
                 "select student_id from (select * from coursesection where semester_id="+semesterId+" and course_id='"+courseId+"')x join student_grade on x.id=student_grade.section_id;"
         );
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while (resultSet.next()){
             Student student= (Student) new myuser().getUser(resultSet.getInt("student_id"));
             students.add(student);
