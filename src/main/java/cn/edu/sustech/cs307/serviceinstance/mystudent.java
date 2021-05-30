@@ -274,7 +274,7 @@ return maps;
         }boolean ans=false;
         for(int i=0;i<courseSections.size();i++){
             ans=ans|passedSection(studentId,courseSections.get(i).id);
-        }return false;
+        }return ans;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
