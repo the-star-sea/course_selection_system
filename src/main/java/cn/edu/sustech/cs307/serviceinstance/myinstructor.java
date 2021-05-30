@@ -2,6 +2,7 @@ package cn.edu.sustech.cs307.serviceinstance;
 import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.CourseSection;
 import cn.edu.sustech.cs307.dto.Department;
+import cn.edu.sustech.cs307.exception.EntityNotFoundException;
 import cn.edu.sustech.cs307.service.*;
 
 import java.sql.*;
@@ -23,6 +24,7 @@ public class myinstructor implements InstructorService{
 
         List<CourseSection>courseSections=new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("select * from (select  * from class join users u on u.id = class.instructor_id where u.id="+instructorId+" )aa join coursesection on aa.coursesection_id=coursesection.id where kind=1 and semester_id="+semesterId+";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
             CourseSection courseSection= new CourseSection();
             courseSection.id=resultSet.getInt("id");

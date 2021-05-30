@@ -14,7 +14,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 
 public class mystudent implements StudentService{
-    ResultSet resultSet;//to do 疑似要每次重新定义
+    ResultSet resultSet;
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -36,7 +36,9 @@ public class mystudent implements StudentService{
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
-        return null;
+        if(resultSet.getRow()>0){
+
+        }
     }
 
     @Override
@@ -68,7 +70,7 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
             statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((HundredMarkGrade) grade).mark+")");
-            //return null;
+
         }
         if(grade instanceof PassOrFailGrade){
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
@@ -83,64 +85,68 @@ public class mystudent implements StudentService{
     public void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-if(grade instanceof HundredMarkGrade){
-    statement.execute("update student_grade set kind=0 where student_id=" +studentId+" section_id="+sectionId+ ";");
-    resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
-    resultSet.next();
-    int id=resultSet.getInt("id");
-    statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
-}
-else if(grade instanceof PassOrFailGrade){
-    statement.execute("update student_grade set kind=1 where student_id=" +studentId+" section_id="+sectionId+ ";");
-    resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
-    resultSet.next();
-    int id=resultSet.getInt("id");
-    statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
-}
+        if(grade instanceof HundredMarkGrade){
+            statement.execute("update student_grade set kind=0 where student_id=" +studentId+" section_id="+sectionId+ ";");
+            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+            resultSet.next();
+            int id=resultSet.getInt("id");
+            statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
+        }
+        else if(grade instanceof PassOrFailGrade){
+            statement.execute("update student_grade set kind=1 where student_id=" +studentId+" section_id="+sectionId+ ";");
+            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+            resultSet.next();
+            int id=resultSet.getInt("id");
+            statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
+        }
     }
 
     @Override
-    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws SQLException {
+    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        Map<Course, Grade>maps=new HashMap<>();
         if(semesterId == null){
-        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+";");
-        }
-        else{
-        resultSet=statement.executeQuery("select * from student_grade where ");
+            resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.semester_id=semester.id order by semester_begin;");
+        }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
+                " and c.semester_id=semester.id order by semester_begin;");}
+while (resultSet.next()){
 
-        }
-        return null;
+    Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
+    Grade grade=new mystudent().getgrade(studentId,course.id);
+maps.put(course,grade);
+}
+return maps;
     }
 
     @Override
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement preparedStatement= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
-preparedStatement.setDate(1,date);
-preparedStatement.setDate(2,date);
-resultSet=preparedStatement.executeQuery();
-resultSet.next();
-int week=resultSet.getInt(1)/7+1;
-preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
-   preparedStatement.setInt(1,week);
-   preparedStatement.setInt(2,studentId);
-   CourseTable courseTable=new CourseTable();
-   courseTable.table=new HashMap<>();
-   for(int i=1;i<=7;i++){
-       preparedStatement.setString(3,DayOfWeek.of(i).toString());
-       resultSet=preparedStatement.executeQuery();
-       List<CourseTable.CourseTableEntry>table=new ArrayList<>();
-       while(resultSet.next()){
-           CourseTable.CourseTableEntry courseTableEntry=new CourseTable.CourseTableEntry();
-           courseTableEntry.courseFullName=resultSet.getString("coursename")+"["+resultSet.getString("sectionname")+"]";
-           courseTableEntry.classBegin= (short) resultSet.getInt("class_begin");
-           courseTableEntry.classEnd= (short) resultSet.getInt("class_end");
-           courseTableEntry.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
-           courseTableEntry.location=resultSet.getString("location");
-           table.add(courseTableEntry);
-       }courseTable.table.put(DayOfWeek.of(i),table);
-   }return courseTable;
+        preparedStatement.setDate(1,date);
+        preparedStatement.setDate(2,date);
+        resultSet=preparedStatement.executeQuery();
+        resultSet.next();
+        int week=resultSet.getInt(1)/7+1;
+        preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
+           preparedStatement.setInt(1,week);
+           preparedStatement.setInt(2,studentId);
+           CourseTable courseTable=new CourseTable();
+           courseTable.table=new HashMap<>();
+       for(int i=1;i<=7;i++){
+           preparedStatement.setString(3,DayOfWeek.of(i).toString());
+           resultSet=preparedStatement.executeQuery();
+           List<CourseTable.CourseTableEntry>table=new ArrayList<>();
+           while(resultSet.next()){
+               CourseTable.CourseTableEntry courseTableEntry=new CourseTable.CourseTableEntry();
+               courseTableEntry.courseFullName=resultSet.getString("coursename")+"["+resultSet.getString("sectionname")+"]";
+               courseTableEntry.classBegin= (short) resultSet.getInt("class_begin");
+               courseTableEntry.classEnd= (short) resultSet.getInt("class_end");
+               courseTableEntry.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
+               courseTableEntry.location=resultSet.getString("location");
+               table.add(courseTableEntry);
+           }courseTable.table.put(DayOfWeek.of(i),table);
+       }return courseTable;
     }
 
     @Override
@@ -179,7 +185,33 @@ preparedStatement=connection.prepareStatement("select location,class_begin,class
             }
             return ans;
         }
-return false;
+    return false;
+    }
+    public Grade getgrade(int studentId, String courseId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
+                " and student_id=" +studentId+
+                ";");
+        resultSet.next();
+        int sgi=resultSet.getInt("student_grade.id");
+        int kind=resultSet.getInt("kind");
+        if(kind==0){
+            resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+            resultSet.next();
+            return new HundredMarkGrade((short) resultSet.getInt("grade"));
+
+
+
+        }
+        if(kind==1) {
+            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
+            resultSet.next();
+
+           return PassOrFailGrade.valueOf(resultSet.getString("grade")) ;
+
+        }
+        return null;
     }
 
     public boolean passedCourse(int studentId, String courseId) throws Exception {
@@ -196,15 +228,14 @@ return false;
            resultSet.next();
            if(resultSet.getInt("grade")>=60)return true;
            return false;
-            //return null;
         }
-if(kind==1) {
+        if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
             resultSet.next();
             if(resultSet.getString("grade").equals("PASS"))return true;
             return false;
         }
-return false;
+        return false;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
@@ -212,6 +243,7 @@ return false;
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select major_id from student where id =" + studentId + ";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             resultSet.next();
             Major major=new mymajor().getMajor(resultSet.getInt("major_id"));
             return major;
