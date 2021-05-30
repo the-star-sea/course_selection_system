@@ -194,15 +194,15 @@ catch (Exception exception){
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         if(grade instanceof HundredMarkGrade){
-            statement.execute("update student_grade set kind=0 where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+            statement.execute("update student_grade set kind=0 where student_id=" +studentId+" and section_id="+sectionId+ ";");
+            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
             resultSet.next();
             int id=resultSet.getInt("id");
             statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
         }
         else if(grade instanceof PassOrFailGrade){
-            statement.execute("update student_grade set kind=1 where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+            statement.execute("update student_grade set kind=1 where student_id=" +studentId+" and section_id="+sectionId+ ";");
+            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
             resultSet.next();
             int id=resultSet.getInt("id");
             statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");

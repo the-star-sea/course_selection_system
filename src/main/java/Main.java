@@ -130,7 +130,11 @@ public class Main {
         //studentService.addEnrolledCourseWithGrade(20221208, 1, grade_2);
         //boolean y = studentService.passedPrerequisitesForCourse(20221208, "CS602");
         //System.out.println(y);
-        studentService.dropCourse(20190621, 5);
+        //studentService.dropCourse(20190621, 5);
+//        Major m = new Major();
+//        m = studentService.getStudentMajor(20190521);
+//        System.out.println(m.toString());
+        studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
 
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
