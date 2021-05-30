@@ -24,8 +24,9 @@ public class myinstructor implements InstructorService{
 
         List<CourseSection>courseSections=new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("select * from (select  * from class join users u on u.id = class.instructor_id where u.id="+instructorId+" )aa join coursesection on aa.coursesection_id=coursesection.id where kind=1 and semester_id="+semesterId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         while(resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             CourseSection courseSection= new CourseSection();
             courseSection.id=resultSet.getInt("id");
             courseSection.name=resultSet.getString("name");

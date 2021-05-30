@@ -28,6 +28,7 @@ public class mymajor implements MajorService{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from major where id="+majorId+";");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from major where id="+majorId+";");
         }catch (SQLException exception){
@@ -41,6 +42,7 @@ public class mymajor implements MajorService{
         Statement statement = connection.createStatement();
         List<Major>majors=new ArrayList<>();
         resultSet=statement.executeQuery("select * from major;");
+        resultSet.next();
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
             Major major=new mymajor().getMajor(resultSet.getInt("id"));

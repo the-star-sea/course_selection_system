@@ -179,8 +179,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Statement statement = connection.createStatement();
         List<Course>courses=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course;");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Course course=new Course();
             course.classHour=resultSet.getInt("class_hour");
             course.credit=resultSet.getInt("credit");
@@ -198,14 +198,14 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
        List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
                 "and semester_id=" +semesterId+ ";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while(resultSet.next()){
-        CourseSection courseSection=new CourseSection();
-        courseSection.leftCapacity=resultSet.getInt("leftcapcity");
-        courseSection.totalCapacity=resultSet.getInt("totcapcity");
-        courseSection.id=resultSet.getInt("id");
-        courseSection.name=resultSet.getString("name");
-        courseSections.add(courseSection);
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+            CourseSection courseSection=new CourseSection();
+            courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+            courseSection.totalCapacity=resultSet.getInt("totcapcity");
+            courseSection.id=resultSet.getInt("id");
+            courseSection.name=resultSet.getString("name");
+            courseSections.add(courseSection);
         }
         return courseSections;
 
@@ -233,9 +233,10 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+
         List<CourseSectionClass>courseSectionClasses=new ArrayList<>();
         while (resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             CourseSectionClass courseSectionClass=new CourseSectionClass();
             courseSectionClass.classBegin= (short) resultSet.getInt("class_begin");
             courseSectionClass.classEnd= (short) resultSet.getInt("class_end");
@@ -272,8 +273,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         resultSet=statement.executeQuery(
                 "select student_id from (select * from coursesection where semester_id="+semesterId+" and course_id='"+courseId+"')x join student_grade on x.id=student_grade.section_id;"
         );
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         while (resultSet.next()){
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Student student= (Student) new myuser().getUser(resultSet.getInt("student_id"));
             students.add(student);
         }
