@@ -24,7 +24,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
     Statement statement = connection.createStatement();
     if(coursePrerequisite instanceof CoursePrerequisite){
         String courseid=((CoursePrerequisite) coursePrerequisite).courseID;
-        resultSet=statement.executeQuery("select * from course where id="+courseid);
+        resultSet=statement.executeQuery("select * from course where id='"+courseid+"';");
         resultSet.next();
         return resultSet.getInt("pre_base_id");
     }
