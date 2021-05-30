@@ -105,7 +105,7 @@ else if(grade instanceof PassOrFailGrade){
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         PreparedStatement preparedStatement= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
-
+        return null;
     }
 
     @Override
@@ -144,7 +144,7 @@ else if(grade instanceof PassOrFailGrade){
             }
             return ans;
         }
-return false;
+        return false;
     }
 
     public boolean passedCourse(int studentId, String courseId) throws Exception {
