@@ -1,10 +1,10 @@
-
 create table if not exists semester
 (
     id    serial primary key,
     name varchar(20),
     semester_begin date,
     semester_end   date,
+    check ( semester_begin<=semester_end ),
     unique (name,semester_begin,semester_end)
 
 );
@@ -116,20 +116,3 @@ create table if not exists student_grade_pf
     grade            varchar(20)
 
 );
--- SELECT nextval(pg_get_serial_sequence('major', 'id'));
--- SELECT nextval(pg_get_serial_sequence('semester', 'id'));
--- SELECT nextval(pg_get_serial_sequence('department', 'id'));
--- SELECT nextval(pg_get_serial_sequence('major', 'id'));
--- SELECT nextval(pg_get_serial_sequence('prerequisite', 'id'));
--- SELECT nextval(pg_get_serial_sequence('student_grade', 'id'));
--- SELECT nextval(pg_get_serial_sequence('class', 'id'));
--- SELECT nextval(pg_get_serial_sequence('coursesection', 'id'));
-
-
-
-
-
-
-
-
-

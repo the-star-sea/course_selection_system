@@ -80,20 +80,20 @@ public class mystudent implements StudentService{
     public void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        if(grade instanceof HundredMarkGrade){
-            statement.execute("update student_grade set kind=0 where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet.next();
-            int id=resultSet.getInt("id");
-            statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
-        }
-        else if(grade instanceof PassOrFailGrade){
-            statement.execute("update student_grade set kind=1 where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
-            resultSet.next();
-            int id=resultSet.getInt("id");
-            statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
-        }
+if(grade instanceof HundredMarkGrade){
+    statement.execute("update student_grade set kind=0 where student_id=" +studentId+" section_id="+sectionId+ ";");
+    resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+    resultSet.next();
+    int id=resultSet.getInt("id");
+    statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
+}
+else if(grade instanceof PassOrFailGrade){
+    statement.execute("update student_grade set kind=1 where student_id=" +studentId+" section_id="+sectionId+ ";");
+    resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" section_id="+sectionId+ ";");
+    resultSet.next();
+    int id=resultSet.getInt("id");
+    statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
+}
     }
 
     @Override
@@ -103,13 +103,8 @@ public class mystudent implements StudentService{
 
     @Override
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
-        try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
-            Statement statement = connection.createStatement();
-            return null;
-        }catch (SQLException exception){
-            throw new EntityNotFoundException();
-        }
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        PreparedStatement preparedStatement= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
 
     }
 
@@ -168,13 +163,13 @@ return false;
            return false;
 
         }
-        if(kind==1) {
+if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
             resultSet.next();
             if(resultSet.getString("grade").equals("PASS"))return true;
             return false;
         }
-        return false;
+return false;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
