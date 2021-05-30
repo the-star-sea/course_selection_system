@@ -145,7 +145,7 @@ public interface StudentService {
      * @param sectionId the id of CourseSection
      * @return See {@link cn.edu.sustech.cs307.service.StudentService.EnrollResult}
      */
-    EnrollResult enrollCourse(int studentId, int sectionId) throws SQLException;
+    EnrollResult enrollCourse(int studentId, int sectionId) throws Exception;
 
     /**
      * Drop a course section for a student

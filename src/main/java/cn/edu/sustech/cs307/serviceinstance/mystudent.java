@@ -31,15 +31,25 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public EnrollResult enrollCourse(int studentId, int sectionId) throws SQLException {//todo
+    public EnrollResult enrollCourse(int studentId, int sectionId) throws Exception {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select * from coursesection where id="+sectionId+";");
+        if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
+        resultSet.next();
+        int left=resultSet.getInt("leftcapcity");
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
-        if(resultSet.getRow()>0){
-            return null;
+        int kind=resultSet.getInt("kind");
+        String courseid=new mycourse().getCourseBySection(sectionId).id;
+        if(resultSet.getRow()>0) {
+            if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
+            if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
         }
-        return null;
+        if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
+if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+
+
     }
 
     @Override
@@ -101,7 +111,17 @@ public class mystudent implements StudentService{
             statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
         }
     }
-
+    public boolean enrolledcourse(int studentId, String courseId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
+                " order by semester_begin;");
+        if(resultSet.getRow()==0)return false;
+        while (resultSet.next()){
+            if(resultSet.getInt("kind")==2)return true;
+        }
+      return false;
+    }
     @Override
     public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -112,7 +132,6 @@ public class mystudent implements StudentService{
         }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
                 " and c.semester_id=semester.id order by semester_begin;");}
 while (resultSet.next()){
-
     Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
     Grade grade=new mystudent().getgrade(studentId,course.id);
 maps.put(course,grade);
@@ -127,6 +146,7 @@ return maps;
         preparedStatement.setDate(1,date);
         preparedStatement.setDate(2,date);
         resultSet=preparedStatement.executeQuery();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int week=resultSet.getInt(1)/7+1;
         preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
@@ -154,7 +174,7 @@ return maps;
     public boolean passedPrerequisitesForCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select * from course where id="+courseId+";");
+        resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
         resultSet.next();
         int pre_id=resultSet.getInt("prerequisite_id");
         return testpre(studentId,pre_id);
@@ -180,7 +200,7 @@ return maps;
             return ans;
         }
         else if(kind==2){
-            boolean ans=true;
+            boolean ans=false;
             for(int i=0;i<pres.length;i++){
                 ans=ans|testpre(studentId,pres[i]);
             }
@@ -191,9 +211,10 @@ return maps;
     public Grade getgrade(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
+        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id='" +courseId+
                 " and student_id=" +studentId+
-                ";");
+                "';");
+        if(resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int sgi=resultSet.getInt("student_grade.id");
         int kind=resultSet.getInt("kind");
@@ -201,8 +222,6 @@ return maps;
             resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
             resultSet.next();
             return new HundredMarkGrade((short) resultSet.getInt("grade"));
-
-
 
         }
         if(kind==1) {
@@ -214,29 +233,47 @@ return maps;
         }
         return null;
     }
-
-    public boolean passedCourse(int studentId, String courseId) throws Exception {
+    public boolean passedSection(int studentId, int sectionId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
-                " and student_id=" +studentId+
-                ";");
-        resultSet.next();
-        int sgi=resultSet.getInt("student_grade.id");
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section _id="+sectionId+";");
+        if(resultSet.getRow()==0)return false;
+
+        while (resultSet.next()){
+        int sgi=resultSet.getInt("id");
         int kind=resultSet.getInt("kind");
         if(kind==0){
-           resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
-           resultSet.next();
-           if(resultSet.getInt("grade")>=60)return true;
-           return false;
+            resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+            resultSet.next();
+            if(resultSet.getInt("grade")>=60)return true;
+
         }
-        if(kind==1) {
+        else if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
             resultSet.next();
             if(resultSet.getString("grade").equals("PASS"))return true;
-            return false;
+
         }
-        return false;
+      }  return false;
+    }
+    public boolean passedCourse(int studentId, String courseId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        List<CourseSection>courseSections=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
+                 "';");
+        if (resultSet.getRow()==0)return false;
+        while(resultSet.next()){
+            CourseSection courseSection=new CourseSection();
+            courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+            courseSection.totalCapacity=resultSet.getInt("totcapcity");
+            courseSection.id=resultSet.getInt("id");
+            courseSection.name=resultSet.getString("name");
+            courseSections.add(courseSection);
+        }boolean ans=false;
+        for(int i=0;i<courseSections.size();i++){
+            ans=ans|passedSection(studentId,courseSections.get(i).id);
+        }return ans;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
