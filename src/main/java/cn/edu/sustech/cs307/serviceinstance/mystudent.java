@@ -14,7 +14,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 
 public class mystudent implements StudentService{
-    ResultSet resultSet;//to do 疑似要每次重新定义
+    ResultSet resultSet;
     @Override
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -96,15 +96,21 @@ else if(grade instanceof PassOrFailGrade){
     }
 
     @Override
-    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws SQLException {
+    public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
+        Map<Course, Grade>maps=new HashMap<>();
         if(semesterId == null){
-        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+";");
-        }
-        else{
-        resultSet=statement.executeQuery("select * from student_grade where ");
-        }
+            resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.semester_id=semester.id order by semester_begin;");
+        }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
+                " and c.semester_id=semester.id order by semester_begin;");}
+while (resultSet.next()){
+
+    Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
+    Grade grade=new mystudent().getgrade(studentId,course.id);
+maps.put(course,grade);
+}
+return maps;
     }
 
     @Override
@@ -174,6 +180,32 @@ preparedStatement=connection.prepareStatement("select location,class_begin,class
             return ans;
         }
 return false;
+    }
+    public Grade getgrade(int studentId, String courseId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
+                " and student_id=" +studentId+
+                ";");
+        resultSet.next();
+        int sgi=resultSet.getInt("student_grade.id");
+        int kind=resultSet.getInt("kind");
+        if(kind==0){
+            resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+            resultSet.next();
+            return new HundredMarkGrade((short) resultSet.getInt("grade"));
+
+
+
+        }
+        if(kind==1) {
+            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
+            resultSet.next();
+
+           return PassOrFailGrade.valueOf(resultSet.getString("grade")) ;
+
+        }
+        return null;
     }
 
     public boolean passedCourse(int studentId, String courseId) throws Exception {

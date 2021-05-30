@@ -198,7 +198,7 @@ public interface StudentService {
      * or {@code PassOrFailGrade.FAIL} respectively.
      * If the grade is not set yet, the value should be null.
      */
-    Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws SQLException;
+    Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception;
 
     /**
      * Return a course table in current week according to the date.
