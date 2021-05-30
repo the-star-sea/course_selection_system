@@ -127,7 +127,7 @@ public interface StudentService {
                                          CourseType searchCourseType,
                                          boolean ignoreFull, boolean ignoreConflict,
                                          boolean ignorePassed, boolean ignoreMissingPrerequisites,
-                                         int pageSize, int pageIndex);
+                                         int pageSize, int pageIndex) throws SQLException;
 
     /**
      * It is the course selection function according to the studentId and courseId.
