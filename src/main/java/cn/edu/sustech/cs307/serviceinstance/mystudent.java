@@ -29,7 +29,15 @@ public class mystudent implements StudentService{
     @Override
     public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement statement = connection.prepareStatement("");
+        String sql="";
+        String searchc=" and course_id='"+searchCid+"'";
+        String searchname=" and course_name='"+searchName+"'";
+        String searchins=" and instructor_name='"+searchInstructor+"'";
+        String searchday=" and dayofweek='"+searchDayOfWeek+"'";
+        String searchfull=" and leftcapcity>0";
+        String
+        Statement statement=connection.createStatement();
+
     }
 
     @Override
