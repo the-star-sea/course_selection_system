@@ -44,8 +44,8 @@ create table if not exists student
 create table if not exists prerequisite(
                                            id serial primary key ,
                                            content int[] ,
-                                           kind integer,--0课1和2或
-                                           unique (content,kind)
+                                           kind integer--0课1和2或
+
 );
 create table if not exists course
 (
@@ -98,7 +98,7 @@ create table if not exists student_grade
         constraint ii references student (id) ON DELETE cascade,
     section_id  integer
         constraint mmm references coursesection (id) ON DELETE cascade,
-    kind integer,--0百分制1pf制2没分
+    kind integer,--0百分制1pf制
     unique (student_id, section_id,kind)
 );
 

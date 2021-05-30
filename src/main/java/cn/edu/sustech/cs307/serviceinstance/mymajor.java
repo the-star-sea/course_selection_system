@@ -54,8 +54,8 @@ public class mymajor implements MajorService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         Major major=new Major();
         major.id=majorId;
         major.name=resultSet.getString("name");
@@ -70,10 +70,8 @@ public class mymajor implements MajorService{
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
         PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where id=?;");
         statement1.setString(1,courseId);
-
         statement1.execute();
     }
-
     @Override
     public void addMajorElectiveCourse(int majorId, String courseId) throws SQLException {//todo
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -81,7 +79,6 @@ public class mymajor implements MajorService{
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
         PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where id=?;");
         statement1.setString(1,courseId);
-
         statement1.execute();
     }
 }

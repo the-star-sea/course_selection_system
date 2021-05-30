@@ -136,6 +136,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from course where id='"+courseId+"';");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from course where id='"+courseId+"';");
         }catch (SQLException exception){
@@ -214,8 +215,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                 ";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         Course course=new Course();
         course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
         course.id=resultSet.getString("course_id");
@@ -250,8 +251,8 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         CourseSection courseSection=new CourseSection();
         courseSection.id=resultSet.getInt("coursesection.id");
         courseSection.name=resultSet.getString("name");
