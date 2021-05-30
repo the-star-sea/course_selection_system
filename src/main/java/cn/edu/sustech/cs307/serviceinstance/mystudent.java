@@ -5,6 +5,7 @@ import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.dto.grade.HundredMarkGrade;
 import cn.edu.sustech.cs307.dto.grade.PassOrFailGrade;
 import cn.edu.sustech.cs307.exception.EntityNotFoundException;
+import cn.edu.sustech.cs307.exception.IntegrityViolationException;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
@@ -47,9 +48,35 @@ public class mystudent implements StudentService{
             if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+if(new mystudent().enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+if(new mystudent().timeconflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
+if(left<=0)return EnrollResult.COURSE_IS_FULL;
+try{
+statement.execute("insert into student_grade(student_id,section_id)values (" +studentId+","+sectionId+
+        ")");
+return EnrollResult.SUCCESS;
+}
+catch (Exception exception){
+    return EnrollResult.UNKNOWN_ERROR;
+}
+    }
 
+    private boolean timeconflict(int studentId,int sectionId ) throws SQLException {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
+        resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
+                " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
+        while(resultSet.next()){
+            String location=resultSet.getString("location");
+            int[]weeklists=(int[])resultSet.getArray("weeklist").getArray();
+            String dayofweek=resultSet.getString("dayofweek");
+            int class_begin=resultSet.getInt("class_begin");
+            int class_end=resultSet.getInt("class_end");
+            for(int i=0;i<classes.size();i++){
 
+            }
+        }return true;
     }
 
     @Override
@@ -74,8 +101,10 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
         if(grade==null){
             statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
                     ");");
-        }
+        }Course.CourseGrading courseGrading=new mycourse().getCourseBySection(sectionId).grading;
         if(grade instanceof HundredMarkGrade){
+
+            if(courseGrading== Course.CourseGrading.PASS_OR_FAIL)throw new IntegrityViolationException();
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
                     "0);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
@@ -84,6 +113,7 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
 
         }
         if(grade instanceof PassOrFailGrade){
+            if(courseGrading== Course.CourseGrading.HUNDRED_MARK_SCORE)throw new IntegrityViolationException();
             statement.execute("insert into student_grade(student_id,section_id,kind) values (" +studentId+","+sectionId+","+
                     "1);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
