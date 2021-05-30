@@ -84,7 +84,7 @@ catch (Exception exception){
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
-if(classes.get(i).location==location)return false;
+//if(classes.get(i).location==location)return false;
 if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
 if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
 
