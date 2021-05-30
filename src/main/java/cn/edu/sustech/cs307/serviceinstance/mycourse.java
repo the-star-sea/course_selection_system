@@ -117,7 +117,9 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Array week = connection.createArrayOf("int", weekList.toArray());
             stmt.setArray(6, week);
             stmt.setString(7, location);
-           resultSet= stmt.executeQuery("select max(id) as id from class;");
+            stmt.execute();
+            Statement statement=connection.createStatement();
+           resultSet= statement.executeQuery("select max(id) as id from class;");
            resultSet.next();
            return resultSet.getInt("id");
         }catch (SQLException e){
