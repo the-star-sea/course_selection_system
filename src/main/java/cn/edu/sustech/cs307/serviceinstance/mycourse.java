@@ -108,8 +108,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
                     SQLDataSource.getInstance().getSQLConnection();
 
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);" +
-                            "select max(id) as id from class;"
+                    "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);"
             )){
             stmt.setInt(1, instructorId);
             stmt.setInt(2, sectionId);
@@ -119,7 +118,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Array week = connection.createArrayOf("int", weekList.toArray());
             stmt.setArray(6, week);
             stmt.setString(7, location);
-           resultSet= stmt.executeQuery();
+           resultSet= stmt.executeQuery("select max(id) as id from class;");
            resultSet.next();
            return resultSet.getInt("id");
         }catch (SQLException e){
