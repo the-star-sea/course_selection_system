@@ -27,6 +27,8 @@ public class mymajor implements MajorService{
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from major where id="+majorId+";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from major where id="+majorId+";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();

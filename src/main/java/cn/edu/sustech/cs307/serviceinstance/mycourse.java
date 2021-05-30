@@ -146,6 +146,8 @@ else {int pre_id = addPre(coursePrerequisite);
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from class where id="+classId+";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from class where id="+classId+";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
@@ -178,13 +180,12 @@ else {int pre_id = addPre(coursePrerequisite);
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
                 "and semester_id=" +semesterId+ ";");
         while(resultSet.next()){
-CourseSection courseSection=new CourseSection();
-courseSection.leftCapacity=resultSet.getInt("leftcapcity");
-courseSection.totalCapacity=resultSet.getInt("totcapcity");
-courseSection.id=resultSet.getInt("id");
-courseSection.name=resultSet.getString("name");
-courseSections.add(courseSection);
-
+        CourseSection courseSection=new CourseSection();
+        courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+        courseSection.totalCapacity=resultSet.getInt("totcapcity");
+        courseSection.id=resultSet.getInt("id");
+        courseSection.name=resultSet.getString("name");
+        courseSections.add(courseSection);
         }
         return courseSections;
 
