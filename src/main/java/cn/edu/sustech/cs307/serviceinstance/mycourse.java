@@ -33,10 +33,9 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         for(int i=0;i<((AndPrerequisite) coursePrerequisite).terms.size();i++){
            pre[i]=addPre(((AndPrerequisite) coursePrerequisite).terms.get(i));
        }Array pres=connection.createArrayOf("int",pre);
-        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1)" +
-                "select max(id) as id from prerequisite;");
+        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1);");
         stmt.setArray(1,pres);
-        resultSet=stmt.executeQuery();
+        resultSet=stmt.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         return resultSet.getInt("id");
     }
