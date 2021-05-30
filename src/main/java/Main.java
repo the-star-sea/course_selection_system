@@ -29,13 +29,13 @@ public class Main {
 //        List<User> users=new ArrayList<>();
 //        users=userService.getAllUsers();
 //        System.out.println(users);
-//        Major major=studentService.getStudentMajor(20221208);
+//        Major major=majorService.getMajor(5);
 //        System.out.println(major);
 //        List<Department> departments=departmentService.getAllDepartments();
 //        System.out.println(departments);
 //        Department department=departmentService.getDepartment(1);
 //        System.out.println(department);
-
+//            courseService.removeCourse("cccdd");
 
         //User user=userService.getUser(1);
         //System.out.println(user.fullName);
