@@ -68,9 +68,9 @@ public class mymajor implements MajorService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
-        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where course_id=? and major_id=?");
+        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where id=?;");
         statement1.setString(1,courseId);
-        statement1.setInt(2,majorId);
+
         statement1.execute();
     }
 
@@ -79,9 +79,9 @@ public class mymajor implements MajorService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
-        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where course_id=? and major_id=?");
+        PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where id=?;");
         statement1.setString(1,courseId);
-        statement1.setInt(2,majorId);
+
         statement1.execute();
     }
 }
