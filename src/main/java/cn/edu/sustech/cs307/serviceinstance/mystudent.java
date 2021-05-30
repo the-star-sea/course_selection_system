@@ -41,12 +41,14 @@ public class mystudent implements StudentService{
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
         int kind=resultSet.getInt("kind");
-        if(resultSet.getRow()>0){
-   if(kind==2)return EnrollResult.ALREADY_ENROLLED;
-if(new mystudent().passedSection(studentId,sectionId))return  EnrollResult.ALREADY_PASSED;
+        String courseid=new mycourse().getCourseBySection(sectionId).id;
+        if(resultSet.getRow()>0) {
+            if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
+            if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-
+if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+return null;
 
     }
 
@@ -109,7 +111,18 @@ if(new mystudent().passedSection(studentId,sectionId))return  EnrollResult.ALREA
             statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
         }
     }
-
+    public boolean enrolledcourse(int studentId, String courseId) throws Exception {
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        Map<Course, Grade>maps=new HashMap<>();
+        resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id=" +courseId+" and  student_id="+studentId+
+                " order by semester_begin;");
+        if(resultSet.getRow()==0)return false;
+        while (resultSet.next()){
+            if(resultSet.getInt("kind")==2)return true;
+        }
+      return false;
+    }
     @Override
     public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
@@ -120,7 +133,6 @@ if(new mystudent().passedSection(studentId,sectionId))return  EnrollResult.ALREA
         }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
                 " and c.semester_id=semester.id order by semester_begin;");}
 while (resultSet.next()){
-
     Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
     Grade grade=new mystudent().getgrade(studentId,course.id);
 maps.put(course,grade);
@@ -189,7 +201,7 @@ return maps;
             return ans;
         }
         else if(kind==2){
-            boolean ans=true;
+            boolean ans=false;
             for(int i=0;i<pres.length;i++){
                 ans=ans|testpre(studentId,pres[i]);
             }
@@ -203,6 +215,7 @@ return maps;
         resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
                 " and student_id=" +studentId+
                 ";");
+        if(resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int sgi=resultSet.getInt("student_grade.id");
         int kind=resultSet.getInt("kind");
@@ -225,45 +238,43 @@ return maps;
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section _id="+sectionId+";");
-        resultSet.next();
+        if(resultSet.getRow()==0)return false;
+
+        while (resultSet.next()){
         int sgi=resultSet.getInt("id");
         int kind=resultSet.getInt("kind");
         if(kind==0){
             resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
             resultSet.next();
             if(resultSet.getInt("grade")>=60)return true;
-            return false;
+
         }
-        if(kind==1) {
+        else if(kind==1) {
             resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
             resultSet.next();
             if(resultSet.getString("grade").equals("PASS"))return true;
-            return false;
+
         }
-        return false;
+      }  return false;
     }
     public boolean passedCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
-                " and student_id=" +studentId+
-                ";");
-        resultSet.next();
-        int sgi=resultSet.getInt("student_grade.id");
-        int kind=resultSet.getInt("kind");
-        if(kind==0){
-           resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
-           resultSet.next();
-           if(resultSet.getInt("grade")>=60)return true;
-           return false;
-        }
-        if(kind==1) {
-            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
-            resultSet.next();
-            if(resultSet.getString("grade").equals("PASS"))return true;
-            return false;
-        }
-        return false;
+        List<CourseSection>courseSections=new ArrayList<>();
+        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
+                 ";");
+        if (resultSet.getRow()==0)return false;
+        while(resultSet.next()){
+            CourseSection courseSection=new CourseSection();
+            courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+            courseSection.totalCapacity=resultSet.getInt("totcapcity");
+            courseSection.id=resultSet.getInt("id");
+            courseSection.name=resultSet.getString("name");
+            courseSections.add(courseSection);
+        }boolean ans=false;
+        for(int i=0;i<courseSections.size();i++){
+            ans=ans|passedSection(studentId,courseSections.get(i).id);
+        }return false;
     }
     @Override
     public Major getStudentMajor(int studentId) throws SQLException {
