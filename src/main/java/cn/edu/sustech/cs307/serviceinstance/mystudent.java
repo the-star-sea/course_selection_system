@@ -47,9 +47,9 @@ public class mystudent implements StudentService{
             if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+        if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
 
-    return null;
+        return null;
     }
 
     @Override
@@ -88,7 +88,7 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
                     "1);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
-            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((PassOrFailGrade) grade).name()+")");
+            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+",'"+((PassOrFailGrade) grade).name()+"');");
         }
     }
 
@@ -142,14 +142,14 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
     @Override
     public CourseTable getCourseTable(int studentId, Date date) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement preparedStatement= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
-        preparedStatement.setDate(1,date);
-        preparedStatement.setDate(2,date);
-        resultSet=preparedStatement.executeQuery();
+        PreparedStatement preparedStatement1= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
+        preparedStatement1.setDate(1,date);
+        preparedStatement1.setDate(2,date);
+        resultSet=preparedStatement1.executeQuery();
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int week=resultSet.getInt(1)/7+1;
-        preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
+        PreparedStatement preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
            preparedStatement.setInt(1,week);
            preparedStatement.setInt(2,studentId);
            CourseTable courseTable=new CourseTable();
