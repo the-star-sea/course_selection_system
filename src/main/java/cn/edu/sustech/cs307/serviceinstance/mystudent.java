@@ -37,8 +37,9 @@ public class mystudent implements StudentService{
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         resultSet.next();
         if(resultSet.getRow()>0){
-
+            return null;
         }
+        return null;
     }
 
     @Override
