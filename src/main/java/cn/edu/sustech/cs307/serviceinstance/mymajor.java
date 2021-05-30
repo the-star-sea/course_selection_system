@@ -4,7 +4,7 @@ import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
-import javax.persistence.EntityNotFoundException;
+import cn.edu.sustech.cs307.exception.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

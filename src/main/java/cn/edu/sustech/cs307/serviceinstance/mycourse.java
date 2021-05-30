@@ -9,7 +9,7 @@ import cn.edu.sustech.cs307.exception.IntegrityViolationException;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
-import javax.persistence.EntityNotFoundException;
+import cn.edu.sustech.cs307.exception.*;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
