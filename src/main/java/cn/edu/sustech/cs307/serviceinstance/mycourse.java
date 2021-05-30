@@ -137,6 +137,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from course where id='"+courseId+"';");
+            resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from course where id='"+courseId+"';");
         }catch (SQLException exception){
