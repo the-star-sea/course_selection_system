@@ -85,7 +85,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             stmt.setInt(6,pre_id);
             stmt.setInt(7,prebas);
             stmt.execute();
-}
+        }
     }
 
     @Override

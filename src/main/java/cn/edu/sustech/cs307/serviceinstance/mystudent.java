@@ -178,7 +178,6 @@ catch (Exception exception){
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
             statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((HundredMarkGrade) grade).mark+")");
-
         }
         if(grade instanceof PassOrFailGrade){
             if(courseGrading== Course.CourseGrading.HUNDRED_MARK_SCORE)throw new IntegrityViolationException();
