@@ -23,13 +23,13 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
     Statement statement = connection.createStatement();
     if(coursePrerequisite instanceof CoursePrerequisite){
         String courseid=((CoursePrerequisite) coursePrerequisite).courseID;
-resultSet=statement.executeQuery("select * from course where id="+courseid);
-   resultSet.next();
-   return resultSet.getInt("pre_base_id");
+        resultSet=statement.executeQuery("select * from course where id="+courseid);
+        resultSet.next();
+        return resultSet.getInt("pre_base_id");
     }
     else if (coursePrerequisite instanceof AndPrerequisite){
         Object[]pre=new Object[((AndPrerequisite) coursePrerequisite).terms.size()];
-       for(int i=0;i<((AndPrerequisite) coursePrerequisite).terms.size();i++){
+        for(int i=0;i<((AndPrerequisite) coursePrerequisite).terms.size();i++){
            pre[i]=addPre(((AndPrerequisite) coursePrerequisite).terms.get(i));
        }Array pres=connection.createArrayOf("int",pre);
         PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1)" +
@@ -142,7 +142,6 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         }catch (SQLException exception){
             throw new EntityNotFoundException();
         }
-
     }
 
     @Override
