@@ -5,6 +5,7 @@ import cn.edu.sustech.cs307.dto.prerequisite.AndPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.CoursePrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.OrPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
+import cn.edu.sustech.cs307.exception.IntegrityViolationException;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
@@ -53,6 +54,9 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
 }
     @Override
     public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) throws Exception {
+        if (credit<0||classHour<0){
+            throw new IntegrityViolationException();
+        }
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement=connection.createStatement();
         resultSet=statement.executeQuery("insert into prerequisite (kind)values(0) ;" +
@@ -84,6 +88,9 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
 
     @Override
     public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException {
+        if (totalCapacity<0){
+            throw new IntegrityViolationException();
+        }
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into coursesection(semester_id,name,course_id,totcapcity,leftcapcity) values ("+semesterId+",'"+sectionName+"','"+courseId+"',"+totalCapacity+","+totalCapacity+");");
@@ -94,6 +101,9 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
     }
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) throws Exception {
+        if (classStart>classEnd){
+            throw new IntegrityViolationException();
+        }
         try(Connection connection=
                     SQLDataSource.getInstance().getSQLConnection();
 
