@@ -32,11 +32,14 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public void removeSemester(int semesterId) {
+    public void removeSemester(int semesterId)throws SQLException {
         try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        statement.execute("delete from semester where id="+semesterId+";");}
+        resultSet = statement.executeQuery("select * from department where id="+semesterId+";");
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+        statement.execute("delete from semester where id="+semesterId+";");
+        }
         catch (SQLException exception){
             throw new EntityNotFoundException();
         }
@@ -48,7 +51,7 @@ public class mysemester implements SemesterService{
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             List<Semester> semesters = new ArrayList<>();
-            resultSet = statement.executeQuery("select * from department;");
+            resultSet = statement.executeQuery("select * from semester;");
             while (resultSet.next()) {
                 Semester semester = new mysemester().getSemester(resultSet.getInt("id"));
                 semesters.add(semester);
@@ -64,7 +67,7 @@ public class mysemester implements SemesterService{
     public Semester getSemester(int semesterId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-       resultSet = statement.executeQuery("select * from users where id =" + semesterId + ";");
+        resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
         resultSet.next();
         Semester semester=new Semester();
         semester.id=resultSet.getInt("id");
