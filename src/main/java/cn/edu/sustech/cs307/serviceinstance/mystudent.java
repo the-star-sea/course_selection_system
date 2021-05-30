@@ -106,11 +106,11 @@ for(int j=0;j<classes.get(i).weekList.size();j++){
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
+            resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and section_id= " + sectionId + ";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             if(resultSet.getInt("kind")==2)throw new IllegalStateException();
-            statement.execute("delete from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
+            statement.execute("delete from student_grade where student_id=" + studentId + " and section_id= " + sectionId + ";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
         }
