@@ -2,7 +2,9 @@ import cn.edu.sustech.cs307.config.Config;
 import cn.edu.sustech.cs307.dto.*;
 import cn.edu.sustech.cs307.dto.grade.Grade;
 import cn.edu.sustech.cs307.dto.grade.HundredMarkGrade;
+import cn.edu.sustech.cs307.dto.prerequisite.AndPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.CoursePrerequisite;
+import cn.edu.sustech.cs307.dto.prerequisite.OrPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.factory.*;
 import cn.edu.sustech.cs307.service.*;
@@ -65,11 +67,25 @@ public class Main {
 //        instructorService.addInstructor(11602131, "wes", "OP");
 
         Prerequisite pre_1 = new CoursePrerequisite("CS102");
+        Prerequisite pre_2 = new CoursePrerequisite("MA203");
+        Prerequisite pre_3 = new CoursePrerequisite("MA101");
+        Prerequisite pre_1_2 = new AndPrerequisite(new LinkedList<>() {{add(pre_1); add(pre_2);}});
+        Prerequisite pre_4 = new CoursePrerequisite("LL103");
+        Prerequisite pre_5 = new CoursePrerequisite("LL104");
+        Prerequisite pre_4_5 = new OrPrerequisite(List.of(pre_4, pre_5));
+        Prerequisite pre_4_5_wp = new AndPrerequisite(List.of(pre_4_5, pre_1));
         //courseService.addCourse("CS102", "JavaProgram", 3, 64, HUNDRED_MARK_SCORE, null);
         //courseService.addCourse("CS202", "C++Program", 3, 64, HUNDRED_MARK_SCORE, pre_1);
         //courseService.addCourse("LL103", "Language", 3, 64, HUNDRED_MARK_SCORE, null);
         //courseService.addCourse("WP908", "Entertainment", 1, 32, PASS_OR_FAIL, null);
         //courseService.addCourse("ME101", "MachineBasic", 4, 64, HUNDRED_MARK_SCORE, null);
+        //courseService.addCourse("MA101", "Calculus", 4, 64, HUNDRED_MARK_SCORE, null);
+        //courseService.addCourse("MA203", "GaiTong", 3, 64, HUNDRED_MARK_SCORE, pre_3);
+        //courseService.addCourse("CS602", "DSAA", 3, 64, HUNDRED_MARK_SCORE, pre_1_2);
+        //courseService.addCourse("LL104", "Lang", 3, 64, PASS_OR_FAIL, null);
+        //courseService.addCourse("LL304", "Uage", 3, 64, HUNDRED_MARK_SCORE, pre_4_5);
+        //courseService.addCourse("WP117", "Ana", 3, 64, HUNDRED_MARK_SCORE, pre_4_5_wp);
+        courseService.removeCourse("ME101");
 
         //courseService.addCourseSection("CS202", 1, "Lecture", 80);
         //courseService.addCourseSection("CS202", 1, "Lab01", 40);
@@ -92,8 +108,9 @@ public class Main {
         //studentService.addEnrolledCourseWithGrade(20221208, 1, PASS);
 
         //majorService.addMajorElectiveCourse(3, "CS202");
-        //majorService.addMajorCompulsoryCourse(3, "CS102");
+        //majorService.addMajorCompulsoryCourse(10, "LL103");
         //majorService.addMajorElectiveCourse(7, "WP908");
+        //majorService.addMajorElectiveCourse(5, "ME101");
 
 
     }

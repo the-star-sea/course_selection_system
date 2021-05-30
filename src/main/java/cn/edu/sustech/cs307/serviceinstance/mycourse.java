@@ -35,18 +35,21 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
        }Array pres=connection.createArrayOf("int",pre);
         PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1);");
         stmt.setArray(1,pres);
-        resultSet=stmt.executeQuery("select max(id) as id from prerequisite;");
+        stmt.execute();
+        Statement statement1=connection.createStatement();
+        resultSet=statement1.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         return resultSet.getInt("id");
     }
-    else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((AndPrerequisite) coursePrerequisite).terms.size()];
+    else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((OrPrerequisite) coursePrerequisite).terms.size()];
         for(int i=0;i<((OrPrerequisite) coursePrerequisite).terms.size();i++){
             pre[i]=addPre(((OrPrerequisite) coursePrerequisite).terms.get(i));
         }Array pres=connection.createArrayOf("int",pre);
-        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,2)" +
-                "select max(id) as id from prerequisite;");
+        PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,2)");
         stmt.setArray(1,pres);
-        resultSet=stmt.executeQuery();
+        stmt.execute();
+        Statement statement1=connection.createStatement();
+        resultSet=statement1.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         return resultSet.getInt("id");}
     throw new Exception();
@@ -86,7 +89,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
     }
 
     @Override
-    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException {
+    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException{
         if (totalCapacity<0){
             throw new IntegrityViolationException();
         }
@@ -96,7 +99,6 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         ResultSet resultSet = statement.executeQuery("select id from coursesection where course_id='" + courseId + "'and semester_id=" + semesterId + " and name='"+sectionName+"';");
         resultSet.next();
         return resultSet.getInt("id");
-
     }
     @Override
     public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) throws Exception {
