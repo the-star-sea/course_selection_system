@@ -59,11 +59,11 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         }
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement=connection.createStatement();
-        resultSet=statement.executeQuery("insert into prerequisite (kind)values(0) ;" +
-                "select max(id) as id from prerequisite;");
+        statement.execute("insert into prerequisite (kind)values(0) ;");
+        resultSet=statement.executeQuery("select max(id) as id from prerequisite;");
         resultSet.next();
         int prebas=resultSet.getInt("id");
-        if(coursePrerequisite.equals(null)){
+        if(coursePrerequisite==null){
             PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id) values (?,?,?,?,?,?);");
             stmt.setString(1,courseId);
             stmt.setString(2,courseName);
@@ -94,7 +94,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         statement.execute("insert into coursesection(semester_id,name,course_id,totcapcity,leftcapcity) values ("+semesterId+",'"+sectionName+"','"+courseId+"',"+totalCapacity+","+totalCapacity+");");
-        ResultSet resultSet = statement.executeQuery("select id from coursesection where course_id='" + courseId + "'and semester_id=" + semesterId + " and name="+sectionName+";");
+        ResultSet resultSet = statement.executeQuery("select id from coursesection where course_id='" + courseId + "'and semester_id=" + semesterId + " and name='"+sectionName+"';");
         resultSet.next();
         return resultSet.getInt("id");
 
@@ -108,7 +108,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
                     SQLDataSource.getInstance().getSQLConnection();
 
             PreparedStatement stmt=connection.prepareStatement(
-                    "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?,?);" +
+                    "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);" +
                             "select max(id) as id from class;"
             )){
             stmt.setInt(1, instructorId);
