@@ -3,6 +3,7 @@ import cn.edu.sustech.cs307.database.SQLDataSource;
 import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Semester;
 import cn.edu.sustech.cs307.exception.EntityNotFoundException;
+import cn.edu.sustech.cs307.exception.IntegrityViolationException;
 import cn.edu.sustech.cs307.service.*;
 
 import java.sql.*;
@@ -12,18 +13,22 @@ import java.util.List;
 public class mysemester implements SemesterService{
     ResultSet resultSet;
     @Override
-    public int addSemester(String name, Date begin, Date end) throws Exception {
-        if(begin.after(end))throw new Exception();
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        PreparedStatement statement=connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
-                " values ('"+name+"',?,?);");
-        statement.setDate(1,begin);
-        statement.setDate(2,end);
-        statement.execute();
-        Statement statement1 = connection.createStatement();
-        resultSet = statement1.executeQuery("select id from semester where name='"+name+"';");
-        resultSet.next();
-        return resultSet.getInt("id");
+    public int addSemester(String name, Date begin, Date end) throws SQLException {
+        if(begin.after(end))throw new IntegrityViolationException();
+        try {
+            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            PreparedStatement statement = connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
+                    " values ('" + name + "',?,?);");
+            statement.setDate(1, begin);
+            statement.setDate(2, end);
+            statement.execute();
+            Statement statement1 = connection.createStatement();
+            resultSet = statement1.executeQuery("select id from semester where name='" + name + "';");
+            resultSet.next();
+            return resultSet.getInt("id");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
@@ -39,16 +44,19 @@ public class mysemester implements SemesterService{
 
     @Override
     public List<Semester> getAllSemesters() throws SQLException {
-
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        List<Semester>semesters=new ArrayList<>();
-       resultSet = statement.executeQuery("select * from department;");
-        while(resultSet.next()){
-            Semester semester=new mysemester().getSemester(resultSet.getInt("id"));
-            semesters.add(semester);
+        try {
+            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            List<Semester> semesters = new ArrayList<>();
+            resultSet = statement.executeQuery("select * from department;");
+            while (resultSet.next()) {
+                Semester semester = new mysemester().getSemester(resultSet.getInt("id"));
+                semesters.add(semester);
+            }
+            return semesters;
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
         }
-        return semesters;
 
     }
 

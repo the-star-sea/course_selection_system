@@ -4,6 +4,7 @@ import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,13 @@ public class mymajor implements MajorService{
 
     @Override
     public void removeMajor(int majorId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("delete from major where id="+majorId+";");
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("delete from major where id="+majorId+";");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override

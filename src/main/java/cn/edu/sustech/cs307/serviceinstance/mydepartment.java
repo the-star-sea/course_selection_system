@@ -4,6 +4,7 @@ import cn.edu.sustech.cs307.dto.Department;
 import cn.edu.sustech.cs307.dto.Major;
 import cn.edu.sustech.cs307.service.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,13 @@ public class mydepartment implements  DepartmentService {
 
     @Override
     public void removeDepartment(int departmentId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("delete from department where id="+departmentId+";");
+        try {
+            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("delete from department where id=" + departmentId + ";");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
@@ -43,14 +48,18 @@ public class mydepartment implements  DepartmentService {
 
     @Override
     public Department getDepartment(int departmentId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
+        try {
+            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
 
-        resultSet=statement.executeQuery("select * from department where id ="+departmentId+";");
-        resultSet.next();
-        Department department=new Department();
-        department.id=departmentId;
-        department.name=resultSet.getString("name");
-        return department;
+            resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
+            resultSet.next();
+            Department department = new Department();
+            department.id = departmentId;
+            department.name = resultSet.getString("name");
+            return department;
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 }

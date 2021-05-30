@@ -8,6 +8,7 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
+import javax.persistence.EntityNotFoundException;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
@@ -119,23 +120,37 @@ else {int pre_id = addPre(coursePrerequisite);
 
     @Override
     public void removeCourse(String courseId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("delete from course where id='"+courseId+"';");
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("delete from course where id='"+courseId+"';");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
     }
 
     @Override
     public void removeCourseSection(int sectionId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("delete from coursesection where id="+sectionId+";");
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("delete from coursesection where id="+sectionId+";");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
+
     }
 
     @Override
     public void removeCourseSectionClass(int classId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("delete from class where id="+classId+";");
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            statement.execute("delete from class where id="+classId+";");
+        }catch (SQLException exception){
+            throw new EntityNotFoundException();
+        }
+
     }
 
     @Override
