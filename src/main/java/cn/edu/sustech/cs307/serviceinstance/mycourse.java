@@ -66,7 +66,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         resultSet.next();
         int prebas=resultSet.getInt("id");
         if(coursePrerequisite==null){
-            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id) values (?,?,?,?,?,?);");
+            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id,coursetype) values (?,?,?,?,?,?,'PUBLIC');");
             stmt.setString(1,courseId);
             stmt.setString(2,courseName);
             stmt.setInt(3,credit);
@@ -76,7 +76,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             stmt.execute();
         }
         else {int pre_id = addPre(coursePrerequisite);
-            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id,pre_base_id) values (?,?,?,?,?,?,?);");
+            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id,pre_base_id,coursetype) values (?,?,?,?,?,?,?,'PUBLIC');");
             stmt.setString(1,courseId);
             stmt.setString(2,courseName);
             stmt.setInt(3,credit);
@@ -85,7 +85,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
             stmt.setInt(6,pre_id);
             stmt.setInt(7,prebas);
             stmt.execute();
-}
+        }
     }
 
     @Override
