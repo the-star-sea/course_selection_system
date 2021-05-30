@@ -49,7 +49,7 @@ public class mystudent implements StudentService{
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
 if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
 
-
+    return null;
     }
 
     @Override
@@ -131,12 +131,12 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
             resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.semester_id=semester.id order by semester_begin;");
         }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
                 " and c.semester_id=semester.id order by semester_begin;");}
-while (resultSet.next()){
-    Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
-    Grade grade=new mystudent().getgrade(studentId,course.id);
-maps.put(course,grade);
-}
-return maps;
+        while (resultSet.next()){
+            Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
+            Grade grade=new mystudent().getgrade(studentId,course.id);
+        maps.put(course,grade);
+        }
+        return maps;
     }
 
     @Override
