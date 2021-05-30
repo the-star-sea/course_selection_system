@@ -114,7 +114,7 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
     public boolean enrolledcourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id=" +courseId+" and  student_id="+studentId+
+        resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
                 " order by semester_begin;");
         if(resultSet.getRow()==0)return false;
         while (resultSet.next()){
@@ -174,7 +174,7 @@ return maps;
     public boolean passedPrerequisitesForCourse(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select * from course where id="+courseId+";");
+        resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
         resultSet.next();
         int pre_id=resultSet.getInt("prerequisite_id");
         return testpre(studentId,pre_id);
@@ -211,9 +211,9 @@ return maps;
     public Grade getgrade(int studentId, String courseId) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id=" +courseId+
+        resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id='" +courseId+
                 " and student_id=" +studentId+
-                ";");
+                "';");
         if(resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int sgi=resultSet.getInt("student_grade.id");
@@ -260,8 +260,8 @@ return maps;
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<CourseSection>courseSections=new ArrayList<>();
-        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
-                 ";");
+        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
+                 "';");
         if (resultSet.getRow()==0)return false;
         while(resultSet.next()){
             CourseSection courseSection=new CourseSection();
