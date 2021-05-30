@@ -70,7 +70,6 @@ public class mymajor implements MajorService{
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
         PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where id=?;");
         statement1.setString(1,courseId);
-
         statement1.execute();
     }
 
@@ -81,7 +80,6 @@ public class mymajor implements MajorService{
         statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
         PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where id=?;");
         statement1.setString(1,courseId);
-
         statement1.execute();
     }
 }
