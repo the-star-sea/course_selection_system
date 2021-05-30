@@ -35,6 +35,7 @@ public class Main {
 //        departmentService.addDepartment("ALE");//3
 //        departmentService.addDepartment("WPE");//4
 //        departmentService.addDepartment("LLE");//5
+        //departmentService.removeDepartment("");
 
 //        majorService.addMajor("CS", 5);//1
 //        majorService.addMajor("IS", 5);//2
@@ -79,16 +80,20 @@ public class Main {
 
         List<Short> li = new LinkedList<>() {{add((short) 1); add((short) 2); add((short) 3); add((short) 4);}};
         //courseService.addCourseSectionClass(4, 11912301, DayOfWeek.THURSDAY, li, (short)10, (short)50, "LycheeHill");
-       // courseService.addCourseSectionClass(3, 11507189, DayOfWeek.WEDNESDAY, li, (short)1, (short)51, "LycheeHill");
-        courseService.addCourseSectionClass(5, 11602131, DayOfWeek.MONDAY, li, (short)5, (short)55, "TeachingBuildingOne");
+       //courseService.addCourseSectionClass(3, 11507189, DayOfWeek.WEDNESDAY, li, (short)1, (short)51, "LycheeHill");
+        //courseService.addCourseSectionClass(6, 11602131, DayOfWeek.MONDAY, li, (short)5, (short)55, "TeachingBuildingOne");
+        //courseService.addCourseSectionClass(7, 12003467, DayOfWeek.MONDAY, li, (short)5, (short)55, "TeachingBuildingOne");
 
         HundredMarkGrade grade_1 = new HundredMarkGrade((short)96);
-        studentService.addEnrolledCourseWithGrade(20191208, 1, grade_1);
-        studentService.addEnrolledCourseWithGrade(20181023, 1, PASS);
+        //studentService.addEnrolledCourseWithGrade(20191208, 1, grade_1);
+        //studentService.addEnrolledCourseWithGrade(20181023, 1, PASS);
+        //studentService.addEnrolledCourseWithGrade(20210509, 5, PASS);
+        //studentService.addEnrolledCourseWithGrade(20190621, 5, PASS);
+        //studentService.addEnrolledCourseWithGrade(20221208, 1, PASS);
 
-        majorService.addMajorElectiveCourse(1, "CS202");
-        majorService.addMajorCompulsoryCourse(1, "CS102");
-        majorService.addMajorElectiveCourse(7, "WP908");
+        //majorService.addMajorElectiveCourse(3, "CS202");
+        //majorService.addMajorCompulsoryCourse(3, "CS102");
+        //majorService.addMajorElectiveCourse(7, "WP908");
 
 
     }

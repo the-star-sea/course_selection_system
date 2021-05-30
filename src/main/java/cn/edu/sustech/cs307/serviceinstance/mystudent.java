@@ -48,8 +48,7 @@ public class mystudent implements StudentService{
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
 if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-
-    return null;
+        return null;
     }
 
     @Override
@@ -88,7 +87,7 @@ if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
                     "1);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
-            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+","+((PassOrFailGrade) grade).name()+")");
+            statement.execute("insert into student_grade_pf (student_grade_id,grade) values("+resultSet.getInt("id")+",'"+((PassOrFailGrade) grade).name()+"');");
         }
     }
 
