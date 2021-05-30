@@ -35,9 +35,9 @@ public class mystudent implements StudentService{
         String searchins=" and instructor_name='"+searchInstructor+"'";
         String searchday=" and dayofweek='"+searchDayOfWeek+"'";
         String searchfull=" and leftcapcity>0";
-        String
+        //String
         Statement statement=connection.createStatement();
-
+return null;
     }
 
     @Override
