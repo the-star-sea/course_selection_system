@@ -9,10 +9,9 @@ import cn.edu.sustech.cs307.service.*;
 
 import javax.annotation.Nullable;
 import java.sql.*;
+import java.sql.Date;
 import java.time.DayOfWeek;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class mystudent implements StudentService{
     ResultSet resultSet;//to do 疑似要每次重新定义
@@ -110,10 +109,25 @@ preparedStatement.setDate(2,date);
 resultSet=preparedStatement.executeQuery();
 resultSet.next();
 int week=resultSet.getInt(1)/7+1;
-Statement statement=connection.createStatement();
-statement.execute("select id from class where " +week+
-        "=any(weeklist) ;");
-
+preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
+   preparedStatement.setInt(1,week);
+   preparedStatement.setInt(2,studentId);
+   CourseTable courseTable=new CourseTable();
+   courseTable.table=new HashMap<>();
+   for(int i=1;i<=7;i++){
+       preparedStatement.setString(3,DayOfWeek.of(i).toString());
+       resultSet=preparedStatement.executeQuery();
+       List<CourseTable.CourseTableEntry>table=new ArrayList<>();
+       while(resultSet.next()){
+           CourseTable.CourseTableEntry courseTableEntry=new CourseTable.CourseTableEntry();
+           courseTableEntry.courseFullName=resultSet.getString("coursename")+"["+resultSet.getString("sectionname")+"]";
+           courseTableEntry.classBegin= (short) resultSet.getInt("class_begin");
+           courseTableEntry.classEnd= (short) resultSet.getInt("class_end");
+           courseTableEntry.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
+           courseTableEntry.location=resultSet.getString("location");
+           table.add(courseTableEntry);
+       }courseTable.table.put(DayOfWeek.of(i),table);
+   }return courseTable;
     }
 
     @Override
