@@ -44,6 +44,10 @@ public class mystudent implements StudentService{
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+            resultSet.next();
+            if(resultSet.getInt("kind")==2)throw new IllegalStateException();
             statement.execute("delete from student_grade where student_id=" + studentId + " and selection_id= " + sectionId + ";");
         }catch (SQLException exception){
             throw new EntityNotFoundException();
