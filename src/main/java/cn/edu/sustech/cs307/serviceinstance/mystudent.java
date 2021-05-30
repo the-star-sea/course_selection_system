@@ -39,6 +39,7 @@ public class mystudent implements StudentService{
         if(resultSet.getRow()>0){
 
         }
+        return null;
     }
 
     @Override
@@ -126,6 +127,7 @@ return maps;
         preparedStatement.setDate(1,date);
         preparedStatement.setDate(2,date);
         resultSet=preparedStatement.executeQuery();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
         resultSet.next();
         int week=resultSet.getInt(1)/7+1;
         preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
