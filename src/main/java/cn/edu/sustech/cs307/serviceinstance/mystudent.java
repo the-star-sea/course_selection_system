@@ -61,12 +61,13 @@ catch (Exception exception){
 }
     }
 
-    private boolean timeconflict(int studentId,int sectionId ) throws SQLException {
+    private boolean timeconflict(int studentId,int sectionId ) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
         resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
+
         while(resultSet.next()){
             String location=resultSet.getString("location");
             int[]weeklists=(int[])resultSet.getArray("weeklist").getArray();
@@ -74,9 +75,19 @@ catch (Exception exception){
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
+if(classes.get(i).location==location)return false;
+if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
+if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
 
-            }
-        }return true;
+for(int j=0;j<classes.get(i).weekList.size();j++){
+    for(int k=0;k<weeklists.length;k++){
+        if(classes.get(i).weekList.get(j)==weeklists[k])
+        return true;
+    }
+}
+
+                return false;    }
+        }throw new Exception();
     }
 
     @Override
