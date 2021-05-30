@@ -43,7 +43,7 @@ public class myuser implements UserService {
 
     @Override
     public User getUser(int userId) throws SQLException {
-      Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
          resultSet=statement.executeQuery("select * from users where id ="+userId+";");
          resultSet.next();

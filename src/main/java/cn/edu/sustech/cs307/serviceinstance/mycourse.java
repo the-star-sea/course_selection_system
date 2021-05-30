@@ -32,22 +32,22 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
            pre[i]=addPre(((AndPrerequisite) coursePrerequisite).terms.get(i));
        }Array pres=connection.createArrayOf("int",pre);
         PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,1)" +
-                "SELECT currval(pg_get_serial_sequence('prerequisite', 'id'));");
+                "select max(id) as id from prerequisite;");
         stmt.setArray(1,pres);
         resultSet=stmt.executeQuery();
         resultSet.next();
-        return resultSet.getInt("currval");
+        return resultSet.getInt("id");
     }
     else if(coursePrerequisite instanceof OrPrerequisite) {Object[]pre=new Object[((AndPrerequisite) coursePrerequisite).terms.size()];
         for(int i=0;i<((OrPrerequisite) coursePrerequisite).terms.size();i++){
             pre[i]=addPre(((OrPrerequisite) coursePrerequisite).terms.get(i));
         }Array pres=connection.createArrayOf("int",pre);
         PreparedStatement stmt=connection.prepareStatement("insert into prerequisite (content,kind)values(?,2)" +
-                "SELECT currval(pg_get_serial_sequence('prerequisite', 'id'));");
+                "select max(id) as id from prerequisite;");
         stmt.setArray(1,pres);
         resultSet=stmt.executeQuery();
         resultSet.next();
-        return resultSet.getInt("currval");}
+        return resultSet.getInt("id");}
     throw new Exception();
 }
     @Override
@@ -55,9 +55,9 @@ resultSet=statement.executeQuery("select * from course where id="+courseid);
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement=connection.createStatement();
         resultSet=statement.executeQuery("insert into prerequisite (kind)values(0) ;" +
-                "SELECT currval(pg_get_serial_sequence('prerequisite', 'id'));");
+                "select max(id) as id from prerequisite;");
         resultSet.next();
-        int prebas=resultSet.getInt("currval");
+        int prebas=resultSet.getInt("id");
         if(coursePrerequisite.equals(null)){
             PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id) values (?,?,?,?,?,?);");
     stmt.setString(1,courseId);
@@ -98,7 +98,7 @@ else {int pre_id = addPre(coursePrerequisite);
 
             PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?,?);" +
-                            "SELECT currval(pg_get_serial_sequence('class', 'id'));"
+                            "select max(id) as id from class;"
             )){
             stmt.setInt(1, instructorId);
             stmt.setInt(2, sectionId);
@@ -110,7 +110,7 @@ else {int pre_id = addPre(coursePrerequisite);
             stmt.setString(7, location);
            resultSet= stmt.executeQuery();
            resultSet.next();
-           return resultSet.getInt("currval");
+           return resultSet.getInt("id");
         }catch (SQLException e){
             e.printStackTrace();
         }
