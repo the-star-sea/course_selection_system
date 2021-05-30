@@ -39,7 +39,7 @@ public class mystudent implements StudentService{
         String searchfull=" and leftcapcity>0";
         //String
         Statement statement=connection.createStatement();
-return null;
+        return null;
     }
 
     @Override
@@ -59,17 +59,17 @@ return null;
             if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
         }
         if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-if(new mystudent().enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-if(new mystudent().conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
-if(left<=0)return EnrollResult.COURSE_IS_FULL;
-try{
-statement.execute("insert into student_grade(student_id,section_id)values (" +studentId+","+sectionId+
-        ");update coursesection set leftcapcity=leftcapcity-1 where id="+sectionId+";");
-return EnrollResult.SUCCESS;
-}
-catch (Exception exception){
-    return EnrollResult.UNKNOWN_ERROR;
-}
+        if(new mystudent().enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+        if(new mystudent().conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
+        if(left<=0)return EnrollResult.COURSE_IS_FULL;
+        try{
+        statement.execute("insert into student_grade(student_id,section_id)values (" +studentId+","+sectionId+
+                ");update coursesection set leftcapcity=leftcapcity-1 where id="+sectionId+";");
+        return EnrollResult.SUCCESS;
+        }
+        catch (Exception exception){
+            return EnrollResult.UNKNOWN_ERROR;
+        }
     }
 
     private boolean conflict(int studentId,int sectionId ) throws Exception {
@@ -78,7 +78,6 @@ catch (Exception exception){
         List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
         resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
-
         while(resultSet.next()){
             String location=resultSet.getString("location");
             int[]weeklists=(int[])resultSet.getArray("weeklist").getArray();
@@ -86,18 +85,18 @@ catch (Exception exception){
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
-//if(classes.get(i).location==location)return false;
-if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
-if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
+            //if(classes.get(i).location==location)return false;
+            if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
+            if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
 
-for(int j=0;j<classes.get(i).weekList.size();j++){
-    for(int k=0;k<weeklists.length;k++){
-        if(classes.get(i).weekList.get(j)==weeklists[k])
-        return true;
-    }
-}
-
-                return false;    }
+            for(int j=0;j<classes.get(i).weekList.size();j++){
+                for(int k=0;k<weeklists.length;k++){
+                    if(classes.get(i).weekList.get(j)==weeklists[k])
+                    return true;
+                }
+            }
+                return false;
+            }
         }throw new Exception();
     }
 
