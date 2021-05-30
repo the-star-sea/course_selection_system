@@ -88,7 +88,7 @@ public class mystudent implements StudentService{
                     "1);");
             resultSet=statement.executeQuery("select max(id)as id from student_grade;");
             resultSet.next();
-            statement.execute("insert into student_grade_hundred (student_grade_id,grade) values("+resultSet.getInt("id")+",'"+((PassOrFailGrade) grade).name()+"');");
+            statement.execute("insert into student_grade_pf (student_grade_id,grade) values("+resultSet.getInt("id")+",'"+((PassOrFailGrade) grade).name()+"');");
         }
     }
 
