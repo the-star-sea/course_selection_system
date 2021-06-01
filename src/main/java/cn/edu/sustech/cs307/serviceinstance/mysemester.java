@@ -27,7 +27,7 @@ public class mysemester implements SemesterService{
             resultSet.next();
             return resultSet.getInt("id");
         }catch (SQLException exception){
-            throw new EntityNotFoundException();
+            throw new IntegrityViolationException();
         }
     }
 
@@ -42,7 +42,7 @@ public class mysemester implements SemesterService{
         statement.execute("delete from semester where id="+semesterId+";");
         }
         catch (SQLException exception){
-            throw new EntityNotFoundException();
+            throw new IntegrityViolationException();
         }
     }
 
@@ -60,22 +60,27 @@ public class mysemester implements SemesterService{
             }
             return semesters;
         }catch (SQLException exception){
-            throw new EntityNotFoundException();
+            throw new IntegrityViolationException();
         }
     }
 
     @Override
-    public Semester getSemester(int semesterId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
-        resultSet.next();
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
-        Semester semester=new Semester();
-        semester.id=resultSet.getInt("id");
-        semester.name=resultSet.getString("name");
-        semester.begin=resultSet.getDate("semester_begin");
-        semester.end=resultSet.getDate("semester_end");
-        return semester;
+    public Semester getSemester(int semesterId){
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
+            resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+            Semester semester=new Semester();
+            semester.id=resultSet.getInt("id");
+            semester.name=resultSet.getString("name");
+            semester.begin=resultSet.getDate("semester_begin");
+            semester.end=resultSet.getDate("semester_end");
+            return semester;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+
     }
 }
