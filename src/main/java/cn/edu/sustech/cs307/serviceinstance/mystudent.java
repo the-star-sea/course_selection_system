@@ -33,7 +33,7 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) throws Exception {
+    public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         String sql="select distinct section_id,course_id from (select course_id,course.name course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
       List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
@@ -88,9 +88,9 @@ courses.add(resultSet.getString(2));
         if(searchCourseType==CourseType.MAJOR_ELECTIVE){
 
         }
-if(searchCourseType==CourseType.CROSS_MAJOR){
+        if(searchCourseType==CourseType.CROSS_MAJOR){
 
-}
+        }
 for(int i=pageIndex;i<pageIndex+pageSize;i++){
     CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
     courseSearchEntry.course=new mycourse().getCourseBySection(sections.get(i));
