@@ -161,8 +161,9 @@ public class mystudent implements StudentService{
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
         while(resultSet.next()){
             //String location=resultSet.getString("location");
+
             Array array=resultSet.getArray("weeklist");
-            int[]weeklists=(int[])array.getArray();
+            Object[]weeklists=(Object[])array.getArray();
             String dayofweek=resultSet.getString("dayofweek");
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
@@ -239,14 +240,14 @@ public class mystudent implements StudentService{
                 resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet.next();
                 int id=resultSet.getInt("id");
-                statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
+                statement.execute("update student_grade_hundred set grade='"+((HundredMarkGrade) grade).mark+"' where student_grade_id="+id+";");
             }
             else if(grade instanceof PassOrFailGrade){
                 statement.execute("update student_grade set kind=1 where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet.next();
                 int id=resultSet.getInt("id");
-                statement.execute("update student_grade_hundred set grade="+((PassOrFailGrade) grade).name()+" where student_grade_id="+id+";");
+                statement.execute("update student_grade_hundred set grade='"+((PassOrFailGrade) grade).name()+"' where student_grade_id="+id+";");
             }
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
@@ -332,6 +333,7 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
             int pre_id=resultSet.getInt("prerequisite_id");
+
             return testpre(studentId,pre_id);
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
@@ -346,7 +348,8 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select * from prerequisite where id="+pre_id+";");
             resultSet.next();
             Array array=resultSet.getArray("content");
-            int[]pres=(int[])array.getArray();
+            //Object[]pres=(Object[])array.getArray();
+
             int kind=resultSet.getInt("kind");
             if(kind==0){
                 resultSet=statement.executeQuery("select * from course where pre_base_id="+pre_id+";");
@@ -354,16 +357,18 @@ public class mystudent implements StudentService{
                 return passedCourse(studentId,resultSet.getString("id"));
             }
             else if(kind==1){
+                Object[]pres=(Object[])array.getArray();
                 boolean ans=true;
                 for(int i=0;i<pres.length;i++){
-                    ans=ans&testpre(studentId,pres[i]);
+                    ans=ans&testpre(studentId, (Integer) pres[i]);
                 }
                 return ans;
             }
             else if(kind==2){
+                Object[]pres=(Object[])array.getArray();
                 boolean ans=false;
                 for(int i=0;i<pres.length;i++){
-                    ans=ans|testpre(studentId,pres[i]);
+                    ans=ans|testpre(studentId, (Integer) pres[i]);
                 }
                 return ans;
             }
