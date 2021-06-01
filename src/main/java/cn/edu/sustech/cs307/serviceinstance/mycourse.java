@@ -14,7 +14,7 @@ import java.sql.*;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class mycourse implements CourseService {
 
@@ -101,7 +101,7 @@ public int addPre(Prerequisite coursePrerequisite) throws Exception {
         return resultSet.getInt("id");
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) throws Exception {
+    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) throws Exception {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }

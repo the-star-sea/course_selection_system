@@ -32,7 +32,7 @@ public class mystudent implements StudentService{
     public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         String sql="select distinct section_id,course_id from (select course_id,course.name course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
-        List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
+      List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
         if(searchCid!=null)
         sql+=" and course_id='"+searchCid+"'";
         if(searchName!=null)
@@ -75,18 +75,39 @@ courses.add(resultSet.getString(2));
             for(int i=0;i<sections.size();i++){
                 if(!new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);}
             }}
-        if(searchCourseType==CourseType.PUBLIC){}//todo
+        if(searchCourseType==CourseType.PUBLIC){
+
+        }//todo
         if(searchCourseType==CourseType.MAJOR_COMPULSORY){
 
         }
-        if(searchCourseType==CourseType.MAJOR_ELECTIVE){}
-if(searchCourseType==CourseType.CROSS_MAJOR){}
+        if(searchCourseType==CourseType.MAJOR_ELECTIVE){
+
+        }
+if(searchCourseType==CourseType.CROSS_MAJOR){
+
+}
 for(int i=pageIndex;i<pageIndex+pageSize;i++){
     CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
     courseSearchEntry.course=new mycourse().getCourseBySection(sections.get(i));
-    //todo
+    resultSet=statement.executeQuery("select * from section where section_id="+sections.get(i)+ ";");
+   resultSet.next();
+        if (resultSet.getRow()==0)throw new EntityNotFoundException();
+        CourseSection courseSection=new CourseSection();
+        courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+        courseSection.totalCapacity=resultSet.getInt("totcapcity");
+        courseSection.id=resultSet.getInt("id");
+        courseSection.name=resultSet.getString("name");
+
+    courseSearchEntry.section=courseSection;
+    courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
+    courseSearchEntry.conflictCourseNames=getConflict(sections.get(i));
     courseSearchEntries.add(courseSearchEntry);
 }return courseSearchEntries;
+    }
+
+    private List<String> getConflict(Integer sectionid) {
+
     }
 
     @Override
