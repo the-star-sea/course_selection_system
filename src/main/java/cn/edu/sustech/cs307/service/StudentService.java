@@ -6,7 +6,6 @@ import cn.edu.sustech.cs307.dto.grade.Grade;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public interface StudentService {
      * @param lastName
      * @param enrolledDate
      */
-    void  addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) throws SQLException;
+    void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate);
 
     /**
      * Search available courses (' sections) for the specified student in the semester with extra conditions.
@@ -127,7 +126,7 @@ public interface StudentService {
                                          CourseType searchCourseType,
                                          boolean ignoreFull, boolean ignoreConflict,
                                          boolean ignorePassed, boolean ignoreMissingPrerequisites,
-                                         int pageSize, int pageIndex) throws Exception;
+                                         int pageSize, int pageIndex);
 
     /**
      * It is the course selection function according to the studentId and courseId.
@@ -145,7 +144,7 @@ public interface StudentService {
      * @param sectionId the id of CourseSection
      * @return See {@link cn.edu.sustech.cs307.service.StudentService.EnrollResult}
      */
-    EnrollResult enrollCourse(int studentId, int sectionId) throws Exception;
+    EnrollResult enrollCourse(int studentId, int sectionId);
 
     /**
      * Drop a course section for a student
@@ -154,7 +153,7 @@ public interface StudentService {
      * @param sectionId
      * @throws IllegalStateException if the student already has a grade for the course section.
      */
-    void dropCourse(int studentId, int sectionId) throws IllegalStateException, SQLException;
+    void dropCourse(int studentId, int sectionId) throws IllegalStateException;
 
     /**
      * It is used for importing existing data from other sources.
@@ -163,24 +162,26 @@ public interface StudentService {
      * prerequisite fulfillment check to directly enroll a student in a course
      * and assign him/her a grade.
      *
-     *If the scoring scheme of a course is one type in pass-or-fail and hundredmark grade,
+     * If the scoring scheme of a course is one type in pass-or-fail and hundredmark grade,
      * your system should not accept the other type of grade.
+     *
+     * Course section's left capacity should remain unchanged after this method.
      *
      * @param studentId
      * @param sectionId We will get the sectionId of one section first
      *                  and then invoke the method by using the sectionId.
      * @param grade     Can be null
      */
-    void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade) throws SQLException;
+    void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade);
 
     /**
-     * For teachers who can give student a grade
+     * For teachers to give students grade.
      *
      * @param studentId student id is in database
      * @param sectionId section id in test cases that have selected by the student
      * @param grade     a new grade
      */
-    void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) throws SQLException;
+    void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade);
 
     /**
      * Queries grades of all enrolled courses in the given semester for the given student
@@ -198,7 +199,7 @@ public interface StudentService {
      * or {@code PassOrFailGrade.FAIL} respectively.
      * If the grade is not set yet, the value should be null.
      */
-    Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId) throws Exception;
+    Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId);
 
     /**
      * Return a course table in current week according to the date.
@@ -208,7 +209,7 @@ public interface StudentService {
      * @return the student's course table for the entire week of the date.
      * Regardless which day of week the date is, return Monday-to-Sunday course table for that week.
      */
-    CourseTable getCourseTable(int studentId, Date date) throws SQLException;
+    CourseTable getCourseTable(int studentId, Date date);
 
     /**
      * check whether a student satisfy a certain course's prerequisites.
@@ -217,7 +218,7 @@ public interface StudentService {
      * @param courseId
      * @return true if the student has any course score record that is passed (>=60 or PASS), which means he has passed the course.
      */
-    boolean passedPrerequisitesForCourse(int studentId, String courseId) throws Exception;
+    boolean passedPrerequisitesForCourse(int studentId, String courseId);
 
-    Major getStudentMajor(int studentId) throws SQLException;
+    Major getStudentMajor(int studentId);
 }
