@@ -86,6 +86,8 @@ public class mycourse implements CourseService {
             }
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -111,9 +113,8 @@ public class mycourse implements CourseService {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
-        try(Connection connection=
-                    SQLDataSource.getInstance().getSQLConnection();
-
+        try(
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);"
             )){
@@ -133,7 +134,7 @@ public class mycourse implements CourseService {
         }catch (SQLException e){
             e.printStackTrace();
         }
-
+        throw new IntegrityViolationException();
     }
 
     @Override

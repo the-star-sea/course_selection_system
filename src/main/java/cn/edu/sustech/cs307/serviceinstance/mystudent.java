@@ -33,85 +33,90 @@ public class mystudent implements StudentService{
     }
 
     @Override
-    public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex) throws Exception {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        String sql="select distinct section_id,course_id from (select course_id,course.name course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
-      List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
-        if(searchCid!=null)
-        sql+=" and course_id='"+searchCid+"'";
-        if(searchName!=null)
-       sql+=" and course_name='"+searchName+"'";
-        if(searchInstructor!=null)
-        sql+=" and instructor_name='"+searchInstructor;
-        if(searchDayOfWeek!=null)
-        sql+=" and dayofweek='"+searchDayOfWeek+"'";
-        if(!ignorePassed)
-        sql+=" and leftcapcity>0";
-        if(searchClassLocations!=null)
-        sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
-        if(searchClassLocations!=null){
-        sql+=" and location in (";
-sql+=searchClassLocations.get(0);
-for(int i=1;i<searchClassLocations.size();i++){
-    sql+=(","+searchClassLocations.get(i));
-}
-sql+=")";
+    public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
+        try {
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            String sql="select distinct section_id,course_id from (select course_id,course.name course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
+            List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
+            if(searchCid!=null)
+                sql+=" and course_id='"+searchCid+"'";
+            if(searchName!=null)
+                sql+=" and course_name='"+searchName+"'";
+            if(searchInstructor!=null)
+                sql+=" and instructor_name='"+searchInstructor;
+            if(searchDayOfWeek!=null)
+                sql+=" and dayofweek='"+searchDayOfWeek+"'";
+            if(!ignorePassed)
+                sql+=" and leftcapcity>0";
+            if(searchClassLocations!=null)
+                sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
+            if(searchClassLocations!=null){
+                sql+=" and location in (";
+                sql+=searchClassLocations.get(0);
+                for(int i=1;i<searchClassLocations.size();i++){
+                    sql+=(","+searchClassLocations.get(i));
+                }
+                sql+=")";
+            }
+            sql+=")aa order by course_id;";
+            Statement statement=connection.createStatement();
+            resultSet=statement.executeQuery(sql);
+            ArrayList<Integer>sections=new ArrayList<>();
+            ArrayList<String>courses=new ArrayList<>();
+            while (resultSet.next()){
+                if(resultSet.getRow()==0)return courseSearchEntries;
+                sections.add(resultSet.getInt(1));
+                courses.add(resultSet.getString(2));
+            }
+            if(!ignoreMissingPrerequisites){
+                for(int i=0;i<sections.size();i++){
+                    if(!new mystudent().passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
+                }}
+            if(!ignorePassed){
+                for(int i=0;i<sections.size();i++){
+                    if(!new mystudent().passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
+                }}
+            if(!ignoreConflict){
+                for(int i=0;i<sections.size();i++){
+                    if(!new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);}
+                }}
+            if(searchCourseType==CourseType.PUBLIC){
+
+            }//todo
+            if(searchCourseType==CourseType.MAJOR_COMPULSORY){
+
+            }
+            if(searchCourseType==CourseType.MAJOR_ELECTIVE){
+
+            }
+            if(searchCourseType==CourseType.CROSS_MAJOR){
+
+            }
+            for(int i=pageIndex;i<pageIndex+pageSize;i++){
+                CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
+                courseSearchEntry.course=new mycourse().getCourseBySection(sections.get(i));
+                resultSet=statement.executeQuery("select * from section where section_id="+sections.get(i)+ ";");
+                resultSet.next();
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
+                CourseSection courseSection=new CourseSection();
+                courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+                courseSection.totalCapacity=resultSet.getInt("totcapcity");
+                courseSection.id=resultSet.getInt("id");
+                courseSection.name=resultSet.getString("name");
+
+                courseSearchEntry.section=courseSection;
+                courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
+                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i));
+                courseSearchEntries.add(courseSearchEntry);
+            }return courseSearchEntries;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
         }
-sql+=")aa order by course_id;";
-        Statement statement=connection.createStatement();
-        resultSet=statement.executeQuery(sql);
-        ArrayList<Integer>sections=new ArrayList<>();
-        ArrayList<String>courses=new ArrayList<>();
-        while (resultSet.next()){
-            if(resultSet.getRow()==0)return courseSearchEntries;
-sections.add(resultSet.getInt(1));
-courses.add(resultSet.getString(2));
-        }
-        if(!ignoreMissingPrerequisites){
-        for(int i=0;i<sections.size();i++){
-            if(!new mystudent().passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
-        }}
-        if(!ignorePassed){
-            for(int i=0;i<sections.size();i++){
-                if(!new mystudent().passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
-            }}
-        if(!ignoreConflict){
-            for(int i=0;i<sections.size();i++){
-                if(!new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);}
-            }}
-        if(searchCourseType==CourseType.PUBLIC){
 
-        }//todo
-        if(searchCourseType==CourseType.MAJOR_COMPULSORY){
-
-        }
-        if(searchCourseType==CourseType.MAJOR_ELECTIVE){
-
-        }
-if(searchCourseType==CourseType.CROSS_MAJOR){
-
-}
-for(int i=pageIndex;i<pageIndex+pageSize;i++){
-    CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
-    courseSearchEntry.course=new mycourse().getCourseBySection(sections.get(i));
-    resultSet=statement.executeQuery("select * from section where section_id="+sections.get(i)+ ";");
-   resultSet.next();
-        if (resultSet.getRow()==0)throw new EntityNotFoundException();
-        CourseSection courseSection=new CourseSection();
-        courseSection.leftCapacity=resultSet.getInt("leftcapcity");
-        courseSection.totalCapacity=resultSet.getInt("totcapcity");
-        courseSection.id=resultSet.getInt("id");
-        courseSection.name=resultSet.getString("name");
-
-    courseSearchEntry.section=courseSection;
-    courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
-    courseSearchEntry.conflictCourseNames=getConflict(sections.get(i));
-    courseSearchEntries.add(courseSearchEntry);
-}return courseSearchEntries;
     }
 
     private List<String> getConflict(Integer sectionid) {
-
+        return null;
     }
 
     @Override
