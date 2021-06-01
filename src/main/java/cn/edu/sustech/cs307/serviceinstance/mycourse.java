@@ -12,9 +12,7 @@ import javax.annotation.Nullable;
 import cn.edu.sustech.cs307.exception.*;
 import java.sql.*;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class mycourse implements CourseService {
     ResultSet resultSet;
@@ -54,37 +52,42 @@ public class mycourse implements CourseService {
         throw new Exception();
     }
     @Override
-    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) throws Exception {
-        if (credit<0||classHour<0){
+    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) {
+        try {
+            if (credit<0||classHour<0){
+                throw new IntegrityViolationException();
+            }
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement=connection.createStatement();
+            statement.execute("insert into prerequisite (kind)values(0) ;");
+            resultSet=statement.executeQuery("select max(id) as id from prerequisite;");
+            resultSet.next();
+            int prebas=resultSet.getInt("id");
+            if(coursePrerequisite==null){
+                PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id,coursetype) values (?,?,?,?,?,?,'PUBLIC');");
+                stmt.setString(1,courseId);
+                stmt.setString(2,courseName);
+                stmt.setInt(3,credit);
+                stmt.setInt(4,classHour);
+                stmt.setString(5,grading.toString());
+                stmt.setInt(6,prebas);
+                stmt.execute();
+            }
+            else {int pre_id = addPre(coursePrerequisite);
+                PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id,pre_base_id,coursetype) values (?,?,?,?,?,?,?,'PUBLIC');");
+                stmt.setString(1,courseId);
+                stmt.setString(2,courseName);
+                stmt.setInt(3,credit);
+                stmt.setInt(4,classHour);
+                stmt.setString(5,grading.toString());
+                stmt.setInt(6,pre_id);
+                stmt.setInt(7,prebas);
+                stmt.execute();
+            }
+        }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement=connection.createStatement();
-        statement.execute("insert into prerequisite (kind)values(0) ;");
-        resultSet=statement.executeQuery("select max(id) as id from prerequisite;");
-        resultSet.next();
-        int prebas=resultSet.getInt("id");
-        if(coursePrerequisite==null){
-            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id,coursetype) values (?,?,?,?,?,?,'PUBLIC');");
-            stmt.setString(1,courseId);
-            stmt.setString(2,courseName);
-            stmt.setInt(3,credit);
-            stmt.setInt(4,classHour);
-            stmt.setString(5,grading.toString());
-            stmt.setInt(6,prebas);
-            stmt.execute();
-        }
-        else {int pre_id = addPre(coursePrerequisite);
-            PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading, prerequisite_id,pre_base_id,coursetype) values (?,?,?,?,?,?,?,'PUBLIC');");
-            stmt.setString(1,courseId);
-            stmt.setString(2,courseName);
-            stmt.setInt(3,credit);
-            stmt.setInt(4,classHour);
-            stmt.setString(5,grading.toString());
-            stmt.setInt(6,pre_id);
-            stmt.setInt(7,prebas);
-            stmt.execute();
-        }
+
     }
 
     @Override
@@ -104,7 +107,7 @@ public class mycourse implements CourseService {
         }
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location) throws Exception {
+    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList, short classStart, short classEnd, String location){
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
@@ -259,7 +262,10 @@ public class mycourse implements CourseService {
                 courseSectionClass.dayOfWeek=DayOfWeek.valueOf(resultSet.getString("dayofweek"));
                 courseSectionClass.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
                 courseSectionClass.location=resultSet.getString("location");
-                courseSectionClass.weekList= (List<Short>) resultSet.getArray("weeklist");
+                Array array=resultSet.getArray("weeklist");
+                int[] tmp=(int[])array.getArray();
+                List wa=Arrays.asList(tmp);
+                courseSectionClass.weekList= new HashSet<Short>(wa);
                 courseSectionClasses.add(courseSectionClass);
             }return courseSectionClasses;
         }catch (SQLException sqlException){
