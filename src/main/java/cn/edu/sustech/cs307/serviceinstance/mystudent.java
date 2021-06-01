@@ -240,14 +240,14 @@ public class mystudent implements StudentService{
                 resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet.next();
                 int id=resultSet.getInt("id");
-                statement.execute("update student_grade_hundred set grade='"+((HundredMarkGrade) grade).mark+"' where student_grade_id="+id+";");
+                statement.execute("update student_grade_hundred set grade="+((HundredMarkGrade) grade).mark+" where student_grade_id="+id+";");
             }
             else if(grade instanceof PassOrFailGrade){
                 statement.execute("update student_grade set kind=1 where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet=statement.executeQuery("select id from student_grade where student_id=" +studentId+" and section_id="+sectionId+ ";");
                 resultSet.next();
                 int id=resultSet.getInt("id");
-                statement.execute("update student_grade_hundred set grade='"+((PassOrFailGrade) grade).name()+"' where student_grade_id="+id+";");
+                statement.execute("update student_grade_pf set grade='"+((PassOrFailGrade) grade).name()+"' where student_grade_id="+id+";");
             }
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
@@ -404,11 +404,10 @@ public class mystudent implements StudentService{
             return null;
         }
 
-
     public boolean passedSection(int studentId, int sectionId) throws SQLException {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section _id="+sectionId+";");
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         if(resultSet.getRow()==0)return false;
 
         while (resultSet.next()){
@@ -432,16 +431,15 @@ public class mystudent implements StudentService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         List<CourseSection>courseSections=new ArrayList<>();
-        resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
+        resultSet=statement.executeQuery("select c.leftcapcity, c.totcapcity, c.id id, c.name nname from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
                  "';");
-
         while(resultSet.next()){
             if (resultSet.getRow()==0)return false;
             CourseSection courseSection=new CourseSection();
             courseSection.leftCapacity=resultSet.getInt("leftcapcity");
             courseSection.totalCapacity=resultSet.getInt("totcapcity");
             courseSection.id=resultSet.getInt("id");
-            courseSection.name=resultSet.getString("name");
+            courseSection.name=resultSet.getString("nname");
             courseSections.add(courseSection);
         }boolean ans=false;
         for(int i=0;i<courseSections.size();i++){

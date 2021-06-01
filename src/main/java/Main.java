@@ -124,7 +124,9 @@ public class Main {
         //studentService.addEnrolledCourseWithGrade(20190621, 9, grade_2);
         //studentService.addEnrolledCourseWithGrade(20200319, 12, grade_2);
 //        studentService.addEnrolledCourseWithGrade(20221208, 11, FAIL);
-        studentService.setEnrolledCourseGrade(20221208, 11, PASS);
+        //courseService.addCourseSection("CS602", 1, "Lecture", 120);
+        //courseService.addCourseSection("CS102", 1, "Lecture", 120);
+        //studentService.setEnrolledCourseGrade(20221208, 11, PASS);
 //        studentService.addEnrolledCourseWithGrade(20181023, 8, grade_3);
 //        studentService.addEnrolledCourseWithGrade(20221208, 7, grade_3);
 //        //studentService.addEnrolledCourseWithGrade(20221208, 7, grade_3);
