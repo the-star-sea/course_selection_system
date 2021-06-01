@@ -127,7 +127,8 @@ catch (Exception exception){
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
         while(resultSet.next()){
             String location=resultSet.getString("location");
-            int[]weeklists=(int[])resultSet.getArray("weeklist").getArray();
+            Array array=resultSet.getArray("weeklist");
+            int[]weeklists=(int[])array.getArray();
             String dayofweek=resultSet.getString("dayofweek");
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
@@ -283,7 +284,8 @@ catch (Exception exception){
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from prerequisite where id="+pre_id+";");
         resultSet.next();
-        int[]pres=(int[])resultSet.getArray("content").getArray();
+        Array array=resultSet.getArray("content");
+        int[]pres=(int[])array.getArray();
         int kind=resultSet.getInt("kind");
         if(kind==0){
             resultSet=statement.executeQuery("select * from course where pre_base_id="+pre_id+";");
