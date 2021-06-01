@@ -36,7 +36,7 @@ public class mystudent implements StudentService{
     public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
-            String sql="select distinct section_id,course_id from (select course_id,course.name course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
+            String sql="select distinct section_id,course_id from (select course_id,course.name||'['||section.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCid!=null)
                 sql+=" and course_id='"+searchCid+"'";
@@ -106,7 +106,7 @@ public class mystudent implements StudentService{
 
                 courseSearchEntry.section=courseSection;
                 courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
-                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i));
+                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections);
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
@@ -115,12 +115,19 @@ public class mystudent implements StudentService{
 
     }
 
-    private List<String> getConflict(Integer sectionid) {
-        return null;
+    private List<String> getConflict(Integer sectionid, ArrayList<Integer> sections) throws SQLException {//todo
+        List<String>conflict=new ArrayList<>();
+        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        Statement statement = connection.createStatement();
+        resultSet=statement.executeQuery("select class.location location,class.weeklist weeklist,class.dayofweek,class.class_begin class_begin,class.class_end class_end,coursesection.name sectionname,course.name course name from course,class,coursesection where course.id=coursesection.course_id and class.section_id=coursesection.id;");
+     resultSet.next();
+      for(int section:sections){
+
+      }return conflict;
     }
 
     @Override
-    public EnrollResult enrollCourse(int studentId, int sectionId)  {//todo
+    public EnrollResult enrollCourse(int studentId, int sectionId)  {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
