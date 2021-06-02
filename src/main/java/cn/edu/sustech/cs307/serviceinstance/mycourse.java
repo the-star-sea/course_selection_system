@@ -208,8 +208,8 @@ public class mycourse implements CourseService {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             List<CourseSection>courseSections=new ArrayList<>();
-            resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id=" +courseId+
-                    "and semester_id=" +semesterId+ ";");
+            resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
+                    "' and semester_id=" +semesterId+ ";");
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 CourseSection courseSection=new CourseSection();

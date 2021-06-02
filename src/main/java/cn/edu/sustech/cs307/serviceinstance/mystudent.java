@@ -409,8 +409,7 @@ public class mystudent implements StudentService{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id='" +courseId+
-                    " and student_id=" +studentId+
-                    "';");
+                    "' and student_id="+studentId+";");
             resultSet.next();
             if(resultSet.getRow()==0)throw new EntityNotFoundException();
 
