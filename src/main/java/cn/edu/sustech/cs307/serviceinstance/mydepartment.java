@@ -13,7 +13,7 @@ import java.util.List;
 public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     @Override
-    public int addDepartment(String name)  {
+    public synchronized int addDepartment(String name)  {
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -29,7 +29,7 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public void removeDepartment(int departmentId){
+    public synchronized void removeDepartment(int departmentId){
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -43,7 +43,7 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public List<Department> getAllDepartments()  {//ok
+    public synchronized List<Department> getAllDepartments()  {//ok
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -63,7 +63,7 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public Department getDepartment(int departmentId) {//ok
+    public synchronized Department getDepartment(int departmentId) {//ok
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();

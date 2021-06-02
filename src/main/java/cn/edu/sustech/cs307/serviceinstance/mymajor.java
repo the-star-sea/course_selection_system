@@ -12,7 +12,7 @@ import java.util.List;
 public class mymajor implements MajorService{
     ResultSet resultSet;
     @Override
-    public int addMajor(String name, int departmentId){
+    public synchronized int addMajor(String name, int departmentId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
@@ -27,7 +27,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public void removeMajor(int majorId) {
+    public synchronized void removeMajor(int majorId) {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -41,7 +41,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public List<Major> getAllMajors()  {
+    public synchronized List<Major> getAllMajors()  {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -62,7 +62,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public Major getMajor(int majorId){
+    public synchronized Major getMajor(int majorId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -81,7 +81,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public void addMajorCompulsoryCourse(int majorId, String courseId){//todo
+    public synchronized void addMajorCompulsoryCourse(int majorId, String courseId){//todo
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -95,7 +95,7 @@ public class mymajor implements MajorService{
 
     }
     @Override
-    public void addMajorElectiveCourse(int majorId, String courseId){//todo
+    public synchronized void addMajorElectiveCourse(int majorId, String courseId){//todo
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();

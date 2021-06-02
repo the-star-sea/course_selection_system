@@ -18,7 +18,7 @@ import java.util.List;
 public class myuser implements UserService {
     ResultSet resultSet;
     @Override
-    public void removeUser(int userId){
+    public synchronized void removeUser(int userId){
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -31,7 +31,7 @@ public class myuser implements UserService {
         }
     }
     @Override
-    public List<User> getAllUsers()  {
+    public synchronized List<User> getAllUsers()  {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -57,7 +57,7 @@ public class myuser implements UserService {
     }
 
     @Override
-    public User getUser(int userId) {
+    public synchronized User getUser(int userId) {
             try {
                 Connection connection= SQLDataSource.getInstance().getSQLConnection();
                 Statement statement = connection.createStatement();

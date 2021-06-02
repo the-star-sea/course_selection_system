@@ -13,7 +13,7 @@ import java.util.List;
 public class mysemester implements SemesterService{
     ResultSet resultSet;
     @Override
-    public int addSemester(String name, Date begin, Date end)  {
+    public synchronized int addSemester(String name, Date begin, Date end)  {
         if(begin.after(end))throw new IntegrityViolationException();
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
@@ -32,7 +32,7 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public void removeSemester(int semesterId){
+    public synchronized void removeSemester(int semesterId){
         try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
@@ -47,7 +47,7 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public List<Semester> getAllSemesters()  {
+    public synchronized List<Semester> getAllSemesters()  {
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -65,7 +65,7 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public Semester getSemester(int semesterId){
+    public synchronized Semester getSemester(int semesterId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();

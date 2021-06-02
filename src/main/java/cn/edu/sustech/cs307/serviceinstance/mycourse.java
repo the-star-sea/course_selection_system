@@ -16,7 +16,7 @@ import java.util.*;
 
 public class mycourse implements CourseService {
     ResultSet resultSet;
-    public int addPre(Prerequisite coursePrerequisite) throws Exception {
+    public synchronized int addPre(Prerequisite coursePrerequisite) throws Exception {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         if(coursePrerequisite instanceof CoursePrerequisite){
@@ -52,7 +52,7 @@ public class mycourse implements CourseService {
         throw new Exception();
     }
     @Override
-    public void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) {
+    public synchronized void addCourse(String courseId, String courseName, int credit, int classHour, Course.CourseGrading grading, @Nullable Prerequisite coursePrerequisite) {
         try {
             if (credit<0||classHour<0){
                 throw new IntegrityViolationException();
@@ -93,7 +93,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+    public synchronized int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
         try {
             if (totalCapacity<0){
                 throw new IntegrityViolationException();
@@ -109,7 +109,7 @@ public class mycourse implements CourseService {
         }
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
+    public synchronized int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
@@ -138,7 +138,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public void removeCourse(String courseId) {
+    public synchronized void removeCourse(String courseId) {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -152,7 +152,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public void removeCourseSection(int sectionId){
+    public synchronized void removeCourseSection(int sectionId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -166,7 +166,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public void removeCourseSectionClass(int classId){
+    public synchronized void removeCourseSectionClass(int classId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -181,7 +181,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public List<Course> getAllCourses() {
+    public synchronized List<Course> getAllCourses() {
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -203,7 +203,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
+    public synchronized List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
         try{
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -226,7 +226,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public Course getCourseBySection(int sectionId){
+    public synchronized Course getCourseBySection(int sectionId){
     try {
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
@@ -247,7 +247,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public List<CourseSectionClass> getCourseSectionClasses(int sectionId){
+    public synchronized List<CourseSectionClass> getCourseSectionClasses(int sectionId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -275,7 +275,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public CourseSection getCourseSectionByClass(int classId){
+    public synchronized CourseSection getCourseSectionByClass(int classId){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -294,7 +294,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) {
+    public synchronized List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) {
     try{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
