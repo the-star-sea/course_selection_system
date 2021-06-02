@@ -36,7 +36,7 @@ public class mystudent implements StudentService{
     public List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
-            String sql="select distinct section_id,course_id from (select course_id,course.name||'['||section.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
+            String sql="select distinct section_id,course_id,course_name from (select course_id,course.name||'['||section.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course_id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id ";
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCid!=null)
                 sql+=" and course_id='"+searchCid+"'";
@@ -63,22 +63,24 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery(sql);
             ArrayList<Integer>sections=new ArrayList<>();
             ArrayList<String>courses=new ArrayList<>();
+            ArrayList<String>names=new ArrayList<>();
             while (resultSet.next()){
                 if(resultSet.getRow()==0)return courseSearchEntries;
                 sections.add(resultSet.getInt(1));
                 courses.add(resultSet.getString(2));
+                names.add(resultSet.getString(3));
             }
             if(!ignoreMissingPrerequisites){
                 for(int i=0;i<sections.size();i++){
-                    if(!new mystudent().passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
+                    if(!new mystudent().passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
             if(!ignorePassed){
                 for(int i=0;i<sections.size();i++){
-                    if(!new mystudent().passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);}
+                    if(!new mystudent().passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
             if(!ignoreConflict){
                 for(int i=0;i<sections.size();i++){
-                    if(!new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);}
+                    if(!new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
             if(searchCourseType==CourseType.PUBLIC){
 
@@ -106,7 +108,7 @@ public class mystudent implements StudentService{
 
                 courseSearchEntry.section=courseSection;
                 courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
-                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections);
+                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
@@ -115,15 +117,31 @@ public class mystudent implements StudentService{
 
     }
 
-    private List<String> getConflict(Integer sectionid, ArrayList<Integer> sections) throws SQLException {//todo
+    private List<String> getConflict(Integer sectionid, ArrayList<Integer> sections, ArrayList<String> names) throws SQLException {//todo
         List<String>conflict=new ArrayList<>();
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select class.location location,class.weeklist weeklist,class.dayofweek,class.class_begin class_begin,class.class_end class_end,coursesection.name sectionname,course.name course name from course,class,coursesection where course.id=coursesection.course_id and class.section_id=coursesection.id;");
+        List<CourseSectionClass>classes=new mycourse().getCourseSectionClasses(sectionid);
      resultSet.next();
-      for(int section:sections){
-
+      for(int i=0;i<sections.size();i++){
+          List<CourseSectionClass>classs=new mycourse().getCourseSectionClasses(sections.get(i));
+          if(classconflict(classes,classs))conflict.add(names.get(i) );
       }return conflict;
+    }
+
+    private boolean classconflict(List<CourseSectionClass> classes, List<CourseSectionClass> classs) {
+        for(CourseSectionClass class1:classes){
+            for(CourseSectionClass class2:classs){
+                if(class1.dayOfWeek==class2.dayOfWeek)return true;
+                if(Math.max(class1.classBegin,class2.classBegin)<Math.min(class1.classEnd,class2.classEnd))return true;
+                for(Short week:class1.weekList){
+                    for(Short week2:class2.weekList){
+                        if(week==week2)
+                            return true;
+                    }
+                }
+            }
+        }return false;
     }
 
     @Override
@@ -176,18 +194,17 @@ public class mystudent implements StudentService{
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
             //if(classes.get(i).location==location)return false;
-            if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))return false;
-            if(class_end<classes.get(i).classBegin||class_begin>classes.get(i).classEnd)return false;
-
+            if(classes.get(i).dayOfWeek.toString().equals(dayofweek))return true;
+            if(Math.max(class_begin,classes.get(i).classBegin)<=Math.min(class_end,classes.get(i).classEnd))return true;
             for(Short week:classes.get(i).weekList){
                 for(int k=0;k<weeklists.length;k++){
                     if(week==weeklists[k])
                     return true;
                 }
             }
-                return false;
+
             }
-        }throw new IntegrityViolationException();
+        } return false;
     }
 
     @Override
