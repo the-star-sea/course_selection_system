@@ -157,7 +157,11 @@ public class Main {
         //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
         //studentService.passedPrerequisitesForCourse();
-
+        List<CourseSearchEntry>searchEntries=studentService.searchCourse(11911607,4,null,
+                null,null,null,null,
+                null, StudentService.CourseType.MAJOR_ELECTIVE,false,false,
+                true,true,1,0);
+        System.out.println(searchEntries);
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");
