@@ -142,16 +142,20 @@ public class Main {
         //HundredMarkGrade grade_4 = new HundredMarkGrade((short)67);
         //studentService.addEnrolledCourseWithGrade(20190621, 7, grade_4);
         //List<Department> departments=departmentService.getAllDepartments();
-        List<Major>majors=majorService.getAllMajors();
+        //List<Major>majors=majorService.getAllMajors();
         //List<Course>courses=courseService.getAllCourses();
         //List<User>users=userService.getAllUsers();
         //System.out.println(departments);
-        System.out.println(majors);
+        //System.out.println(majors);
         //System.out.println(courses);
         //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
         //studentService.passedPrerequisitesForCourse();
-
+        List<CourseSearchEntry>searchEntries=studentService.searchCourse(11911607,4,null,
+                null,null,null,null,
+                null, StudentService.CourseType.MAJOR_ELECTIVE,false,false,
+                true,true,1,0);
+        System.out.println(searchEntries);
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");

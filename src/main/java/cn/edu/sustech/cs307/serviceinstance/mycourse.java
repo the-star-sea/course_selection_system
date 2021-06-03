@@ -251,7 +251,7 @@ public class mycourse implements CourseService {
         try {
             Connection connection= SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
-            resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
+            resultSet=statement.executeQuery("select class_begin, class_end, c.id id, dayofweek, instructor_id, location, weeklist from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
 
             List<CourseSectionClass>courseSectionClasses=new ArrayList<>();
             while (resultSet.next()){
@@ -259,12 +259,13 @@ public class mycourse implements CourseService {
                 CourseSectionClass courseSectionClass=new CourseSectionClass();
                 courseSectionClass.classBegin= (short) resultSet.getInt("class_begin");
                 courseSectionClass.classEnd= (short) resultSet.getInt("class_end");
-                courseSectionClass.id=resultSet.getInt("c.id");
+                courseSectionClass.id=resultSet.getInt("id");
                 courseSectionClass.dayOfWeek=DayOfWeek.valueOf(resultSet.getString("dayofweek"));
                 courseSectionClass.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
                 courseSectionClass.location=resultSet.getString("location");
                 Array array=resultSet.getArray("weeklist");
-                int[] tmp=(int[])array.getArray();
+                //int[] tmp=(int[])array.getArray();
+                Object[] tmp=(Object[])array.getArray();
                 List wa=Arrays.asList(tmp);
                 courseSectionClass.weekList= new HashSet<Short>(wa);
                 courseSectionClasses.add(courseSectionClass);
