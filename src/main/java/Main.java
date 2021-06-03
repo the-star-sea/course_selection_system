@@ -142,11 +142,11 @@ public class Main {
         //HundredMarkGrade grade_4 = new HundredMarkGrade((short)67);
         //studentService.addEnrolledCourseWithGrade(20190621, 7, grade_4);
         //List<Department> departments=departmentService.getAllDepartments();
-        List<Major>majors=majorService.getAllMajors();
+        //List<Major>majors=majorService.getAllMajors();
         //List<Course>courses=courseService.getAllCourses();
         //List<User>users=userService.getAllUsers();
         //System.out.println(departments);
-        System.out.println(majors);
+        //System.out.println(majors);
         //System.out.println(courses);
         //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
@@ -156,7 +156,11 @@ public class Main {
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");
 //        majorService.addMajorElectiveCourse(7, "ME101");
-
+        //studentService.enrollCourse(20191208, 2);
+        studentService.enrollCourse(20221208, 7);
+        //studentService.enrollCourse(20221208, 12);
+        HundredMarkGrade gra_0 = new HundredMarkGrade((short) 85);
+        //studentService.addEnrolledCourseWithGrade(20221208, 9, gra_0);
 
     }
 

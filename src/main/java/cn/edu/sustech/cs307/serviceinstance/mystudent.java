@@ -435,9 +435,10 @@ public class mystudent implements StudentService{
         Connection connection= SQLDataSource.getInstance().getSQLConnection();
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
-        if(resultSet.getRow()==0)return false;
+        //if(resultSet.getRow()==0)return false;
 
         while (resultSet.next()){
+            if(resultSet.getRow()==0)return false;
         int sgi=resultSet.getInt("id");
         int kind=resultSet.getInt("kind");
         if(kind==0){
