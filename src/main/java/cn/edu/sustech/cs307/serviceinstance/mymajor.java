@@ -11,10 +11,12 @@ import java.util.List;
 
 public class mymajor implements MajorService{
     ResultSet resultSet;
+    Connection connection;
     @Override
-    public synchronized int addMajor(String name, int departmentId){
+    public int addMajor(String name, int departmentId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
             statement.execute();
             Statement statement1 = connection.createStatement();

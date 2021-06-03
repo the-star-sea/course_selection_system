@@ -16,8 +16,10 @@ import java.util.*;
 
 public class mycourse implements CourseService {
     ResultSet resultSet;
+    Connection connection;
     public synchronized int addPre(Prerequisite coursePrerequisite) throws Exception {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         if(coursePrerequisite instanceof CoursePrerequisite){
             String courseid=((CoursePrerequisite) coursePrerequisite).courseID;
@@ -57,7 +59,8 @@ public class mycourse implements CourseService {
             if (credit<0||classHour<0){
                 throw new IntegrityViolationException();
             }
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement=connection.createStatement();
             statement.execute("insert into prerequisite (kind)values(0) ;");
             resultSet=statement.executeQuery("select max(id) as id from prerequisite;");
@@ -93,12 +96,13 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public synchronized int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
         try {
             if (totalCapacity<0){
                 throw new IntegrityViolationException();
             }
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             statement.execute("insert into coursesection(semester_id,name,course_id,totcapcity,leftcapcity) values ("+semesterId+",'"+sectionName+"','"+courseId+"',"+totalCapacity+","+totalCapacity+");");
             ResultSet resultSet = statement.executeQuery("select id from coursesection where course_id='" + courseId + "'and semester_id=" + semesterId + " and name='"+sectionName+"';");
@@ -109,13 +113,22 @@ public class mycourse implements CourseService {
         }
     }
     @Override
-    public synchronized int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
+    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
+
+            if(connection==null){
+                try {
+                    connection= SQLDataSource.getInstance().getSQLConnection();
+                }catch (SQLException sqlException){
+
+                }
+                }
+
+
         try(
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
-            PreparedStatement stmt=connection.prepareStatement(
+                PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);"
             )){
             stmt.setInt(1, instructorId);

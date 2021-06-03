@@ -12,11 +12,13 @@ import java.util.List;
 
 public class mysemester implements SemesterService{
     ResultSet resultSet;
+    Connection connection;
     @Override
-    public synchronized int addSemester(String name, Date begin, Date end)  {
+    public int addSemester(String name, Date begin, Date end)  {
         if(begin.after(end))throw new IntegrityViolationException();
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             PreparedStatement statement = connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
                     " values ('" + name + "',?,?);");
             statement.setDate(1, begin);

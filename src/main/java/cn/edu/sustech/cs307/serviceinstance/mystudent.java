@@ -16,10 +16,12 @@ import java.util.*;
 
 public class mystudent implements StudentService{
     ResultSet resultSet;
+    Connection connection;
     @Override
-    public synchronized void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
+    public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
             String name=firstName+lastName;
             if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
             PreparedStatement statement = connection.prepareStatement("insert into users(id,name,kind) values ("+userId+",'"+name+"',0);" +
@@ -138,8 +140,8 @@ public class mystudent implements StudentService{
             for(CourseSectionClass class2:classs){
                 if(class1.dayOfWeek==class2.dayOfWeek)return true;
                 if(Math.max(class1.classBegin,class2.classBegin)<Math.min(class1.classEnd,class2.classEnd))return true;
-                for(Short week:class1.weekList){
-                    for(Short week2:class2.weekList){
+                for(Object week:class1.weekList){//todo
+                    for(Object week2:class2.weekList){
                         if(week==week2)
                             return true;
                     }

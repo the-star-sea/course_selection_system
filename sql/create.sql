@@ -1,7 +1,7 @@
 create table if not exists semester
 (
     id    serial primary key,
-    name varchar(20),
+    name varchar(50),
     semester_begin date,
     semester_end   date,
     unique (name,semester_begin,semester_end)
@@ -10,19 +10,19 @@ create table if not exists semester
 create table if not exists users
 (
     id   integer primary key,
-    name  varchar(20),
+    name  varchar(50),
     kind integer--0学生，1老师
 );
 create table if not exists department
 (
     id   serial primary key,
-    name varchar(20),
+    name varchar(50),
     unique (name)
 );
 create table if not exists major
 (
     id            serial primary key,
-    name          varchar(20),
+    name          varchar(50),
     department_id integer
         constraint uuu references department (id) ON DELETE cascade,
     unique (name)
@@ -49,7 +49,7 @@ create table if not exists prerequisite(
 create table if not exists course
 (
     id        varchar(20) primary key,
-    name       varchar(20),
+    name       varchar(50),
     credit     int,
     class_hour int,
     coursetype varchar(20),
@@ -67,7 +67,7 @@ create table if not exists major_course
 create table if not exists coursesection
 (
     id          serial primary key,
-    name varchar(20),
+    name varchar(50),
     semester_id int
         constraint ooi references semester(id) ON DELETE cascade,
     course_id   varchar(20)

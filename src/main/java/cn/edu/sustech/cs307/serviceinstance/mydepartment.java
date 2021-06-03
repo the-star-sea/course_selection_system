@@ -12,10 +12,12 @@ import java.util.List;
 
 public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
+    Connection connection;
     @Override
-    public synchronized int addDepartment(String name)  {
+    public int addDepartment(String name)  {
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from department where name='"+name+"';");
             if(resultSet.getRow()!=0)throw new IntegrityViolationException();

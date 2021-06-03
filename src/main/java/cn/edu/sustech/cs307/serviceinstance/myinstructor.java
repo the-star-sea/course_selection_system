@@ -11,16 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class myinstructor implements InstructorService{
+    Connection connection;
     @Override
-    public synchronized void addInstructor(int userId, String firstName, String lastName){
-        try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+    public void addInstructor(int userId, String firstName, String lastName){
+      try{
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             String name=firstName+lastName;
             if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
             statement.execute("insert into users(id,name,kind) values ("+userId+",'"+name+"',1);");
         }catch (SQLException sqlException) {
-            throw new IntegrityViolationException();
+          // throw new IntegrityViolationException();
+          sqlException.printStackTrace();
         }
     }
 

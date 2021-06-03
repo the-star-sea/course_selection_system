@@ -13,9 +13,7 @@ import cn.edu.sustech.cs307.serviceinstance.mymajor;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static cn.edu.sustech.cs307.dto.Course.CourseGrading.HUNDRED_MARK_SCORE;
 import static cn.edu.sustech.cs307.dto.Course.CourseGrading.PASS_OR_FAIL;
@@ -24,6 +22,7 @@ import static cn.edu.sustech.cs307.dto.grade.PassOrFailGrade.PASS;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+
         ServiceFactory serviceFactory= Config.getServiceFactory();
         UserService userService=serviceFactory.createService(UserService.class);
         MajorService majorService=serviceFactory.createService(MajorService.class);
