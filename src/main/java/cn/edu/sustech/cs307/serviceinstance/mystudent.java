@@ -159,9 +159,9 @@ public class mystudent implements StudentService{
             int left=resultSet.getInt("leftcapcity");
             resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
             resultSet.next();
-            int kind=resultSet.getInt("kind");
             String courseid=new mycourse().getCourseBySection(sectionId).id;
             if(resultSet.getRow()>0) {
+                int kind=resultSet.getInt("kind");
                 if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
                 if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
             }
@@ -170,8 +170,8 @@ public class mystudent implements StudentService{
             if(new mystudent().conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
             if(left<=0)return EnrollResult.COURSE_IS_FULL;
             try{
-                statement.execute("insert into student_grade(student_id,section_id)values (" +studentId+","+sectionId+
-                        ");update coursesection set leftcapcity=leftcapcity-1 where id="+sectionId+";");
+                statement.execute("insert into student_grade(student_id,section_id,kind)values (" +studentId+","+sectionId+
+                        ",2);update coursesection set leftcapcity=leftcapcity-1 where id="+sectionId+";");
                 return EnrollResult.SUCCESS;
             }
             catch (Exception exception){
@@ -361,6 +361,9 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
             int pre_id=resultSet.getInt("prerequisite_id");
+            if(pre_id == -1){
+                return true;
+            }
 
             return testpre(studentId,pre_id);
         }catch (SQLException sqlException){
