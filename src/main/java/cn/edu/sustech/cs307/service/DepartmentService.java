@@ -3,7 +3,6 @@ package cn.edu.sustech.cs307.service;
 import cn.edu.sustech.cs307.dto.Department;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -14,16 +13,16 @@ public interface DepartmentService {
      * @param name
      * @return
      */
-    int addDepartment(String name) throws SQLException;
+    int addDepartment(String name);
 
-    void removeDepartment(int departmentId) throws SQLException;
+    void removeDepartment(int departmentId);
 
-    List<Department> getAllDepartments() throws SQLException;
+    List<Department> getAllDepartments();
 
     /**
      * If there is no Department about specific id, throw EntityNotFoundException.
      * @param departmentId
      * @return
      */
-    Department getDepartment(int departmentId) throws SQLException;
+    Department getDepartment(int departmentId);
 }

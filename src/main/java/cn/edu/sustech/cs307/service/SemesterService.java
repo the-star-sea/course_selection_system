@@ -4,7 +4,6 @@ import cn.edu.sustech.cs307.dto.Semester;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
@@ -17,7 +16,7 @@ public interface SemesterService {
      * @param end
      * @return the Semester id of new inserted line, if adding process is successful.
      */
-    int addSemester(String name, Date begin, Date end) throws Exception;
+    int addSemester(String name, Date begin, Date end);
 
     /**
      *To remove an entity from the system, related entities dependent on this entity
@@ -26,9 +25,9 @@ public interface SemesterService {
      * More specifically, when remove a semester, the related select course record should be removed accordingly.
      * @param semesterId
      */
-    void removeSemester(int semesterId) throws SQLException;
+    void removeSemester(int semesterId);
 
-    List<Semester> getAllSemesters() throws SQLException;
+    List<Semester> getAllSemesters();
 
-    Semester getSemester(int semesterId) throws SQLException;
+    Semester getSemester(int semesterId);
 }

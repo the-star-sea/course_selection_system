@@ -5,9 +5,9 @@ import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 @ParametersAreNonnullByDefault
 public interface CourseService {
@@ -23,7 +23,7 @@ public interface CourseService {
      * @param prerequisite The root of a {@link cn.edu.sustech.cs307.dto.prerequisite.Prerequisite} expression tree.
      */
     void addCourse(String courseId, String courseName, int credit, int classHour,
-                   Course.CourseGrading grading, @Nullable Prerequisite prerequisite) throws Exception;
+                   Course.CourseGrading grading, @Nullable Prerequisite prerequisite);
 
     /**
      * Add one course section according to following parameters:
@@ -35,7 +35,7 @@ public interface CourseService {
      * @param totalCapacity the total capacity of section
      * @return the CourseSection id of new inserted line, if adding process is successful.
      */
-    int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) throws SQLException;
+    int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity);
 
 
     /**
@@ -51,8 +51,8 @@ public interface CourseService {
      * @param location
      * @return the CourseSectionClass id of new inserted line.
      */
-    int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, List<Short> weekList,
-                              short classStart, short classEnd, String location) throws Exception;
+    int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList,
+                              short classStart, short classEnd, String location);
 
 
     /**
@@ -62,7 +62,7 @@ public interface CourseService {
      * when a course has been removed
      * @param courseId
      */
-    void removeCourse(String courseId) throws SQLException;
+    void removeCourse(String courseId);
 
     /**
      *  To remove an entity from the system, related entities dependent on this entity (usually rows referencing the row to remove through foreign keys in a relational database)
@@ -71,7 +71,7 @@ public interface CourseService {
      *   when a courseSection has been removed
      * @param sectionId
      */
-    void removeCourseSection(int sectionId) throws SQLException;
+    void removeCourseSection(int sectionId);
 
     /**
      *  To remove an entity from the system, related entities dependent on this entity (usually rows referencing the row to remove through foreign keys in a relational database)
@@ -79,9 +79,9 @@ public interface CourseService {
      *  More specifically, only remove course section class
      * @param classId
      */
-    void removeCourseSectionClass(int classId) throws SQLException;
+    void removeCourseSectionClass(int classId);
 
-    List<Course> getAllCourses() throws SQLException;
+    List<Course> getAllCourses();
 
     /**
      * Return all satisfied CourseSections.
@@ -90,14 +90,14 @@ public interface CourseService {
      * @param semesterId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) throws SQLException;
+    List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId);
 
     /**
      * If there is no Course about specific id, throw EntityNotFoundException.
      * @param sectionId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    Course getCourseBySection(int sectionId) throws SQLException;
+    Course getCourseBySection(int sectionId);
 
     /**
      *
@@ -105,14 +105,14 @@ public interface CourseService {
      *                  if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    List<CourseSectionClass> getCourseSectionClasses(int sectionId) throws SQLException;
+    List<CourseSectionClass> getCourseSectionClasses(int sectionId);
 
     /**
      *
      * @param classId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    CourseSection getCourseSectionByClass(int classId) throws SQLException;
+    CourseSection getCourseSectionByClass(int classId);
 
     /**
      *
@@ -120,5 +120,5 @@ public interface CourseService {
      * @param semesterId if the key is non-existent, please throw an EntityNotFoundException.
      * @return
      */
-    List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) throws SQLException;
+    List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId);
 }

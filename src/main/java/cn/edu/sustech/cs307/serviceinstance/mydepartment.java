@@ -13,19 +13,23 @@ import java.util.List;
 public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     @Override
-    public int addDepartment(String name) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select * from department where name='"+name+"';");
-        if(resultSet.getRow()!=0)throw new IntegrityViolationException();
-        statement.execute("insert into department(name) values ('"+name+"');");
-        resultSet=statement.executeQuery("select id from department where name='"+name+"';");
-        resultSet.next();
-        return resultSet.getInt("id");
+    public synchronized int addDepartment(String name)  {
+        try{
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
+            resultSet=statement.executeQuery("select * from department where name='"+name+"';");
+            if(resultSet.getRow()!=0)throw new IntegrityViolationException();
+            statement.execute("insert into department(name) values ('"+name+"');");
+            resultSet=statement.executeQuery("select id from department where name='"+name+"';");
+            resultSet.next();
+            return resultSet.getInt("id");
+        }catch (SQLException sqlException) {
+            throw new IntegrityViolationException();
+        }
     }
 
     @Override
-    public void removeDepartment(int departmentId) throws SQLException {
+    public synchronized void removeDepartment(int departmentId){
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -33,29 +37,33 @@ public class mydepartment implements  DepartmentService {
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
-        }catch (SQLException exception){
-            throw new EntityNotFoundException();
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
         }
     }
 
     @Override
-    public List<Department> getAllDepartments() throws SQLException {//ok
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
-        Statement statement = connection.createStatement();
+    public synchronized List<Department> getAllDepartments()  {//ok
+        try{
+            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            Statement statement = connection.createStatement();
 
-        List<Department>departments=new ArrayList<>();
-        resultSet=statement.executeQuery("select * from department;");
+            List<Department>departments=new ArrayList<>();
+            resultSet=statement.executeQuery("select * from department;");
 
-        while(resultSet.next()){
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
-            Department department=new mydepartment().getDepartment(resultSet.getInt("id"));
-            departments.add(department);
+            while(resultSet.next()){
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
+                Department department=new mydepartment().getDepartment(resultSet.getInt("id"));
+                departments.add(department);
+            }
+            return departments;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
         }
-        return departments;
     }
 
     @Override
-    public Department getDepartment(int departmentId) throws SQLException {//ok
+    public synchronized Department getDepartment(int departmentId) {//ok
         try {
             Connection connection = SQLDataSource.getInstance().getSQLConnection();
             Statement statement = connection.createStatement();
@@ -66,8 +74,8 @@ public class mydepartment implements  DepartmentService {
             department.id = departmentId;
             department.name = resultSet.getString("name");
             return department;
-        }catch (SQLException exception){
-            throw new EntityNotFoundException();
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
         }
     }
 }

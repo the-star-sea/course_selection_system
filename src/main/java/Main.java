@@ -74,6 +74,7 @@ public class Main {
         Prerequisite pre_5 = new CoursePrerequisite("LL104");
         Prerequisite pre_4_5 = new OrPrerequisite(List.of(pre_4, pre_5));
         Prerequisite pre_4_5_wp = new AndPrerequisite(List.of(pre_4_5, pre_1));
+
 //        courseService.addCourse("CS102", "JavaProgram", 3, 64, HUNDRED_MARK_SCORE, null);
 //        courseService.addCourse("CS202", "C++Program", 3, 64, HUNDRED_MARK_SCORE, pre_1);
 //        courseService.addCourse("LL103", "Language", 3, 64, HUNDRED_MARK_SCORE, null);
@@ -91,7 +92,6 @@ public class Main {
         //courseService.removeCourseSectionClass(6);
         List<Course> dd = new ArrayList<>();
         //dd = courseService.getAllCourses();
-
         //List<User> uu = new ArrayList<>();
         //uu = userService.getAllUsers();
 //        courseService.addCourseSection("CS202", 1, "Lecture", 80);
@@ -124,17 +124,33 @@ public class Main {
         //studentService.addEnrolledCourseWithGrade(20190621, 9, grade_2);
         //studentService.addEnrolledCourseWithGrade(20200319, 12, grade_2);
 //        studentService.addEnrolledCourseWithGrade(20221208, 11, FAIL);
+        //courseService.addCourseSection("CS602", 1, "Lecture", 120);
+        //courseService.addCourseSection("CS102", 1, "Lecture", 120);
+        //studentService.setEnrolledCourseGrade(20221208, 11, PASS);
 //        studentService.addEnrolledCourseWithGrade(20181023, 8, grade_3);
 //        studentService.addEnrolledCourseWithGrade(20221208, 7, grade_3);
 //        //studentService.addEnrolledCourseWithGrade(20221208, 7, grade_3);
         //studentService.addEnrolledCourseWithGrade(20221208, 1, grade_2);
-        //boolean y = studentService.passedPrerequisitesForCourse(20221208, "CS602");
-        //System.out.println(y);
+//        boolean y = studentService.passedPrerequisitesForCourse(20221208, "CS602");
+//        //List<>
+//        System.out.println(y);
         //studentService.dropCourse(20190621, 5);
 //        Major m = new Major();
 //        m = studentService.getStudentMajor(20190521);
 //        System.out.println(m.toString());
+//        G
+        //HundredMarkGrade grade_4 = new HundredMarkGrade((short)67);
+        //studentService.addEnrolledCourseWithGrade(20190621, 7, grade_4);
+        //List<Department> departments=departmentService.getAllDepartments();
+        List<Major>majors=majorService.getAllMajors();
+        //List<Course>courses=courseService.getAllCourses();
+        //List<User>users=userService.getAllUsers();
+        //System.out.println(departments);
+        System.out.println(majors);
+        //System.out.println(courses);
+        //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
+        //studentService.passedPrerequisitesForCourse();
 
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
