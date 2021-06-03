@@ -30,7 +30,8 @@ public class myinstructor implements InstructorService{
     @Override
     public synchronized List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) {
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
 
             List<CourseSection> courseSections = new ArrayList<>();

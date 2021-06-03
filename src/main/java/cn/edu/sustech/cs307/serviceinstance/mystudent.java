@@ -37,7 +37,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             String sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCourseType==CourseType.PUBLIC){
@@ -125,7 +126,8 @@ public class mystudent implements StudentService{
 
     private synchronized List<String> getConflict(Integer sectionid, ArrayList<Integer> sections, ArrayList<String> names) throws SQLException {//todo
         List<String>conflict=new ArrayList<>();
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSectionClass>classes=new mycourse().getCourseSectionClasses(sectionid);
      resultSet.next();
@@ -153,7 +155,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized EnrollResult enrollCourse(int studentId, int sectionId)  {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from coursesection where id="+sectionId+";");
             resultSet.next();
@@ -185,7 +188,8 @@ public class mystudent implements StudentService{
     }
 
     private synchronized boolean conflict(int studentId,int sectionId ) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
         resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
@@ -216,7 +220,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized void dropCourse(int studentId, int sectionId) throws IllegalStateException{
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and section_id= " + sectionId + ";");
             resultSet.next();
@@ -231,7 +236,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             if(grade==null){
                 statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
@@ -263,7 +269,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             if(grade instanceof HundredMarkGrade){
                 statement.execute("update student_grade set kind=0 where student_id=" +studentId+" and section_id="+sectionId+ ";");
@@ -284,7 +291,8 @@ public class mystudent implements StudentService{
         }
     }
     public synchronized boolean enrolledcourse(int studentId, String courseId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
                 " order by semester_begin;");
@@ -297,7 +305,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId)  {
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             Map<Course, Grade>maps=new HashMap<>();
             if(semesterId == null){
@@ -318,7 +327,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized CourseTable getCourseTable(int studentId, Date date) {
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             PreparedStatement preparedStatement1= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
             preparedStatement1.setDate(1,date);
             preparedStatement1.setDate(2,date);
@@ -357,7 +367,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized boolean passedPrerequisitesForCourse(int studentId, String courseId) {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
@@ -375,7 +386,8 @@ public class mystudent implements StudentService{
 
     private synchronized boolean testpre(int studentId, int pre_id) throws SQLException {
 
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from prerequisite where id="+pre_id+";");
             resultSet.next();
@@ -410,7 +422,8 @@ public class mystudent implements StudentService{
     }
     public synchronized Grade getgrade(int studentId, String courseId) throws SQLException {
 
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select kind,student_grade.id from student_grade join coursesection c on c.id = student_grade.section_id where course_id='" +courseId+
                     "' and student_id="+studentId+";");
@@ -436,7 +449,8 @@ public class mystudent implements StudentService{
         }
 
     public synchronized boolean passedSection(int studentId, int sectionId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
         while (resultSet.next()){
@@ -458,7 +472,8 @@ public class mystudent implements StudentService{
       }  return false;
     }
     public synchronized boolean passedCourse(int studentId, String courseId) throws SQLException {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSection>courseSections=new ArrayList<>();
         resultSet=statement.executeQuery("select c.leftcapcity, c.totcapcity, c.id id, c.name nname from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
@@ -479,7 +494,8 @@ public class mystudent implements StudentService{
     @Override
     public synchronized Major getStudentMajor(int studentId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select major_id from student where id =" + studentId + ";");
             resultSet.next();

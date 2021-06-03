@@ -31,7 +31,8 @@ public class mymajor implements MajorService{
     @Override
     public synchronized void removeMajor(int majorId) {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from major where id="+majorId+";");
             resultSet.next();
@@ -45,7 +46,8 @@ public class mymajor implements MajorService{
     @Override
     public synchronized List<Major> getAllMajors()  {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
 
             List<Major>majors=new ArrayList<>();
@@ -66,7 +68,8 @@ public class mymajor implements MajorService{
     @Override
     public synchronized Major getMajor(int majorId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
             resultSet.next();
@@ -85,7 +88,8 @@ public class mymajor implements MajorService{
     @Override
     public synchronized void addMajorCompulsoryCourse(int majorId, String courseId){//todo
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
             PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_COMPULSORY' where id=?;");
@@ -99,7 +103,8 @@ public class mymajor implements MajorService{
     @Override
     public synchronized void addMajorElectiveCourse(int majorId, String courseId){//todo
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             statement.execute("insert into major_course(course_id,major_id) values ('"+courseId+"',"+majorId+");");
             PreparedStatement statement1=connection.prepareStatement("update course set coursetype='MAJOR_ELECTIVE' where id=?;");

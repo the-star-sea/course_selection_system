@@ -17,10 +17,12 @@ import java.util.List;
 
 public class myuser implements UserService {
     ResultSet resultSet;
+    Connection connection;
     @Override
     public synchronized void removeUser(int userId){
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from users where id="+userId+";");
             resultSet.next();
@@ -33,7 +35,8 @@ public class myuser implements UserService {
     @Override
     public synchronized List<User> getAllUsers()  {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
             resultSet=statement.executeQuery("select * from users;");
@@ -59,7 +62,8 @@ public class myuser implements UserService {
     @Override
     public synchronized User getUser(int userId) {
             try {
-                Connection connection= SQLDataSource.getInstance().getSQLConnection();
+                if(connection==null){
+                    connection= SQLDataSource.getInstance().getSQLConnection();}
                 Statement statement = connection.createStatement();
                 resultSet=statement.executeQuery("select * from users where id ="+userId+";");
                 resultSet.next();
