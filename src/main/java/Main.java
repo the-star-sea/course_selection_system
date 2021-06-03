@@ -86,7 +86,7 @@ public class Main {
 //        courseService.addCourse("LL304", "Uage", 3, 64, HUNDRED_MARK_SCORE, pre_4_5);
 //        courseService.addCourse("WP117", "Ana", 3, 64, HUNDRED_MARK_SCORE, pre_4_5_wp);
         //courseService.addCourse("AB209", "HiAll", 3, 64, HUNDRED_MARK_SCORE, null);
-        courseService.addCourse("AB304", "WhatUp", 2, 64, HUNDRED_MARK_SCORE, null);
+        //courseService.addCourse("AB304", "WhatUp", 2, 64, HUNDRED_MARK_SCORE, null);
         //courseService.removeCourse("ME101");
         //courseService.removeCourse("ABC");
         //courseService.removeCourseSection(4);
@@ -156,18 +156,26 @@ public class Main {
         //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
         //studentService.passedPrerequisitesForCourse();
-        /*List<CourseSearchEntry>searchEntries=studentService.searchCourse(11911607,4,null,
+        List<CourseSearchEntry>searchEntries=studentService.searchCourse(20221208,1,null,
                 null,null,null,null,
-                null, StudentService.CourseType.MAJOR_ELECTIVE,false,false,
-                true,true,1,0);*/
-        //System.out.println(searchEntries);
-        CourseTable courseTable=studentService.getCourseTable(20190621,java.sql.Date.valueOf("2019-08-15"));
-        System.out.println(courseTable);
+                null, StudentService.CourseType.PUBLIC,false,false,
+                true,true,1,0);
+        System.out.println(searchEntries);
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");
 //        majorService.addMajorElectiveCourse(7, "ME101");
-
+        //studentService.enrollCourse(20191208, 18);
+        //studentService.enrollCourse(20221208, 7); //ALREADY_PASSED check√
+        //studentService.enrollCourse(20191208, 18); //SUCCESS check√
+        //studentService.enrollCourse(20221208, 30); //COURSE_NOT_FOUND check√
+        //studentService.enrollCourse(20221208, 18); //ALREADY_ENROLLED check√
+        HundredMarkGrade gra_0 = new HundredMarkGrade((short) 85);
+        //studentService.enrollCourse(20221208,10); //PREREQUISITES_NOT_FULFILLED check√
+        //boolean con = studentService.
+        //studentService.enrollCourse(20190621, 5); //COURSE_IS_FULL check√ COURSE_CONFLICT_FOUND check√
+        //studentService.dropCourse(20190621, 7);
+        //studentService.addEnrolledCourseWithGrade(20221208, 9, gra_0);
 
     }
 
