@@ -54,7 +54,7 @@ create table if not exists course
     class_hour int,
     coursetype varchar(20),
     grading    varchar(20),
-    prerequisite_id int constraint ppuj references prerequisite(id) ON DELETE cascade,
+    prerequisite_id int,
     pre_base_id int--add course 时加
 );
 create table if not exists major_course

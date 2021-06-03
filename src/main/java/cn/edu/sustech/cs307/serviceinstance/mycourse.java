@@ -64,7 +64,7 @@ public class mycourse implements CourseService {
             resultSet.next();
             int prebas=resultSet.getInt("id");
             if(coursePrerequisite==null){
-                PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id,coursetype) values (?,?,?,?,?,?,'PUBLIC');");
+                PreparedStatement stmt=connection.prepareStatement("insert into course(id,name,credit,class_hour,grading,pre_base_id,coursetype,prerequisite_id) values (?,?,?,?,?,?,'PUBLIC',-1);");
                 stmt.setString(1,courseId);
                 stmt.setString(2,courseName);
                 stmt.setInt(3,credit);
