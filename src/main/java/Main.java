@@ -86,6 +86,8 @@ public class Main {
 //        courseService.addCourse("LL104", "Lang", 3, 64, PASS_OR_FAIL, null);
 //        courseService.addCourse("LL304", "Uage", 3, 64, HUNDRED_MARK_SCORE, pre_4_5);
 //        courseService.addCourse("WP117", "Ana", 3, 64, HUNDRED_MARK_SCORE, pre_4_5_wp);
+        //courseService.addCourse("AB209", "HiAll", 3, 64, HUNDRED_MARK_SCORE, null);
+        courseService.addCourse("AB304", "WhatUp", 2, 64, HUNDRED_MARK_SCORE, null);
         //courseService.removeCourse("ME101");
         //courseService.removeCourse("ABC");
         //courseService.removeCourseSection(4);
@@ -126,6 +128,10 @@ public class Main {
 //        studentService.addEnrolledCourseWithGrade(20221208, 11, FAIL);
         //courseService.addCourseSection("CS602", 1, "Lecture", 120);
         //courseService.addCourseSection("CS102", 1, "Lecture", 120);
+        //courseService.addCourseSection("LL304", 3, "Lect", 120);
+        //courseService.addCourseSection("MA101", 2, "Lect", 117);
+        //courseService.addCourseSection("WP117", 1, "Lect", 117);
+        //courseService.addCourseSection("WP117", 1, "Lab", 62);
         //studentService.setEnrolledCourseGrade(20221208, 11, PASS);
 //        studentService.addEnrolledCourseWithGrade(20181023, 8, grade_3);
 //        studentService.addEnrolledCourseWithGrade(20221208, 7, grade_3);
@@ -162,11 +168,7 @@ public class Main {
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");
 //        majorService.addMajorElectiveCourse(7, "ME101");
-        //studentService.enrollCourse(20191208, 2);
-        //studentService.enrollCourse(20221208, 7);
-        //studentService.enrollCourse(20221208, 12);
-        //HundredMarkGrade gra_0 = new HundredMarkGrade((short) 85);
-        //studentService.addEnrolledCourseWithGrade(20221208, 9, gra_0);
+
 
     }
 
