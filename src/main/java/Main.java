@@ -151,19 +151,21 @@ public class Main {
         //System.out.println(users);
         //studentService.setEnrolledCourseGrade(20190621, 9, grade_1);
         //studentService.passedPrerequisitesForCourse();
-        List<CourseSearchEntry>searchEntries=studentService.searchCourse(11911607,4,null,
+        /*List<CourseSearchEntry>searchEntries=studentService.searchCourse(11911607,4,null,
                 null,null,null,null,
                 null, StudentService.CourseType.MAJOR_ELECTIVE,false,false,
-                true,true,1,0);
-        System.out.println(searchEntries);
+                true,true,1,0);*/
+        //System.out.println(searchEntries);
+        CourseTable courseTable=studentService.getCourseTable(20190621,java.sql.Date.valueOf("2019-08-15"));
+        System.out.println(courseTable);
 //        majorService.addMajorElectiveCourse(4, "CS202");
 //        majorService.addMajorCompulsoryCourse(12, "LL103");
 //        majorService.addMajorElectiveCourse(10, "WP908");
 //        majorService.addMajorElectiveCourse(7, "ME101");
         //studentService.enrollCourse(20191208, 2);
-        studentService.enrollCourse(20221208, 7);
+        //studentService.enrollCourse(20221208, 7);
         //studentService.enrollCourse(20221208, 12);
-        HundredMarkGrade gra_0 = new HundredMarkGrade((short) 85);
+        //HundredMarkGrade gra_0 = new HundredMarkGrade((short) 85);
         //studentService.addEnrolledCourseWithGrade(20221208, 9, gra_0);
 
     }
