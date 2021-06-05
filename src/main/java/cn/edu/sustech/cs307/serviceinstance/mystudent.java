@@ -33,13 +33,33 @@ public class mystudent implements StudentService{
             throw new IntegrityViolationException();
         }
     }
-
-    @Override
-    public synchronized List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
+    public synchronized Course getCourseBySection(int sectionId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
-            String sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
+            Statement statement = connection.createStatement();
+            resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
+                    ";");
+            resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+            Course course=new Course();
+            course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
+            course.id=resultSet.getString("course_id");
+            course.credit=resultSet.getInt("credit");
+            course.classHour=resultSet.getInt("class_hour");
+            course.name=resultSet.getString("name");
+            return course;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
+    @Override
+    public synchronized List<CourseSearchEntry> searchCourse(int studentId, int semesterId, @Nullable String searchCid, @Nullable String searchName, @Nullable String searchInstructor, @Nullable DayOfWeek searchDayOfWeek, @Nullable Short searchClassTime, @Nullable List<String> searchClassLocations, CourseType searchCourseType, boolean ignoreFull, boolean ignoreConflict, boolean ignorePassed, boolean ignoreMissingPrerequisites, int pageSize, int pageIndex){
+        String sql = null;
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+           sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCourseType==CourseType.PUBLIC){
                 sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and course.coursetype='PUBLIC' and coursesection.semester_id="+semesterId;
@@ -61,7 +81,7 @@ public class mystudent implements StudentService{
             if(searchName!=null)
                 sql+=" and course_name='"+searchName+"'";
             if(searchInstructor!=null)
-                sql+=" and instructor_name='"+searchInstructor;
+                sql+=" and users.name='"+searchInstructor+"'";
             if(searchDayOfWeek!=null)
                 sql+=" and dayofweek='"+searchDayOfWeek+"'";
             if(!ignoreFull)
@@ -90,20 +110,20 @@ public class mystudent implements StudentService{
             }
             if(!ignoreMissingPrerequisites){
                 for(int i=0;i<sections.size();i++){
-                    if(!new mystudent().passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
+                    if(!passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
             if(!ignorePassed){
                 for(int i=0;i<sections.size();i++){
-                    if(new mystudent().passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
+                    if(passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
             if(!ignoreConflict){
                 for(int i=0;i<sections.size();i++){
-                    if(new mystudent().conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
+                    if(conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
 
             for(int i=pageIndex;i<=pageIndex+pageSize&&i<sections.size();i++){
                 CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
-                courseSearchEntry.course=new mycourse().getCourseBySection(sections.get(i));
+                courseSearchEntry.course=getCourseBySection(sections.get(i));
                 resultSet=statement.executeQuery("select * from coursesection where id="+sections.get(i)+ ";");
                 resultSet.next();
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
@@ -114,25 +134,81 @@ public class mystudent implements StudentService{
                 courseSection.name=resultSet.getString("name");
 
                 courseSearchEntry.section=courseSection;
-                courseSearchEntry.sectionClasses=new HashSet<>(new mycourse().getCourseSectionClasses(sections.get(i)));
-                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
+                courseSearchEntry.sectionClasses=new HashSet<>(getCourseSectionClasses(sections.get(i)));
+                //courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
+            System.out.println(sql);
             throw new IntegrityViolationException();
         }
 
     }
+    public synchronized List<CourseSectionClass> getCourseSectionClasses(int sectionId){
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            resultSet=statement.executeQuery("select class_begin, class_end, c.id id, dayofweek, instructor_id, location, weeklist from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
 
+            List<CourseSectionClass>courseSectionClasses=new ArrayList<>();
+            while (resultSet.next()){
+                if (resultSet.getRow()==0)throw new EntityNotFoundException();
+                CourseSectionClass courseSectionClass=new CourseSectionClass();
+                courseSectionClass.classBegin= (short) resultSet.getInt("class_begin");
+                courseSectionClass.classEnd= (short) resultSet.getInt("class_end");
+                courseSectionClass.id=resultSet.getInt("id");
+                courseSectionClass.dayOfWeek=DayOfWeek.valueOf(resultSet.getString("dayofweek"));
+                courseSectionClass.instructor= (Instructor) getUser(resultSet.getInt("instructor_id"));
+                courseSectionClass.location=resultSet.getString("location");
+                Array array=resultSet.getArray("weeklist");
+                //int[] tmp=(int[])array.getArray();
+                Object[] tmp=(Object[])array.getArray();
+                List wa=Arrays.asList(tmp);
+                courseSectionClass.weekList= new HashSet<Short>(wa);
+                courseSectionClasses.add(courseSectionClass);
+            }return courseSectionClasses;
+        }catch (SQLException sqlException){
+            sqlException.printStackTrace();
+            throw new IntegrityViolationException();
+        }
+    }
+
+    public synchronized User getUser(int userId) {
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet1=statement.executeQuery("select * from users where id ="+userId+";");
+            resultSet1.next();
+            if (resultSet1.getRow()==0)throw new EntityNotFoundException();
+            int kind=resultSet1.getInt("kind");
+            String name=resultSet1.getString("name");
+
+            if(kind==0){
+                resultSet1=statement.executeQuery("select * from student where id ="+userId+";");
+                resultSet1.next();
+                Student student= new Student();
+                student.enrolledDate=resultSet1.getDate("enrolled_date");
+                student.id=userId;
+                student.fullName=name;student.major=new mymajor().getMajor(resultSet1.getInt("major_id"));
+                return student;}
+            Instructor instructor= new Instructor();
+            instructor.fullName=name;
+            instructor.id=userId;
+            return instructor ;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
     private synchronized List<String> getConflict(Integer sectionid, ArrayList<Integer> sections, ArrayList<String> names) throws SQLException {//todo
         List<String>conflict=new ArrayList<>();
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
-        List<CourseSectionClass>classes=new mycourse().getCourseSectionClasses(sectionid);
-     resultSet.next();
+        List<CourseSectionClass>classes=getCourseSectionClasses(sectionid);
       for(int i=0;i<sections.size();i++){
-          List<CourseSectionClass>classs=new mycourse().getCourseSectionClasses(sections.get(i));
+          List<CourseSectionClass>classs=getCourseSectionClasses(sections.get(i));
           if(classconflict(classes,classs))conflict.add(names.get(i) );
       }return conflict;
     }
