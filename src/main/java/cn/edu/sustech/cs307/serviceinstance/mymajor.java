@@ -55,7 +55,7 @@ public class mymajor implements MajorService{
 
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
-                Major major=new mymajor().getMajor(resultSet.getInt("id"));
+                Major major=getMajor(resultSet.getInt("id"));
                 majors.add(major);
             }
             return majors;
@@ -77,12 +77,28 @@ public class mymajor implements MajorService{
             Major major=new Major();
             major.id=majorId;
             major.name=resultSet.getString("name");
-            major.department=new mydepartment().getDepartment(resultSet.getInt("department_id"));
+            major.department=getDepartment(resultSet.getInt("department_id"));
             return major;
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
+    }
 
+    public synchronized Department getDepartment(int departmentId) {//ok
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet1 = statement.executeQuery("select * from department where id =" + departmentId + ";");
+            resultSet1.next();
+            if (resultSet1.getRow()==0)throw new EntityNotFoundException();
+            Department department = new Department();
+            department.id = departmentId;
+            department.name = resultSet1.getString("name");
+            return department;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
     }
 
     @Override
@@ -115,4 +131,6 @@ public class mymajor implements MajorService{
         }
 
     }
+
+
 }

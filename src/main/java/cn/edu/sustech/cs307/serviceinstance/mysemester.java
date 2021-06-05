@@ -59,7 +59,7 @@ public class mysemester implements SemesterService{
             resultSet = statement.executeQuery("select * from semester;");
             while (resultSet.next()) {
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
-                Semester semester = new mysemester().getSemester(resultSet.getInt("id"));
+                Semester semester = getSemester(resultSet.getInt("id"));
                 semesters.add(semester);
             }
             return semesters;

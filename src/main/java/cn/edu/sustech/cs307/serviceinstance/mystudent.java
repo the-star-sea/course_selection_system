@@ -191,7 +191,7 @@ public class mystudent implements StudentService{
                 Student student= new Student();
                 student.enrolledDate=resultSet1.getDate("enrolled_date");
                 student.id=userId;
-                student.fullName=name;student.major=new mymajor().getMajor(resultSet1.getInt("major_id"));
+                student.fullName=name;student.major=getMajor(resultSet1.getInt("major_id"));
                 return student;}
             Instructor instructor= new Instructor();
             instructor.fullName=name;
@@ -201,6 +201,42 @@ public class mystudent implements StudentService{
             throw new IntegrityViolationException();
         }
     }
+
+    public synchronized Major getMajor(int majorId){
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
+            resultSet.next();
+            if (resultSet.getRow()==0)throw new EntityNotFoundException();
+            Major major=new Major();
+            major.id=majorId;
+            major.name=resultSet.getString("name");
+            major.department=getDepartment(resultSet.getInt("department_id"));
+            return major;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
+
+    public synchronized Department getDepartment(int departmentId) {//ok
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet2 = statement.executeQuery("select * from department where id =" + departmentId + ";");
+            resultSet2.next();
+            if (resultSet2.getRow()==0)throw new EntityNotFoundException();
+            Department department = new Department();
+            department.id = departmentId;
+            department.name = resultSet2.getString("name");
+            return department;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
+
     private synchronized List<String> getConflict(Integer sectionid, ArrayList<Integer> sections, ArrayList<String> names) throws SQLException {//todo
         List<String>conflict=new ArrayList<>();
         if(connection==null){
@@ -240,15 +276,15 @@ public class mystudent implements StudentService{
             int left=resultSet.getInt("leftcapcity");
             resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
             resultSet.next();
-            String courseid=new mycourse().getCourseBySection(sectionId).id;
+            String courseid=getCourseBySection(sectionId).id;
             if(resultSet.getRow()>0) {
                 int kind=resultSet.getInt("kind");
                 if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
-                if (new mystudent().passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
+                if (passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
             }
-            if(!new mystudent().passedPrerequisitesForCourse(studentId,new mycourse().getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-            if(new mystudent().enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-            if(new mystudent().conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
+            if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
+            if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+            if(conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
             if(left<=0)return EnrollResult.COURSE_IS_FULL;
             try{
                 statement.execute("insert into student_grade(student_id,section_id,kind)values (" +studentId+","+sectionId+
@@ -267,7 +303,7 @@ public class mystudent implements StudentService{
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
-        List<CourseSectionClass> classes =new mycourse().getCourseSectionClasses(sectionId);
+        List<CourseSectionClass> classes =getCourseSectionClasses(sectionId);
         resultSet=statement.executeQuery("select class.* from  student_grade ,coursesection,class where student_id=" +studentId+
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
         while(resultSet.next()){
@@ -318,7 +354,7 @@ public class mystudent implements StudentService{
             if(grade==null){
                 statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
                         ");");
-            }Course.CourseGrading courseGrading=new mycourse().getCourseBySection(sectionId).grading;
+            }Course.CourseGrading courseGrading=getCourseBySection(sectionId).grading;
             if(grade instanceof HundredMarkGrade){
 
                 if(courseGrading== Course.CourseGrading.PASS_OR_FAIL)throw new IntegrityViolationException();
@@ -390,8 +426,8 @@ public class mystudent implements StudentService{
             }else{resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and semester_id=" +semesterId+
                     " and c.semester_id=semester.id order by semester_begin;");}
             while (resultSet.next()){
-                Course course=new mycourse().getCourseBySection(resultSet.getInt("section_id"));
-                Grade grade=new mystudent().getgrade(studentId,course.id);
+                Course course=getCourseBySection(resultSet.getInt("section_id"));
+                Grade grade=getgrade(studentId,course.id);
                 maps.put(course,grade);
             }
             return maps;
@@ -427,7 +463,7 @@ public class mystudent implements StudentService{
                     courseTableEntry.courseFullName=resultSet.getString("coursename")+"["+resultSet.getString("sectionname")+"]";
                     courseTableEntry.classBegin= (short) resultSet.getInt("class_begin");
                     courseTableEntry.classEnd= (short) resultSet.getInt("class_end");
-                    courseTableEntry.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
+                    courseTableEntry.instructor= (Instructor)getUser(resultSet.getInt("instructor_id"));
                     courseTableEntry.location=resultSet.getString("location");
                     table.add(courseTableEntry);
                 }
@@ -577,7 +613,7 @@ public class mystudent implements StudentService{
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
 
-            Major major=new mymajor().getMajor(resultSet.getInt("major_id"));
+            Major major=getMajor(resultSet.getInt("major_id"));
             return major;
         }catch (SQLException exception){
             throw new IntegrityViolationException();

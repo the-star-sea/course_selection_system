@@ -117,10 +117,6 @@ public class mycourse implements CourseService {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
-
-
-
-
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -310,12 +306,47 @@ public class mycourse implements CourseService {
                 Student student= new Student();
                 student.enrolledDate=resultSet1.getDate("enrolled_date");
                 student.id=userId;
-                student.fullName=name;student.major=new mymajor().getMajor(resultSet1.getInt("major_id"));
+                student.fullName=name;student.major=getMajor(resultSet1.getInt("major_id"));
                 return student;}
             Instructor instructor= new Instructor();
             instructor.fullName=name;
             instructor.id=userId;
             return instructor ;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
+
+    public synchronized Major getMajor(int majorId){
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet2=statement.executeQuery("select * from major where id ="+majorId+";");
+            resultSet2.next();
+            if (resultSet2.getRow()==0)throw new EntityNotFoundException();
+            Major major=new Major();
+            major.id=majorId;
+            major.name=resultSet2.getString("name");
+            major.department=getDepartment(resultSet2.getInt("department_id"));
+            return major;
+        }catch (SQLException sqlException){
+            throw new IntegrityViolationException();
+        }
+    }
+
+    public synchronized Department getDepartment(int departmentId) {//ok
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet3 = statement.executeQuery("select * from department where id =" + departmentId + ";");
+            resultSet3.next();
+            if (resultSet3.getRow()==0)throw new EntityNotFoundException();
+            Department department = new Department();
+            department.id = departmentId;
+            department.name = resultSet3.getString("name");
+            return department;
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
@@ -353,7 +384,7 @@ public class mycourse implements CourseService {
         );
         while (resultSet.next()){
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
-            Student student= (Student) new myuser().getUser(resultSet.getInt("student_id"));
+            Student student= (Student) getUser(resultSet.getInt("student_id"));
             students.add(student);
         }
         return students;

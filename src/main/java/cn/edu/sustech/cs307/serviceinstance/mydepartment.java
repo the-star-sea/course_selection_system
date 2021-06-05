@@ -57,7 +57,7 @@ public class mydepartment implements  DepartmentService {
 
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
-                Department department=new mydepartment().getDepartment(resultSet.getInt("id"));
+                Department department=getDepartment(resultSet.getInt("id"));
                 departments.add(department);
             }
             return departments;
