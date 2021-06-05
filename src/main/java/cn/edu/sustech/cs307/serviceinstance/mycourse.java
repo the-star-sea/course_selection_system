@@ -118,19 +118,16 @@ public class mycourse implements CourseService {
             throw new IntegrityViolationException();
         }
 
+
+
+
+        try{
             if(connection==null){
-                try {
-                    connection= SQLDataSource.getInstance().getSQLConnection();
-                }catch (SQLException sqlException){
-
-                }
-                }
-
-
-        try(
+                connection= SQLDataSource.getInstance().getSQLConnection();}
                 PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);"
-            )){
+            );
+
             stmt.setInt(1, instructorId);
             stmt.setInt(2, sectionId);
             stmt.setInt(3, classStart);
@@ -145,15 +142,16 @@ public class mycourse implements CourseService {
            resultSet.next();
            return resultSet.getInt("id");
         }catch (SQLException e){
-            e.printStackTrace();
+            throw new IntegrityViolationException();
         }
-        throw new IntegrityViolationException();
+
     }
 
     @Override
     public synchronized void removeCourse(String courseId) {
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
@@ -167,7 +165,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized void removeCourseSection(int sectionId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from coursesection where id="+sectionId+";");
             resultSet.next();
@@ -181,7 +180,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized void removeCourseSectionClass(int classId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from class where id="+classId+";");
             resultSet.next();
@@ -196,7 +196,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized List<Course> getAllCourses() {
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<Course>courses=new ArrayList<>();
             resultSet=statement.executeQuery("select * from course;");
@@ -218,7 +219,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<CourseSection>courseSections=new ArrayList<>();
             resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
@@ -241,7 +243,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized Course getCourseBySection(int sectionId){
     try {
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                 ";");
@@ -262,7 +265,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized List<CourseSectionClass> getCourseSectionClasses(int sectionId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select class_begin, class_end, c.id id, dayofweek, instructor_id, location, weeklist from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
 
@@ -274,7 +278,7 @@ public class mycourse implements CourseService {
                 courseSectionClass.classEnd= (short) resultSet.getInt("class_end");
                 courseSectionClass.id=resultSet.getInt("id");
                 courseSectionClass.dayOfWeek=DayOfWeek.valueOf(resultSet.getString("dayofweek"));
-                courseSectionClass.instructor= (Instructor) new myuser().getUser(resultSet.getInt("instructor_id"));
+                courseSectionClass.instructor= (Instructor) getUser(resultSet.getInt("instructor_id"));
                 courseSectionClass.location=resultSet.getString("location");
                 Array array=resultSet.getArray("weeklist");
                 //int[] tmp=(int[])array.getArray();
@@ -284,7 +288,35 @@ public class mycourse implements CourseService {
                 courseSectionClasses.add(courseSectionClass);
             }return courseSectionClasses;
         }catch (SQLException sqlException){
-            //sqlException.printStackTrace();
+            sqlException.printStackTrace();
+            throw new IntegrityViolationException();
+        }
+    }
+
+    public synchronized User getUser(int userId) {
+        try {
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
+            Statement statement = connection.createStatement();
+            ResultSet resultSet1=statement.executeQuery("select * from users where id ="+userId+";");
+            resultSet1.next();
+            if (resultSet1.getRow()==0)throw new EntityNotFoundException();
+            int kind=resultSet1.getInt("kind");
+            String name=resultSet1.getString("name");
+
+            if(kind==0){
+                resultSet1=statement.executeQuery("select * from student where id ="+userId+";");
+                resultSet1.next();
+                Student student= new Student();
+                student.enrolledDate=resultSet1.getDate("enrolled_date");
+                student.id=userId;
+                student.fullName=name;student.major=new mymajor().getMajor(resultSet1.getInt("major_id"));
+                return student;}
+            Instructor instructor= new Instructor();
+            instructor.fullName=name;
+            instructor.id=userId;
+            return instructor ;
+        }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
     }
@@ -292,7 +324,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized CourseSection getCourseSectionByClass(int classId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
             resultSet.next();
@@ -311,7 +344,8 @@ public class mycourse implements CourseService {
     @Override
     public synchronized List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) {
     try{
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+        if(connection==null){
+            connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<Student> students=new ArrayList<>();
         resultSet=statement.executeQuery(

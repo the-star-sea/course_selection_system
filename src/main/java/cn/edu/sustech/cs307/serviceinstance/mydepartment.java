@@ -33,7 +33,8 @@ public class mydepartment implements  DepartmentService {
     @Override
     public synchronized void removeDepartment(int departmentId){
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
             resultSet.next();
@@ -47,7 +48,8 @@ public class mydepartment implements  DepartmentService {
     @Override
     public synchronized List<Department> getAllDepartments()  {//ok
         try{
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
 
             List<Department>departments=new ArrayList<>();
@@ -67,7 +69,8 @@ public class mydepartment implements  DepartmentService {
     @Override
     public synchronized Department getDepartment(int departmentId) {//ok
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
             resultSet.next();

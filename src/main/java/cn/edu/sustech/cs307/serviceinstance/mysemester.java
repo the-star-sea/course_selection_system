@@ -36,7 +36,8 @@ public class mysemester implements SemesterService{
     @Override
     public synchronized void removeSemester(int semesterId){
         try{
-        Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         resultSet = statement.executeQuery("select * from semester where id="+semesterId+";");
         resultSet.next();
@@ -51,7 +52,8 @@ public class mysemester implements SemesterService{
     @Override
     public synchronized List<Semester> getAllSemesters()  {
         try {
-            Connection connection = SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<Semester> semesters = new ArrayList<>();
             resultSet = statement.executeQuery("select * from semester;");
@@ -69,7 +71,8 @@ public class mysemester implements SemesterService{
     @Override
     public synchronized Semester getSemester(int semesterId){
         try {
-            Connection connection= SQLDataSource.getInstance().getSQLConnection();
+            if(connection==null){
+                connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
             resultSet.next();
