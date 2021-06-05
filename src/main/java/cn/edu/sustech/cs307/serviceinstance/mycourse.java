@@ -284,6 +284,7 @@ public class mycourse implements CourseService {
                 courseSectionClasses.add(courseSectionClass);
             }return courseSectionClasses;
         }catch (SQLException sqlException){
+            //sqlException.printStackTrace();
             throw new IntegrityViolationException();
         }
     }

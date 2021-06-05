@@ -80,6 +80,7 @@ public class myuser implements UserService {
                 instructor.id=userId;
                 return instructor ;
             }catch (SQLException sqlException){
+sqlException.printStackTrace();
                 throw new IntegrityViolationException();
             }
     }
