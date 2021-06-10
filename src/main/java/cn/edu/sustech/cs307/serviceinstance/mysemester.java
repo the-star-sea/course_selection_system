@@ -14,7 +14,7 @@ public class mysemester implements SemesterService{
     ResultSet resultSet;
     Connection connection;
     @Override
-    public int addSemester(String name, Date begin, Date end)  {
+    public synchronized int addSemester(String name, Date begin, Date end)  {
         if(begin.after(end))throw new IntegrityViolationException();
         try {
             if(connection==null){

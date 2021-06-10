@@ -13,7 +13,7 @@ import java.util.List;
 public class myinstructor implements InstructorService{
     Connection connection;
     @Override
-    public void addInstructor(int userId, String firstName, String lastName){
+    public synchronized void addInstructor(int userId, String firstName, String lastName){
       try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}

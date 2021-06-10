@@ -18,7 +18,7 @@ public class mystudent implements StudentService{
     ResultSet resultSet;
     Connection connection;
     @Override
-    public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
+    public synchronized void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
         try {
             if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}

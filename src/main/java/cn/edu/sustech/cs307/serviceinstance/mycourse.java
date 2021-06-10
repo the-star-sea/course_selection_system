@@ -96,7 +96,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+    public synchronized int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
         try {
             if (totalCapacity<0){
                 throw new IntegrityViolationException();
@@ -113,7 +113,7 @@ public class mycourse implements CourseService {
         }
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
+    public synchronized int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }

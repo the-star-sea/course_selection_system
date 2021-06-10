@@ -14,7 +14,7 @@ public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     Connection connection;
     @Override
-    public int addDepartment(String name)  {
+    public synchronized int addDepartment(String name)  {
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}

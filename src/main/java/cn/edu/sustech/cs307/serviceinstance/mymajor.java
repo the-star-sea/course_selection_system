@@ -13,7 +13,7 @@ public class mymajor implements MajorService{
     ResultSet resultSet;
     Connection connection;
     @Override
-    public int addMajor(String name, int departmentId){
+    public synchronized int addMajor(String name, int departmentId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}

@@ -102,9 +102,9 @@ public final class ProjectJudge {
                 if (expected == result) {
                     evalResult.passCount.incrementAndGet();
               }
-//                else{
-//                    result=testEnrollCourse(enrollCourseParams.get(i));
-//                }
+               else{
+                    result=testEnrollCourse(enrollCourseParams.get(i));
+                }
                 if (expected == StudentService.EnrollResult.SUCCESS) {
                     evalResult.succeedSections.add(enrollCourseParams.get(i));
                 }
