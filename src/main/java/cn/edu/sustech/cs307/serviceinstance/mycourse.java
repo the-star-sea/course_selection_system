@@ -96,7 +96,7 @@ public class mycourse implements CourseService {
     }
 
     @Override
-    public int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
+    public synchronized int addCourseSection(String courseId, int semesterId, String sectionName, int totalCapacity) {
         try {
             if (totalCapacity<0){
                 throw new IntegrityViolationException();
@@ -113,7 +113,7 @@ public class mycourse implements CourseService {
         }
     }
     @Override
-    public int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
+    public synchronized int addCourseSectionClass(int sectionId, int instructorId, DayOfWeek dayOfWeek, Set<Short> weekList, short classStart, short classEnd, String location) {
         if (classStart>classEnd){
             throw new IntegrityViolationException();
         }
@@ -154,7 +154,7 @@ public class mycourse implements CourseService {
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from course where id='"+courseId+"';");
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -169,7 +169,7 @@ public class mycourse implements CourseService {
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from coursesection where id="+sectionId+";");
         }catch (SQLException exception){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -184,7 +184,7 @@ public class mycourse implements CourseService {
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from class where id="+classId+";");
         }catch (SQLException exception){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
 
     }
@@ -208,7 +208,7 @@ public class mycourse implements CourseService {
             }
             return courses;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -232,7 +232,7 @@ public class mycourse implements CourseService {
             }
             return courseSections;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -254,7 +254,7 @@ public class mycourse implements CourseService {
         course.name=resultSet.getString("name");
         return course;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -285,7 +285,7 @@ public class mycourse implements CourseService {
             }return courseSectionClasses;
         }catch (SQLException sqlException){
             sqlException.printStackTrace();
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -313,7 +313,7 @@ public class mycourse implements CourseService {
             instructor.id=userId;
             return instructor ;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -331,7 +331,7 @@ public class mycourse implements CourseService {
             major.department=getDepartment(resultSet2.getInt("department_id"));
             return major;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -348,7 +348,7 @@ public class mycourse implements CourseService {
             department.name = resultSet3.getString("name");
             return department;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -368,7 +368,7 @@ public class mycourse implements CourseService {
             courseSection.leftCapacity=resultSet.getInt("leftcapcity");
             return courseSection;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -389,7 +389,7 @@ public class mycourse implements CourseService {
         }
         return students;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 }

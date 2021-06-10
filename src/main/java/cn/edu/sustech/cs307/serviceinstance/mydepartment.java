@@ -14,7 +14,7 @@ public class mydepartment implements  DepartmentService {
     ResultSet resultSet;
     Connection connection;
     @Override
-    public int addDepartment(String name)  {
+    public synchronized int addDepartment(String name)  {
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -41,7 +41,7 @@ public class mydepartment implements  DepartmentService {
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -62,7 +62,7 @@ public class mydepartment implements  DepartmentService {
             }
             return departments;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -80,7 +80,7 @@ public class mydepartment implements  DepartmentService {
             department.name = resultSet.getString("name");
             return department;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 }

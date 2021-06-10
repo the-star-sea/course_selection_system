@@ -13,7 +13,7 @@ public class mymajor implements MajorService{
     ResultSet resultSet;
     Connection connection;
     @Override
-    public int addMajor(String name, int departmentId){
+    public synchronized int addMajor(String name, int departmentId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -39,7 +39,7 @@ public class mymajor implements MajorService{
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from major where id="+majorId+";");
         }catch (SQLException exception){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -60,7 +60,7 @@ public class mymajor implements MajorService{
             }
             return majors;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
 
     }
@@ -80,7 +80,7 @@ public class mymajor implements MajorService{
             major.department=getDepartment(resultSet.getInt("department_id"));
             return major;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -97,7 +97,7 @@ public class mymajor implements MajorService{
             department.name = resultSet1.getString("name");
             return department;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 

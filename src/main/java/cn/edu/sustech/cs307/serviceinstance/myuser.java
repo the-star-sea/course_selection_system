@@ -24,10 +24,12 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from users where id="+userId+";");
             resultSet.next();
-            if (resultSet.getRow()==0)throw new EntityNotFoundException();
-            statement.execute("delete from users where id=" + userId + ";");
+            if (resultSet.getRow()==0){throw new EntityNotFoundException();}
+            else{
+                statement.execute("delete from users where id=" + userId + ";");
+            }
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
     @Override
@@ -39,20 +41,23 @@ public class myuser implements UserService {
             List<User>users=new ArrayList<>();
             resultSet =statement.executeQuery("select * from users;");
             while(resultSet.next()){
-                if (resultSet.getRow()==0)throw new EntityNotFoundException();
-                int id= resultSet.getInt("id");
-                int kind = resultSet.getInt("kind");
-                if(kind==0){
-                    User student=getUser(id);
-                    users.add(student);
-                }else{
-                    User instructor=getUser(id);
-                    users.add(instructor);
+                if (resultSet.getRow()==0){
+                    throw new EntityNotFoundException();
+                }else {
+                    int id= resultSet.getInt("id");
+                    int kind = resultSet.getInt("kind");
+                    if(kind==0){
+                        User student=getUser(id);
+                        users.add(student);
+                    }else{
+                        User instructor=getUser(id);
+                        users.add(instructor);
+                    }
                 }
             }
             return users;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -64,25 +69,28 @@ public class myuser implements UserService {
                 Statement statement = connection.createStatement();
                 resultSet =statement.executeQuery("select * from users where id ="+userId+";");
                 resultSet.next();
-                if (resultSet.getRow()==0)throw new EntityNotFoundException();
-                int kind= resultSet.getInt("kind");
-                String name= resultSet.getString("name");
-                if(kind==0){
-                    resultSet =statement.executeQuery("select * from student where id ="+userId+";");
-                    resultSet.next();
-                    Student student= new Student();
-                    student.enrolledDate= resultSet.getDate("enrolled_date");
-                    student.id=userId;
-                    student.fullName=name;
-                    student.major=getMajor(resultSet.getInt("major_id"));
-                    return student;}
-                Instructor instructor= new Instructor();
-                instructor.fullName=name;
-                instructor.id=userId;
-                return instructor ;
+                if (resultSet.getRow()==0){throw new EntityNotFoundException();}
+                else{
+                    int kind= resultSet.getInt("kind");
+                    String name= resultSet.getString("name");
+                    if(kind==0){
+                        resultSet =statement.executeQuery("select * from student where id ="+userId+";");
+                        resultSet.next();
+                        Student student= new Student();
+                        student.enrolledDate= resultSet.getDate("enrolled_date");
+                        student.id=userId;
+                        student.fullName=name;
+                        student.major=getMajor(resultSet.getInt("major_id"));
+                        return student;}
+                    Instructor instructor= new Instructor();
+                    instructor.fullName=name;
+                    instructor.id=userId;
+                    return instructor ;
+                }
+
             }catch (SQLException sqlException){
                 sqlException.printStackTrace();
-                throw new IntegrityViolationException();
+                throw new EntityNotFoundException();
             }
     }
     public synchronized Major getMajor(int majorId){
@@ -92,14 +100,17 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             ResultSet resultSet1 =statement.executeQuery("select * from major where id ="+majorId+";");
             resultSet1.next();
-            if (resultSet1.getRow()==0)throw new EntityNotFoundException();
-            Major major=new Major();
-            major.id=majorId;
-            major.name= resultSet1.getString("name");
-            major.department=getDepartment(resultSet1.getInt("department_id"));
-            return major;
+            if (resultSet1.getRow()==0){throw new EntityNotFoundException();}else
+            {
+                Major major=new Major();
+                major.id=majorId;
+                major.name= resultSet1.getString("name");
+                major.department=getDepartment(resultSet1.getInt("department_id"));
+                return major;
+            }
+
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
     public synchronized Department getDepartment(int departmentId) {//ok
@@ -109,13 +120,16 @@ public class myuser implements UserService {
             Statement statement = connection.createStatement();
             ResultSet resultSet2 = statement.executeQuery("select * from department where id =" + departmentId + ";");
             resultSet2.next();
-            if (resultSet2.getRow()==0)throw new EntityNotFoundException();
-            Department department = new Department();
-            department.id = departmentId;
-            department.name = resultSet2.getString("name");
-            return department;
+            if (resultSet2.getRow()==0){throw new EntityNotFoundException();}
+            else {
+                Department department = new Department();
+                department.id = departmentId;
+                department.name = resultSet2.getString("name");
+                return department;
+            }
+
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
