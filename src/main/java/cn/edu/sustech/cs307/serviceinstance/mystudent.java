@@ -290,13 +290,14 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery("select kind from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
             resultSet.next();
             String courseid=getCourseBySection(sectionId).id;
+
             if(resultSet.getRow()>0) {
                 int kind=resultSet.getInt(1);
                 if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
                 if (passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
             }
             if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-            if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
+            if(enrolledcourse(studentId,courseid,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
             if(conflict(studentId,sectionId,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
             if(left<=0)return EnrollResult.COURSE_IS_FULL;
             try{
@@ -428,7 +429,7 @@ if(resultSet.getRow()==0)return false;
             throw new IntegrityViolationException();
         }
     }
-    public synchronized boolean enrolledcourse(int studentId, String courseId) throws SQLException {
+    public synchronized boolean enrolledcourse(int studentId, String courseId, int semester_id) throws SQLException {
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
 //        if(studentId==11713333&&courseId.equals("CS205")){
@@ -436,7 +437,8 @@ if(resultSet.getRow()==0)return false;
 //        }
         Statement statement = connection.createStatement();
         String sql="select distinct student_grade.* from student_grade, coursesection c where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
-                " ;";
+                "and c.semester_id=" +semester_id+
+                ";";
         resultSet=statement.executeQuery(sql);
         while (resultSet.next()){
             if(resultSet.getRow()==0)return false;
