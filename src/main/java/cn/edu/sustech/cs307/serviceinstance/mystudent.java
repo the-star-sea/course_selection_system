@@ -89,12 +89,12 @@ public class mystudent implements StudentService{
             if(searchClassLocations!=null)
                 sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
             if(searchClassLocations!=null){
-                sql+=" and location in (";
+                sql+=" and location in ('";
                 sql+=searchClassLocations.get(0);
                 for(int i=1;i<searchClassLocations.size();i++){
-                    sql+=(","+searchClassLocations.get(i));
+                    sql+=("','"+searchClassLocations.get(i));
                 }
-                sql+=")";
+                sql+="')";
             }
             sql+=")aa order by course_id;";
             Statement statement=connection.createStatement();
