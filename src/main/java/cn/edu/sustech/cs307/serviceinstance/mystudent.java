@@ -129,7 +129,7 @@ public class mystudent implements StudentService{
                 sections1.add(resultSet.getInt(2));
                 names1.add(resultSet.getString(1));
             }
-            for(int i=pageIndex;i<=pageIndex+pageSize&&i<sections.size();i++){
+            for(int i=pageIndex;i<pageIndex+pageSize&&i<sections.size();i++){
                 CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
                 courseSearchEntry.course=getCourseBySection(sections.get(i));
                 resultSet=statement.executeQuery("select * from coursesection where id="+sections.get(i)+ ";");
