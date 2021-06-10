@@ -84,7 +84,7 @@ public class mystudent implements StudentService{
                 sql+=" and users.name='"+searchInstructor+"'";
             if(searchDayOfWeek!=null)
                 sql+=" and dayofweek='"+searchDayOfWeek+"'";
-            if(!ignoreFull)
+            if(ignoreFull)
                 sql+=" and leftcapcity>0";
             if(searchClassLocations!=null)
                 sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
@@ -96,7 +96,7 @@ public class mystudent implements StudentService{
                 }
                 sql+="')";
             }
-            sql+=")aa order by course_id;";
+            sql+=")aa order by course_id,course_name;";
             Statement statement=connection.createStatement();
             resultSet=statement.executeQuery(sql);
             ArrayList<Integer>sections=new ArrayList<>();
@@ -108,15 +108,15 @@ public class mystudent implements StudentService{
                 courses.add(resultSet.getString(2));
                 names.add(resultSet.getString(3));
             }
-            if(!ignoreMissingPrerequisites){
+            if(ignoreMissingPrerequisites){
                 for(int i=0;i<sections.size();i++){
                     if(!passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
-            if(!ignorePassed){
+            if(ignorePassed){
                 for(int i=0;i<sections.size();i++){
                     if(passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
-            if(!ignoreConflict){
+            if(ignoreConflict){
                 for(int i=0;i<sections.size();i++){
                     if(conflict(studentId, studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
@@ -148,7 +148,7 @@ public class mystudent implements StudentService{
             }
             return courseSearchEntries;
         }catch (SQLException sqlException){
-          System.out.println(sql);
+          //System.out.println(sql);
             sqlException.printStackTrace();
             throw new IntegrityViolationException();
         }
