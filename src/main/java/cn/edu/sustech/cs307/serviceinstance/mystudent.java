@@ -77,9 +77,9 @@ public class mystudent implements StudentService{
                         "where course.id=coursesection.course_id and major_course.course_id=course.id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and student.id= "+studentId+" and major_course.major_id<>student.major_id and course.coursetype!='PUBLIC' and coursesection.semester_id="+semesterId;
             }
             if(searchCid!=null)
-                sql+=" and course_id='"+searchCid+"'";
+                sql+=" and course.id='"+searchCid+"'";
             if(searchName!=null)
-                sql+=" and course_name='"+searchName+"'";
+                sql+=" and course.name||'['||coursesection.name||']'= '"+searchName+"'";
             if(searchInstructor!=null)
                 sql+=" and users.name='"+searchInstructor+"'";
             if(searchDayOfWeek!=null)
@@ -88,7 +88,7 @@ public class mystudent implements StudentService{
                 sql+=" and leftcapcity>0";
             if(searchClassLocations!=null)
                 sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
-            if(searchClassLocations!=null){
+            if(searchClassLocations!=null&&searchClassLocations.size()>0){
                 sql+=" and location in ('";
                 sql+=searchClassLocations.get(0);
                 for(int i=1;i<searchClassLocations.size();i++){
@@ -135,11 +135,11 @@ public class mystudent implements StudentService{
 
                 courseSearchEntry.section=courseSection;
                 courseSearchEntry.sectionClasses=new HashSet<>(getCourseSectionClasses(sections.get(i)));
-                //courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
+                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
-            System.out.println(sql);
+           // System.out.println(sql);
             throw new IntegrityViolationException();
         }
 
