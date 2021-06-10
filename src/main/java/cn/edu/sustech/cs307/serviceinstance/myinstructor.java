@@ -22,8 +22,7 @@ public class myinstructor implements InstructorService{
             if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
             statement.execute("insert into users(id,name,kind) values ("+userId+",'"+name+"',1);");
         }catch (SQLException sqlException) {
-          // throw new IntegrityViolationException();
-          sqlException.printStackTrace();
+          throw new IntegrityViolationException();
         }
     }
 
@@ -47,7 +46,7 @@ public class myinstructor implements InstructorService{
             }
             return courseSections;
         } catch (SQLException sqlException) {
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 }

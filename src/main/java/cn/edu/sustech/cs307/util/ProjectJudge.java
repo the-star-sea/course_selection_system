@@ -53,6 +53,11 @@ public final class ProjectJudge {
             result.elapsedTimeNs.addAndGet(System.nanoTime() - beforeTime);
             result.passCount.addAndGet(IntStream.range(0, searchCourseParams.size()).parallel()
                     .filter(it -> searchCourseExpected.get(it).equals(searchCourseResult.get(it))).count());
+            for(int i=0;i<searchCourseExpected.size();i++){
+                if(!searchCourseExpected.get(i).equals(searchCourseResult.get(i))){
+                    testSearchCourse(searchCourseParams.get(i)).toString();
+                }
+            }
         }
         return result;
     }
@@ -96,6 +101,8 @@ public final class ProjectJudge {
                 evalResult.elapsedTimeNs.addAndGet(System.nanoTime() - beforeTime);
                 if (expected == result) {
                     evalResult.passCount.incrementAndGet();
+                }else{
+                    result=testEnrollCourse(enrollCourseParams.get(i));
                 }
                 if (expected == StudentService.EnrollResult.SUCCESS) {
                     evalResult.succeedSections.add(enrollCourseParams.get(i));
@@ -142,6 +149,7 @@ public final class ProjectJudge {
             result.elapsedTimeNs.addAndGet(System.nanoTime() - beforeTime);
             result.passCount.addAndGet(IntStream.range(0, courseTableParams.size()).parallel()
                     .filter(it -> courseTableExpected.get(it).equals(courseTableResults.get(it))).count());
+
         }
         return result;
     }
@@ -165,6 +173,7 @@ public final class ProjectJudge {
                     int section = importer.mapSectionId(Integer.parseInt(it.getKey()));
                     try {
                         studentService.dropCourse(student, section);
+
                     } catch (IllegalStateException e) {
                         result.passCount.getAndIncrement();
                     }

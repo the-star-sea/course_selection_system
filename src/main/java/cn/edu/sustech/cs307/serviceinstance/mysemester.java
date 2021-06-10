@@ -45,7 +45,7 @@ public class mysemester implements SemesterService{
         statement.execute("delete from semester where id="+semesterId+";");
         }
         catch (SQLException exception){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -64,7 +64,7 @@ public class mysemester implements SemesterService{
             }
             return semesters;
         }catch (SQLException exception){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -84,7 +84,7 @@ public class mysemester implements SemesterService{
             semester.end=resultSet.getDate("semester_end");
             return semester;
         }catch (SQLException sqlException){
-            throw new IntegrityViolationException();
+            throw new EntityNotFoundException();
         }
 
     }
