@@ -29,7 +29,7 @@ public class myuser implements UserService {
                 statement.execute("delete from users where id=" + userId + ";");
             }
         }catch (SQLException sqlException){
-
+            throw new EntityNotFoundException();
         }
     }
     @Override

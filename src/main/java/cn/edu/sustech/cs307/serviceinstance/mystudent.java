@@ -118,7 +118,7 @@ public class mystudent implements StudentService{
                 }}
             if(!ignoreConflict){
                 for(int i=0;i<sections.size();i++){
-                    if(conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
+                    if(conflict(studentId, studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
            sql="select distinct course.name||'['||coursesection.name||']' course_name,coursesection.id section_id from coursesection , course , student_grade where coursesection.course_id=course.id and student_grade.section_id=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";";
         resultSet=statement.executeQuery(sql);
@@ -285,6 +285,7 @@ public class mystudent implements StudentService{
             resultSet=statement.executeQuery(sql);
             resultSet.next();
             if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
+            int semester_id=resultSet.getInt("semester_id");
             int left=resultSet.getInt("leftcapcity");
             resultSet=statement.executeQuery("select kind from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
             resultSet.next();
@@ -296,7 +297,7 @@ public class mystudent implements StudentService{
             }
             if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
             if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-            if(conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;
+            if(conflict(studentId,sectionId,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
             if(left<=0)return EnrollResult.COURSE_IS_FULL;
             try{
                 statement.execute("insert into student_grade(student_id,section_id,kind)values (" +studentId+","+sectionId+
@@ -311,12 +312,12 @@ public class mystudent implements StudentService{
         }
     }
 
-  public synchronized boolean conflict(int studentId,int sectionId ) throws SQLException {
+  public synchronized boolean conflict(int studentId, int sectionId,int semester_id) throws SQLException {
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSectionClass> classes =getCourseSectionClasses(sectionId);
-        resultSet=statement.executeQuery("select distinct class.* from  student_grade ,coursesection,class where student_id=" +studentId+
+        resultSet=statement.executeQuery("select distinct semester_id,class.* from  student_grade ,coursesection,class where student_id=" +studentId+
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
         while(resultSet.next()){
             //String location=resultSet.getString("location");
@@ -326,6 +327,8 @@ if(resultSet.getRow()==0)return false;
             String dayofweek=resultSet.getString("dayofweek");
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
+            int se_id=resultSet.getInt("semester_id");
+            if(semester_id!=se_id)return false;
             for(int i=0;i<classes.size();i++){
                 Boolean conflicts=true;
             //if(classes.get(i).location==location)return false;
@@ -428,9 +431,13 @@ if(resultSet.getRow()==0)return false;
     public synchronized boolean enrolledcourse(int studentId, String courseId) throws SQLException {
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
+//        if(studentId==11713333&&courseId.equals("CS205")){
+//            System.out.println("haha");
+//        }
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select student_grade.* from student_grade, coursesection c,semester where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
-                " order by semester_begin;");
+        String sql="select distinct student_grade.* from student_grade, coursesection c where student_grade.section_id = c.id and c.course_id='" +courseId+"' and  student_id="+studentId+
+                " ;";
+        resultSet=statement.executeQuery(sql);
         while (resultSet.next()){
             if(resultSet.getRow()==0)return false;
             if(resultSet.getInt("kind")==2)return true;

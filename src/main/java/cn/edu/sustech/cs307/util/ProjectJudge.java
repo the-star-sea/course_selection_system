@@ -101,9 +101,10 @@ public final class ProjectJudge {
                 evalResult.elapsedTimeNs.addAndGet(System.nanoTime() - beforeTime);
                 if (expected == result) {
                     evalResult.passCount.incrementAndGet();
-                }else{
-                    result=testEnrollCourse(enrollCourseParams.get(i));
-                }
+              }
+//                else{
+//                    result=testEnrollCourse(enrollCourseParams.get(i));
+//                }
                 if (expected == StudentService.EnrollResult.SUCCESS) {
                     evalResult.succeedSections.add(enrollCourseParams.get(i));
                 }
@@ -149,7 +150,11 @@ public final class ProjectJudge {
             result.elapsedTimeNs.addAndGet(System.nanoTime() - beforeTime);
             result.passCount.addAndGet(IntStream.range(0, courseTableParams.size()).parallel()
                     .filter(it -> courseTableExpected.get(it).equals(courseTableResults.get(it))).count());
-
+            for(int i=0;i<courseTableExpected.size();i++){
+                if(!courseTableExpected.get(i).equals(courseTableResults.get(i))){
+                    testCourseTable(courseTableParams.get(i)).toString();
+                }
+            }
         }
         return result;
     }
