@@ -120,7 +120,14 @@ public class mystudent implements StudentService{
                 for(int i=0;i<sections.size();i++){
                     if(conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
-
+resultSet=statement.executeQuery("select distinct course.name||'['||coursesection.name||']' course_name,section.id section_id from coursesection and course and student_grade where coursesection.course_id=course.id and student_grade=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";");
+         ArrayList<Integer>sections1=new ArrayList<>();
+         ArrayList<String>names1=new ArrayList<>();
+            while (resultSet.next()){
+                if(resultSet.getRow()==0)break;
+                sections1.add(resultSet.getInt(2));
+                names1.add(resultSet.getString(1));
+            }
             for(int i=pageIndex;i<=pageIndex+pageSize&&i<sections.size();i++){
                 CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
                 courseSearchEntry.course=getCourseBySection(sections.get(i));
@@ -135,7 +142,7 @@ public class mystudent implements StudentService{
 
                 courseSearchEntry.section=courseSection;
                 courseSearchEntry.sectionClasses=new HashSet<>(getCourseSectionClasses(sections.get(i)));
-                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections,names);
+                courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections1,names1);
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
