@@ -120,8 +120,9 @@ public class mystudent implements StudentService{
                 for(int i=0;i<sections.size();i++){
                     if(conflict(studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
                 }}
-resultSet=statement.executeQuery("select distinct course.name||'['||coursesection.name||']' course_name,section.id section_id from coursesection and course and student_grade where coursesection.course_id=course.id and student_grade=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";");
-         ArrayList<Integer>sections1=new ArrayList<>();
+           sql="select distinct course.name||'['||coursesection.name||']' course_name,coursesection.id section_id from coursesection , course , student_grade where coursesection.course_id=course.id and student_grade.section_id=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";";
+        resultSet=statement.executeQuery(sql);
+            ArrayList<Integer>sections1=new ArrayList<>();
          ArrayList<String>names1=new ArrayList<>();
             while (resultSet.next()){
                 if(resultSet.getRow()==0)break;
@@ -146,7 +147,8 @@ resultSet=statement.executeQuery("select distinct course.name||'['||coursesectio
                 courseSearchEntries.add(courseSearchEntry);
             }return courseSearchEntries;
         }catch (SQLException sqlException){
-           // System.out.println(sql);
+          System.out.println(sql);
+            sqlException.printStackTrace();
             throw new IntegrityViolationException();
         }
 
@@ -259,8 +261,8 @@ resultSet=statement.executeQuery("select distinct course.name||'['||coursesectio
     private synchronized boolean classconflict(List<CourseSectionClass> classes, List<CourseSectionClass> classs) {
         for(CourseSectionClass class1:classes){
             for(CourseSectionClass class2:classs){
-                if(class1.dayOfWeek==class2.dayOfWeek)return true;
-                if(Math.max(class1.classBegin,class2.classBegin)<Math.min(class1.classEnd,class2.classEnd))return true;
+                if(!(class1.dayOfWeek==class2.dayOfWeek))return false;
+                if(class1.classEnd<class2.classBegin||class2.classEnd<class1.classEnd)return false;
                 for(Object week:class1.weekList){//todo
                     for(Object week2:class2.weekList){
                         if(week.toString().equals(week2.toString()))
@@ -293,7 +295,7 @@ resultSet=statement.executeQuery("select distinct course.name||'['||coursesectio
             }
             if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
             if(enrolledcourse(studentId,courseid))return EnrollResult.COURSE_CONFLICT_FOUND;
-            if(conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;//考虑了location
+            if(conflict(studentId,sectionId))return EnrollResult.COURSE_CONFLICT_FOUND;
             if(left<=0)return EnrollResult.COURSE_IS_FULL;
             try{
                 statement.execute("insert into student_grade(student_id,section_id,kind)values (" +studentId+","+sectionId+
@@ -308,7 +310,7 @@ resultSet=statement.executeQuery("select distinct course.name||'['||coursesectio
         }
     }
 
-    private synchronized boolean conflict(int studentId,int sectionId ) throws SQLException {
+  public synchronized boolean conflict(int studentId,int sectionId ) throws SQLException {
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
@@ -317,22 +319,26 @@ resultSet=statement.executeQuery("select distinct course.name||'['||coursesectio
                 " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
         while(resultSet.next()){
             //String location=resultSet.getString("location");
-
+if(resultSet.getRow()==0)return false;
             Array array=resultSet.getArray("weeklist");
             Object[]weeklists=(Object[])array.getArray();
             String dayofweek=resultSet.getString("dayofweek");
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
             for(int i=0;i<classes.size();i++){
+                Boolean conflicts=true;
             //if(classes.get(i).location==location)return false;
-            if(classes.get(i).dayOfWeek.toString().equals(dayofweek))return true;
-            if(Math.max(class_begin,classes.get(i).classBegin)<=Math.min(class_end,classes.get(i).classEnd))return true;
-                for(Object week:classes.get(i).weekList){//todo
+            if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))conflicts=false;
+            if(class_end<classes.get(i).classBegin||classes.get(i).classEnd<class_begin)conflicts= false;
+                Boolean tem=true;//no overlap
+            for(Object week:classes.get(i).weekList){//todo
                     for(Object week1:weeklists){
                         if(week.toString().equals(week1.toString()))
-                            return true;
+                            tem=false;
                     }
                 }
+            if(tem)conflicts=false;
+            if(conflicts)return true;
 //            for(Short week:classes.get(i).weekList){
 //                for(int k=0;k<weeklists.length;k++){
 //                    if(week==weeklists[k])

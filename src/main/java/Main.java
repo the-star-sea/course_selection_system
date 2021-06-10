@@ -8,7 +8,7 @@ import cn.edu.sustech.cs307.dto.prerequisite.OrPrerequisite;
 import cn.edu.sustech.cs307.dto.prerequisite.Prerequisite;
 import cn.edu.sustech.cs307.factory.*;
 import cn.edu.sustech.cs307.service.*;
-import cn.edu.sustech.cs307.serviceinstance.mymajor;
+import cn.edu.sustech.cs307.serviceinstance.*;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -31,6 +31,7 @@ public class Main {
         DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
         StudentService studentService=serviceFactory.createService(StudentService.class);
         SemesterService semesterService=serviceFactory.createService(SemesterService.class);
+        StudentService.EnrollResult w=studentService.enrollCourse(11718502,149);
 
 //        departmentService.addDepartment("CSE");//1
 //        departmentService.addDepartment("MEE");//2
