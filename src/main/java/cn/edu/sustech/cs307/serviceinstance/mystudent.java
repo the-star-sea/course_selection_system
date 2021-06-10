@@ -363,8 +363,9 @@ if(resultSet.getRow()==0)return false;
                 //throw new EntityNotFoundException();
             }else {
                 if (resultSet.getInt("kind") != 2) throw new IllegalStateException();
-                statement.execute("delete from student_grade where student_id=" + studentId + " and section_id= " + sectionId + ";");
-            } }catch (SQLException exception){
+                else {
+                    statement.execute("delete from student_grade where student_id=" + studentId + " and kind=2 and section_id= " + sectionId + ";");
+                }} }catch (SQLException exception){
             throw new IntegrityViolationException();
         }
     }
