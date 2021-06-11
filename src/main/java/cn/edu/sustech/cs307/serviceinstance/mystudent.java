@@ -140,7 +140,7 @@ public class mystudent implements StudentService{
                     }
                 }
             }
-           sql="select distinct course.name||'['||coursesection.name||']' course_name,coursesection.id section_id from coursesection , course , student_grade where coursesection.course_id=course.id and student_grade.section_id=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";";
+           sql="select distinct course.name||'['||coursesection.name||']' course_name,coursesection.id section_id from coursesection , course , student_grade where coursesection.course_id=course.id and student_grade.section_id=coursesection.id  and student_grade.student_id="+studentId+";";
         resultSet=statement.executeQuery(sql);
             ArrayList<Integer>sections1=new ArrayList<>();
          ArrayList<String>names1=new ArrayList<>();
