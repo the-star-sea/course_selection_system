@@ -78,6 +78,9 @@ public final class ProjectJudge {
                         System.out.println(c1.weekList.equals(c2.weekList));
                     }
                     testSearchCourse(searchCourseParams.get(i));
+                    testSearchCourse(searchCourseParams.get(i));
+                    testSearchCourse(searchCourseParams.get(i));
+                    testSearchCourse(searchCourseParams.get(i));
                 }
             }
         }
