@@ -274,14 +274,17 @@ public class mystudent implements StudentService{
     private synchronized boolean classconflict(List<CourseSectionClass> classes, List<CourseSectionClass> classs) {
         for(CourseSectionClass class1:classes){
             for(CourseSectionClass class2:classs){
-                if((class1.dayOfWeek==class2.dayOfWeek))return false;
+                boolean conflicts=true;
+                if(!(class1.dayOfWeek==class2.dayOfWeek))return false;
                 if(class1.classEnd<class2.classBegin||class2.classEnd<class1.classEnd)return false;
+                boolean cc=true;
                 for(Object week:class1.weekList){//todo
                     for(Object week2:class2.weekList){
                         if(week.toString().equals(week2.toString()))
-                            return true;
+                            cc=false;
                     }
-                }
+                }if(cc)conflicts=false;
+                if(conflicts)return true;
             }
         }return false;
     }
@@ -298,15 +301,18 @@ public class mystudent implements StudentService{
             if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
             int semester_id=resultSet.getInt("semester_id");
             int left=resultSet.getInt("leftcapcity");
-            resultSet=statement.executeQuery("select kind from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
-            resultSet.next();
-            String courseid=getCourseBySection(sectionId).id;
+            resultSet=statement.executeQuery("select distinct kind from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
 
+            String courseid=getCourseBySection(sectionId).id;
+resultSet.next();
             if(resultSet.getRow()>0) {
-                int kind=resultSet.getInt(1);
-                if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
-                if (passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
-            }
+                return EnrollResult.ALREADY_ENROLLED;
+//                int kind=resultSet.getInt(1);
+//                if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
+//                while(resultSet.next()){
+//                if (resultSet.getInt(1) == 2) return EnrollResult.ALREADY_ENROLLED;}
+
+            } if (passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
             if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
             if(enrolledcourse(studentId,courseid,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
             if(conflict(studentId,sectionId,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
@@ -329,8 +335,8 @@ public class mystudent implements StudentService{
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSectionClass> classes =getCourseSectionClasses(sectionId);
-        resultSet=statement.executeQuery("select distinct semester_id,class.* from  student_grade ,coursesection,class where student_id=" +studentId+
-                " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id and kind=2");
+        resultSet=statement.executeQuery("select distinct class.* from  student_grade ,coursesection,class where student_id=" +studentId+
+                " and coursesection.id=student_grade.section_id and coursesection.id=class.section_id  and coursesection.semester_id="+semester_id+";");
         while(resultSet.next()){
             //String location=resultSet.getString("location");
 if(resultSet.getRow()==0)return false;
@@ -339,8 +345,6 @@ if(resultSet.getRow()==0)return false;
             String dayofweek=resultSet.getString("dayofweek");
             int class_begin=resultSet.getInt("class_begin");
             int class_end=resultSet.getInt("class_end");
-            int se_id=resultSet.getInt("semester_id");
-            if(semester_id!=se_id)return false;
             for(int i=0;i<classes.size();i++){
                 Boolean conflicts=true;
             //if(classes.get(i).location==location)return false;
@@ -451,11 +455,10 @@ if(resultSet.getRow()==0)return false;
                 "and c.semester_id=" +semester_id+
                 ";";
         resultSet=statement.executeQuery(sql);
-        while (resultSet.next()){
+        resultSet.next();
             if(resultSet.getRow()==0)return false;
-            if(resultSet.getInt("kind")==2)return true;
-        }
-      return false;
+            return true;
+
     }
     @Override
     public synchronized Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId)  {
@@ -618,12 +621,12 @@ if(resultSet.getRow()==0)return false;
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         Statement statement1 = connection.createStatement();
-        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and kind<>2 and section_id="+sectionId+";");
-        while (resultSet.next()){
+       ResultSet resultSet77=statement.executeQuery("select * from student_grade where student_id="+studentId+" and kind<>2 and section_id="+sectionId+";");
+        while (resultSet77.next()){
 
-            if(resultSet.getRow()==0)return false;
-        int sgi=resultSet.getInt("id");
-        int kind=resultSet.getInt("kind");
+            if(resultSet77.getRow()==0)return false;
+        int sgi=resultSet77.getInt("id");
+        int kind=resultSet77.getInt("kind");
             ResultSet resultSet9;
         if(kind==0){
             resultSet9=statement1.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
@@ -644,20 +647,14 @@ if(resultSet.getRow()==0)return false;
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
         List<CourseSection>courseSections=new ArrayList<>();
-        resultSet=statement.executeQuery("select c.leftcapcity, c.totcapcity, c.id id, c.name nname from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
-                 "';");
+        resultSet=statement.executeQuery("select id from coursesection where course_id='"+courseId+"';");
+        boolean ans=false;
         while(resultSet.next()){
+            int u=resultSet.getRow();
             if (resultSet.getRow()==0)return false;
-            CourseSection courseSection=new CourseSection();
-            courseSection.leftCapacity=resultSet.getInt("leftcapcity");
-            courseSection.totalCapacity=resultSet.getInt("totcapcity");
-            courseSection.id=resultSet.getInt("id");
-            courseSection.name=resultSet.getString("nname");
-            courseSections.add(courseSection);
-        }boolean ans=false;
-        for(int i=0;i<courseSections.size();i++){
-            ans=ans|passedSection(studentId,courseSections.get(i).id);
-        }return ans;
+            ans=ans|passedSection(studentId,resultSet.getInt(1));
+        }
+        return ans;
     }
     @Override
     public synchronized Major getStudentMajor(int studentId){
