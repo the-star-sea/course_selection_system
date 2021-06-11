@@ -134,7 +134,8 @@ public class mystudent implements StudentService{
             if(ignoreConflict){
                 int i = 0;
                 while(i < sections.size()){
-                    if(conflict(studentId, sections.get(i),semesterId)){sections.remove(i);courses.remove(i);names.remove(i);}else{
+
+                    if(conflict(studentId, sections.get(i),semesterId)||enrolledcourse(studentId,getCourseBySection(sections.get(i)).id,semesterId)){sections.remove(i);courses.remove(i);names.remove(i);}else{
                         i++;
                     }
                 }
