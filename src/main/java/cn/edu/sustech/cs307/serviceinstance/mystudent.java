@@ -298,7 +298,7 @@ public class mystudent implements StudentService{
             for(CourseSectionClass class2:classs){
                 boolean conflicts=true;
                 if(!(class1.dayOfWeek==class2.dayOfWeek))conflicts= false;
-                if((class1.classEnd<class2.classBegin&&class1.classEnd<class2.classEnd)||(class2.classEnd<class1.classEnd&&class2.classEnd<class1.classBegin))return false;
+                if((class1.classEnd<class2.classBegin&&class1.classEnd<class2.classEnd)||(class2.classEnd<class1.classEnd&&class2.classEnd<class1.classBegin))conflicts= false;
                 boolean cc=true;
                 for(Object week:class1.weekList){//todo
                     for(Object week2:class2.weekList){
