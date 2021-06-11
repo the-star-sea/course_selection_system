@@ -55,6 +55,17 @@ public final class ProjectJudge {
                     .filter(it -> searchCourseExpected.get(it).equals(searchCourseResult.get(it))).count());
             for(int i=0;i<searchCourseExpected.size();i++){
                 if(!searchCourseExpected.get(i).equals(searchCourseResult.get(i))){
+                    for (int j = 0; j < searchCourseResult.get(i).size(); j++) {
+                        //System.out.println("course: " + searchCourseResult.get(i).get(j).course.equals(searchCourseExpected.get(i).get(j).course));
+                        //System.out.println("section: " + searchCourseResult.get(i).get(j).section.equals(searchCourseExpected.get(i).get(j).section));
+                        System.out.println("sectionClass: " + (searchCourseResult.get(i).get(j).sectionClasses).equals(searchCourseExpected.get(i).get(j).sectionClasses));
+
+                    }
+                    for (int j = 0; j < searchCourseResult.size(); j++) {
+                        System.out.println(j + ": " +searchCourseResult.get(j).equals(searchCourseExpected.get(j)));
+                        System.out.println(searchCourseResult.get(j));
+                        //System.out.println(searchCourseExpected.get(j));
+                    }
                     testSearchCourse(searchCourseParams.get(i));
                 }
             }

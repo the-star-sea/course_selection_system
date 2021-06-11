@@ -154,7 +154,11 @@ public class mystudent implements StudentService{
                 courseSection.name=resultSet.getString("name");
 
                 courseSearchEntry.section=courseSection;
-                courseSearchEntry.sectionClasses=new HashSet<>(getCourseSectionClasses(sections.get(i)));
+                List<CourseSectionClass>temp=getCourseSectionClasses(sections.get(i));
+                courseSearchEntry.sectionClasses=new HashSet<>();
+                for (int j = 0; j < temp.size(); j++) {
+                    courseSearchEntry.sectionClasses.add(temp.get(j));
+                }
                 courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections1,names1);
                 courseSearchEntries.add(courseSearchEntry);
             }
