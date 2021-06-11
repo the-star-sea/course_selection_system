@@ -109,17 +109,29 @@ public class mystudent implements StudentService{
                 names.add(resultSet.getString(3));
             }
             if(ignoreMissingPrerequisites){
-                for(int i=0;i<sections.size();i++){
-                    if(!passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
-                }}
+                int i = 0;
+                while(i < sections.size()){
+                    if(!passedPrerequisitesForCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}else{
+                        i++;
+                    }
+                }
+            }
             if(ignorePassed){
-                for(int i=0;i<sections.size();i++){
-                    if(passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
-                }}
+                int i = 0;
+                while(i < sections.size()){
+                    if(passedCourse(studentId,courses.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}else{
+                        i++;
+                    }
+                }
+            }
             if(ignoreConflict){
-                for(int i=0;i<sections.size();i++){
-                    if(conflict(studentId, studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}
-                }}
+                int i = 0;
+                while(i < sections.size()){
+                    if(conflict(studentId, studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}else{
+                        i++;
+                    }
+                }
+            }
            sql="select distinct course.name||'['||coursesection.name||']' course_name,coursesection.id section_id from coursesection , course , student_grade where coursesection.course_id=course.id and student_grade.section_id=coursesection.id and student_grade.kind=2 and student_grade.student_id="+studentId+";";
         resultSet=statement.executeQuery(sql);
             ArrayList<Integer>sections1=new ArrayList<>();
