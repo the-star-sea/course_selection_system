@@ -289,7 +289,7 @@ public class mystudent implements StudentService{
         List<CourseSectionClass>classes=getCourseSectionClasses(sectionid);
       for(int i=0;i<sections.size();i++){
           List<CourseSectionClass>classs=getCourseSectionClasses(sections.get(i));
-          if(classconflict(classes,classs))conflict.add(names.get(i) );
+          if(classconflict(classes,classs)||getCourseBySection(sectionid).id.equals(getCourseBySection(sections.get(i)).id))conflict.add(names.get(i) );
       }return conflict;
     }
 
@@ -297,7 +297,7 @@ public class mystudent implements StudentService{
         for(CourseSectionClass class1:classes){
             for(CourseSectionClass class2:classs){
                 boolean conflicts=true;
-                if(!(class1.dayOfWeek==class2.dayOfWeek))return false;
+                if(!(class1.dayOfWeek==class2.dayOfWeek))conflicts= false;
                 if((class1.classEnd<class2.classBegin&&class1.classEnd<class2.classEnd)||(class2.classEnd<class1.classEnd&&class2.classEnd<class1.classBegin))return false;
                 boolean cc=true;
                 for(Object week:class1.weekList){//todo
