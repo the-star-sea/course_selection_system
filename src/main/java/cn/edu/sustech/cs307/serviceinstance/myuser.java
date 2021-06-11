@@ -72,7 +72,10 @@ public class myuser implements UserService {
                 if (resultSet.getRow()==0){throw new EntityNotFoundException();}
                 else{
                     int kind= resultSet.getInt("kind");
-                    String name= resultSet.getString("name");
+                    String firstName= resultSet.getString("firstname");
+                    String lastName=resultSet.getString("lastname");
+                    String name=firstName+lastName;
+                    if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
                     if(kind==0){
                         resultSet =statement.executeQuery("select * from student where id ="+userId+";");
                         resultSet.next();

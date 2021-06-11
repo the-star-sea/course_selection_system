@@ -23,8 +23,8 @@ public class mystudent implements StudentService{
             if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
             String name=firstName+lastName;
-            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
-            PreparedStatement statement = connection.prepareStatement("insert into users(id,name,kind) values ("+userId+",'"+name+"',0);" +
+//            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
+            PreparedStatement statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
                     "insert into student(id,enrolled_date,major_id) values (" +userId+
                     ",?,"+majorId+");");
             statement.setDate(1,enrolledDate);
@@ -59,42 +59,45 @@ public class mystudent implements StudentService{
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
-           sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
+           sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCourseType==CourseType.PUBLIC){
-                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and course.coursetype='PUBLIC' and coursesection.semester_id="+semesterId;
+                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and course.coursetype='PUBLIC' and coursesection.semester_id="+semesterId;
             }
             if(searchCourseType==CourseType.MAJOR_COMPULSORY){
-                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
+                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
                         "where course.id=coursesection.course_id and major_course.course_id=course.id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and student.id= "+studentId+" and major_course.major_id=student.major_id and course.coursetype='MAJOR_COMPULSORY' and coursesection.semester_id="+semesterId;
             }
             if(searchCourseType==CourseType.MAJOR_ELECTIVE){
-                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
+                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
                         "where course.id=coursesection.course_id and major_course.course_id=course.id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and student.id= "+studentId+" and major_course.major_id=student.major_id and course.coursetype='MAJOR_ELECTIVE' and coursesection.semester_id="+semesterId;
             }
             if(searchCourseType==CourseType.CROSS_MAJOR){
-                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name,users.name instructor_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
+                sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin,class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class,student,major_course " +
                         "where course.id=coursesection.course_id and major_course.course_id=course.id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and student.id= "+studentId+" and major_course.major_id<>student.major_id and course.coursetype!='PUBLIC' and coursesection.semester_id="+semesterId;
             }
             if(searchCid!=null)
-                sql+=" and course.id='"+searchCid+"'";
+                sql+=" and course.id like '%"+searchCid+"%'";
             if(searchName!=null)
-                sql+=" and course.name||'['||coursesection.name||']'= '"+searchName+"'";
+                sql+=" and course.name||'['||coursesection.name||']'like '%"+searchName+"%'";
             if(searchInstructor!=null)
-                sql+=" and users.name='"+searchInstructor+"'";
+                sql+=" and (" + "users.firstname like '" + searchInstructor + "%' or users.lastname like '" + searchInstructor + "%' or users.firstname||users.lastname like '" + searchInstructor + "%' or users.firstname||' '||users.lastname like '" + searchInstructor + "%')";
             if(searchDayOfWeek!=null)
                 sql+=" and dayofweek='"+searchDayOfWeek+"'";
             if(ignoreFull)
                 sql+=" and leftcapcity>0";
-            if(searchClassLocations!=null)
+            if(searchClassTime!=null)
                 sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
             if(searchClassLocations!=null&&searchClassLocations.size()>0){
-                sql+=" and location in ('";
+                sql+=" and (location like '%'||'";
                 sql+=searchClassLocations.get(0);
+                sql+="'||'%'";
                 for(int i=1;i<searchClassLocations.size();i++){
-                    sql+=("','"+searchClassLocations.get(i));
+                    sql+=" or location like '%'||'";
+                    sql+=searchClassLocations.get(i);
+                    sql+="'||'%'";
                 }
-                sql+="')";
+                sql+=")";
             }
             sql+=")aa order by course_id,course_name;";
             Statement statement=connection.createStatement();
@@ -141,7 +144,7 @@ public class mystudent implements StudentService{
                 sections1.add(resultSet.getInt(2));
                 names1.add(resultSet.getString(1));
             }
-            for(int i=pageIndex;i<pageIndex+pageSize&&i<sections.size();i++){
+            for(int i=pageIndex*pageSize;i<pageIndex*pageSize+pageSize&&i<sections.size();i++){
                 CourseSearchEntry courseSearchEntry=new CourseSearchEntry();
                 courseSearchEntry.course=getCourseBySection(sections.get(i));
                 resultSet=statement.executeQuery("select * from coursesection where id="+sections.get(i)+ ";");
@@ -208,25 +211,32 @@ public class mystudent implements StudentService{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            ResultSet resultSet1=statement.executeQuery("select * from users where id ="+userId+";");
+            ResultSet resultSet1 =statement.executeQuery("select * from users where id ="+userId+";");
             resultSet1.next();
-            if (resultSet1.getRow()==0)throw new EntityNotFoundException();
-            int kind=resultSet1.getInt("kind");
-            String name=resultSet1.getString("name");
+            if (resultSet1.getRow()==0){throw new EntityNotFoundException();}
+            else{
+                int kind= resultSet1.getInt("kind");
+                String firstName= resultSet1.getString("firstname");
+                String lastName=resultSet1.getString("lastname");
+                String name=firstName+lastName;
+                if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
+                if(kind==0){
+                    resultSet1 =statement.executeQuery("select * from student where id ="+userId+";");
+                    resultSet1.next();
+                    Student student= new Student();
+                    student.enrolledDate= resultSet1.getDate("enrolled_date");
+                    student.id=userId;
+                    student.fullName=name;
+                    student.major=getMajor(resultSet1.getInt("major_id"));
+                    return student;}
+                Instructor instructor= new Instructor();
+                instructor.fullName=name;
+                instructor.id=userId;
+                return instructor ;
+            }
 
-            if(kind==0){
-                resultSet1=statement.executeQuery("select * from student where id ="+userId+";");
-                resultSet1.next();
-                Student student= new Student();
-                student.enrolledDate=resultSet1.getDate("enrolled_date");
-                student.id=userId;
-                student.fullName=name;student.major=getMajor(resultSet1.getInt("major_id"));
-                return student;}
-            Instructor instructor= new Instructor();
-            instructor.fullName=name;
-            instructor.id=userId;
-            return instructor ;
         }catch (SQLException sqlException){
+            sqlException.printStackTrace();
             throw new EntityNotFoundException();
         }
     }
