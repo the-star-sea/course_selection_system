@@ -152,7 +152,11 @@ public final class ProjectJudge {
                     .filter(it -> courseTableExpected.get(it).equals(courseTableResults.get(it))).count());
             for(int i=0;i<courseTableExpected.size();i++){
                 if(!courseTableExpected.get(i).equals(courseTableResults.get(i))){
-                    testCourseTable(courseTableParams.get(i)).toString();
+
+                    for(int j=1;j<=7;j++){
+                        System.out.println(courseTableExpected.get(i).table.get(DayOfWeek.of(j)).equals(courseTableResults.get(i).table.get(DayOfWeek.of(j))));
+                    }
+                    CourseTable courseTable=testCourseTable(courseTableParams.get(i));
                 }
             }
         }
@@ -228,8 +232,8 @@ public final class ProjectJudge {
         Map<String, Map<String, List<CourseSection>>> sections = readValueFromFile("courseSections.json", Map.class);
         Map<String, List<CourseSectionClass>> classes = readValueFromFile("courseSectionClasses.json", Map.class);
         Map<String, Map<String, Grade>> studentCourses = readValueFromFile("studentCourses.json", Map.class);
-        long startTimeNs, endTimeNs;
-        startTimeNs = System.nanoTime();
+     long startTimeNs, endTimeNs;
+      startTimeNs = System.nanoTime();
         System.out.println("Import departments");
         importer.importDepartments(departments);
         System.out.println("Import majors");

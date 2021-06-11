@@ -19,7 +19,7 @@ public class myinstructor implements InstructorService{
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             String name=firstName+lastName;
-            if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
+            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
             statement.execute("insert into users(id,name,kind) values ("+userId+",'"+name+"',1);");
         }catch (SQLException sqlException) {
           throw new IntegrityViolationException();
