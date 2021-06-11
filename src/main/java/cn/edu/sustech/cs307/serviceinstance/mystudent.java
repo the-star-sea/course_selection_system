@@ -134,7 +134,7 @@ public class mystudent implements StudentService{
             if(ignoreConflict){
                 int i = 0;
                 while(i < sections.size()){
-                    if(conflict(studentId, studentId,sections.get(i))){sections.remove(i);courses.remove(i);names.remove(i);}else{
+                    if(conflict(studentId, sections.get(i),semesterId)){sections.remove(i);courses.remove(i);names.remove(i);}else{
                         i++;
                     }
                 }
@@ -297,7 +297,7 @@ public class mystudent implements StudentService{
             for(CourseSectionClass class2:classs){
                 boolean conflicts=true;
                 if(!(class1.dayOfWeek==class2.dayOfWeek))return false;
-                if(class1.classEnd<class2.classBegin||class2.classEnd<class1.classEnd)return false;
+                if((class1.classEnd<class2.classBegin&&class1.classEnd<class2.classEnd)||(class2.classEnd<class1.classEnd&&class2.classEnd<class1.classBegin))return false;
                 boolean cc=true;
                 for(Object week:class1.weekList){//todo
                     for(Object week2:class2.weekList){
@@ -369,8 +369,10 @@ if(resultSet.getRow()==0)return false;
             for(int i=0;i<classes.size();i++){
                 Boolean conflicts=true;
             //if(classes.get(i).location==location)return false;
-            if(!classes.get(i).dayOfWeek.toString().equals(dayofweek))conflicts=false;
-            if(class_end<classes.get(i).classBegin||classes.get(i).classEnd<class_begin)conflicts= false;
+                String tm=classes.get(i).dayOfWeek.toString();
+               Boolean v=!tm.equals(dayofweek);
+            if(v)conflicts=false;
+            if((class_end>classes.get(i).classEnd&&class_begin>classes.get(i).classEnd)||(classes.get(i).classEnd>class_end&&classes.get(i).classBegin>class_end))conflicts= false;
                 Boolean tem=true;//no overlap
             for(Object week:classes.get(i).weekList){//todo
                     for(Object week1:weeklists){
