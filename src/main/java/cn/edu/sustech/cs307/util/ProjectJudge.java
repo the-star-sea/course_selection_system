@@ -55,17 +55,18 @@ public final class ProjectJudge {
                     .filter(it -> searchCourseExpected.get(it).equals(searchCourseResult.get(it))).count());
             for(int i=0;i<searchCourseExpected.size();i++){
                 if(!searchCourseExpected.get(i).equals(searchCourseResult.get(i))){
-                    for (int j = 0; j < searchCourseResult.get(i).size(); j++) {
-                        //System.out.println("course: " + searchCourseResult.get(i).get(j).course.equals(searchCourseExpected.get(i).get(j).course));
-                        //System.out.println("section: " + searchCourseResult.get(i).get(j).section.equals(searchCourseExpected.get(i).get(j).section));
-                        System.out.println("sectionClass: " + (searchCourseResult.get(i).get(j).sectionClasses).equals(searchCourseExpected.get(i).get(j).sectionClasses));
-
-                    }
-                    for (int j = 0; j < searchCourseResult.size(); j++) {
-                        System.out.println(j + ": " +searchCourseResult.get(j).equals(searchCourseExpected.get(j)));
-                        System.out.println(searchCourseResult.get(j));
-                        //System.out.println(searchCourseExpected.get(j));
-                    }
+//                    for(int j=0;j<searchCourseExpected.get(i).size();j++){
+//
+//                        CourseSectionClass c1= (CourseSectionClass) searchCourseExpected.get(i).get(j).sectionClasses.toArray()[0];
+//                        CourseSectionClass c2=(CourseSectionClass)searchCourseResult.get(i).get(j).sectionClasses.toArray()[0];
+//                        System.out.println(c1.id==c2.id);
+//                        System.out.println(c1.classEnd==c2.classEnd);
+//                        System.out.println(c1.location==c2.location);
+//                        System.out.println(c1.dayOfWeek==c2.dayOfWeek);
+//                        System.out.println(c1.instructor.equals(c2.instructor));
+//                        System.out.println(c1.weekList.equals(c2.weekList));
+//                        System.out.println("haha");
+//                    }
                     testSearchCourse(searchCourseParams.get(i));
                 }
             }
@@ -114,7 +115,7 @@ public final class ProjectJudge {
                     evalResult.passCount.incrementAndGet();
               }
                else{
-                    result=testEnrollCourse(enrollCourseParams.get(i));
+                   testEnrollCourse(enrollCourseParams.get(i));
                 }
                 if (expected == StudentService.EnrollResult.SUCCESS) {
                     evalResult.succeedSections.add(enrollCourseParams.get(i));
@@ -268,37 +269,37 @@ public final class ProjectJudge {
         EvalResult searchCourse1 = testSearchCourses(searchCourse1Dir);
         System.out.println("Test search course 1: " + searchCourse1.passCount.get());
         System.out.printf("Test search course 1 time: %.2fs\n", searchCourse1.elapsedTimeNs.get() / 1000000000.0);
-        // 3. Test enrollCourse1
-//        EnrollEvalResult enrollCourse1 = testEnrollCourses(enrollCourse1Dir);
-//        System.out.println("Test enroll course 1: " + enrollCourse1.passCount.get());
-//        System.out.printf("Test enroll course 1 time: %.2fs\n", enrollCourse1.elapsedTimeNs.get() / 1000000000.0);
-//        // 4. Drop all success course
-//        EvalResult dropEnrolledCourse1 = testDropEnrolledCourses(enrollCourse1);
-//        System.out.println("Test drop enrolled course 1: " + dropEnrolledCourse1.passCount.get());
-//        System.out.printf("Test drop enrolled course 1 time: %.2fs\n",
-//                dropEnrolledCourse1.elapsedTimeNs.get() / 1000000000.0);
-//        // 5. Import studentCourses.json
-//        startTimeNs = System.nanoTime();
-//        System.out.println("Import student courses");
-//        importer.importStudentCourses(studentCourses);
-//        endTimeNs = System.nanoTime();
-//        System.out.printf("Import student courses time: %.2fs\n", (endTimeNs - startTimeNs) / 1000000000.0);
-//        // 6. Try to drop graded course, test if throw IllegalStateException
-//        EvalResult dropCourse = testDropCourses(studentCourses);
-//        System.out.println("Test drop course: " + dropCourse.passCount.get());
-//        System.out.printf("Test drop course time: %.2fs\n", dropCourse.elapsedTimeNs.get() / 1000000000.0);
-//        // 7. Test courseTable2
-//        EvalResult courseTables2 = testCourseTables(courseTable2Dir);
-//        System.out.println("Test course table 2: " + courseTables2.passCount.get());
-//        System.out.printf("Test course table 2 time: %.2fs\n", courseTables2.elapsedTimeNs.get() / 1000000000.0);
-//        // 8. Test searchCourse2
-//        EvalResult searchCourse2 = testSearchCourses(searchCourse2Dir);
-//        System.out.println("Test search course 2: " + searchCourse2.passCount.get());
-//        System.out.printf("Test search course 2 time: %.2fs\n", searchCourse2.elapsedTimeNs.get() / 1000000000.0);
-//        // 9. Test enrollCourse2
-//        EnrollEvalResult enrollCourse2 = testEnrollCourses(enrollCourse2Dir);
-//        System.out.println("Test enroll course 2: " + enrollCourse2.passCount.get());
-//        System.out.printf("Test enroll course 2 time: %.2fs\n", courseTables2.elapsedTimeNs.get() / 1000000000.0);
+//         3. Test enrollCourse1
+        EnrollEvalResult enrollCourse1 = testEnrollCourses(enrollCourse1Dir);
+        System.out.println("Test enroll course 1: " + enrollCourse1.passCount.get());
+        System.out.printf("Test enroll course 1 time: %.2fs\n", enrollCourse1.elapsedTimeNs.get() / 1000000000.0);
+        // 4. Drop all success course
+        EvalResult dropEnrolledCourse1 = testDropEnrolledCourses(enrollCourse1);
+        System.out.println("Test drop enrolled course 1: " + dropEnrolledCourse1.passCount.get());
+        System.out.printf("Test drop enrolled course 1 time: %.2fs\n",
+                dropEnrolledCourse1.elapsedTimeNs.get() / 1000000000.0);
+        // 5. Import studentCourses.json
+        startTimeNs = System.nanoTime();
+        System.out.println("Import student courses");
+        importer.importStudentCourses(studentCourses);
+        endTimeNs = System.nanoTime();
+        System.out.printf("Import student courses time: %.2fs\n", (endTimeNs - startTimeNs) / 1000000000.0);
+        // 6. Try to drop graded course, test if throw IllegalStateException
+        EvalResult dropCourse = testDropCourses(studentCourses);
+        System.out.println("Test drop course: " + dropCourse.passCount.get());
+        System.out.printf("Test drop course time: %.2fs\n", dropCourse.elapsedTimeNs.get() / 1000000000.0);
+        // 7. Test courseTable2
+        EvalResult courseTables2 = testCourseTables(courseTable2Dir);
+        System.out.println("Test course table 2: " + courseTables2.passCount.get());
+        System.out.printf("Test course table 2 time: %.2fs\n", courseTables2.elapsedTimeNs.get() / 1000000000.0);
+        // 8. Test searchCourse2
+        EvalResult searchCourse2 = testSearchCourses(searchCourse2Dir);
+        System.out.println("Test search course 2: " + searchCourse2.passCount.get());
+        System.out.printf("Test search course 2 time: %.2fs\n", searchCourse2.elapsedTimeNs.get() / 1000000000.0);
+        // 9. Test enrollCourse2
+        EnrollEvalResult enrollCourse2 = testEnrollCourses(enrollCourse2Dir);
+        System.out.println("Test enroll course 2: " + enrollCourse2.passCount.get());
+        System.out.printf("Test enroll course 2 time: %.2fs\n", courseTables2.elapsedTimeNs.get() / 1000000000.0);
 
         // TODO: Multi-threaded benchmark
 

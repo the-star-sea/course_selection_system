@@ -279,7 +279,10 @@ public class mycourse implements CourseService {
                 Array array=resultSet.getArray("weeklist");
                 //int[] tmp=(int[])array.getArray();
                 Object[] tmp=(Object[])array.getArray();
-                List wa=Arrays.asList(tmp);
+                ArrayList<Short>wa=new ArrayList<>();
+                for(Object ob:tmp){
+                    wa.add(((Integer) ob).shortValue());
+                }
                 courseSectionClass.weekList= new HashSet<Short>(wa);
                 courseSectionClasses.add(courseSectionClass);
             }return courseSectionClasses;
