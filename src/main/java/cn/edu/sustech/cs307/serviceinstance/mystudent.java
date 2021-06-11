@@ -88,7 +88,11 @@ public class mystudent implements StudentService{
                 sql+=" and leftcapcity>0";
             if(searchClassTime!=null)
                 sql+=" and class_begin<="+searchClassTime+" and class_end>="+searchClassTime;
-            if(searchClassLocations!=null&&searchClassLocations.size()>0){
+
+            if(searchClassLocations!=null){
+                if(searchClassLocations.size()==0){
+                    return courseSearchEntries;
+                }
                 sql+=" and (location like '%'||'";
                 sql+=searchClassLocations.get(0);
                 sql+="'||'%'";
