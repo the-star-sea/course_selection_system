@@ -23,7 +23,7 @@ public class mystudent implements StudentService{
             if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
             String name=firstName+lastName;
-            if(name.matches("[a-zA-Z]+"))name=firstName+" "+lastName;
+            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
             PreparedStatement statement = connection.prepareStatement("insert into users(id,name,kind) values ("+userId+",'"+name+"',0);" +
                     "insert into student(id,enrolled_date,major_id) values (" +userId+
                     ",?,"+majorId+");");
@@ -274,13 +274,12 @@ public class mystudent implements StudentService{
     private synchronized boolean classconflict(List<CourseSectionClass> classes, List<CourseSectionClass> classs) {
         for(CourseSectionClass class1:classes){
             for(CourseSectionClass class2:classs){
-                if(!(class1.dayOfWeek==class2.dayOfWeek))return false;
+                if((class1.dayOfWeek==class2.dayOfWeek))return false;
                 if(class1.classEnd<class2.classBegin||class2.classEnd<class1.classEnd)return false;
                 for(Object week:class1.weekList){//todo
                     for(Object week2:class2.weekList){
                         if(week.toString().equals(week2.toString()))
                             return true;
-
                     }
                 }
             }
@@ -485,18 +484,23 @@ if(resultSet.getRow()==0)return false;
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
-            PreparedStatement preparedStatement1= connection.prepareStatement("select ?-semester_begin from semester where ? between semester_begin and semester_end; ");
+            PreparedStatement preparedStatement1= connection.prepareStatement("select ?-semester_begin,id from semester where ? between semester_begin and semester_end; ");
             preparedStatement1.setDate(1,date);
             preparedStatement1.setDate(2,date);
             resultSet=preparedStatement1.executeQuery();
             resultSet.next();
             CourseTable courseTable=new CourseTable();
-            if (resultSet.getRow()==0){
 
+            if (resultSet.getRow()==0){
+                courseTable.table=new HashMap<>();
+                for(int i=1;i<=7;i++){
+                    courseTable.table.put(DayOfWeek.of(i),new HashSet<>());
+                }
             }
             else {
                 int week=resultSet.getInt(1)/7+1;
-                PreparedStatement preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id;");
+                int semester_id=resultSet.getInt("id");
+                PreparedStatement preparedStatement=connection.prepareStatement("select location,class_begin,class_end,course.name coursename,coursesection.name sectionname,instructor_id from class ,coursesection,student_grade ,course where ?=any(weeklist) and student_id=? and class.section_id=coursesection.id and coursesection.id=student_grade.section_id and dayofweek=? and course_id=course.id and coursesection.semester_id="+semester_id+";");
                 preparedStatement.setInt(1,week);
                 preparedStatement.setInt(2,studentId);
 
@@ -539,6 +543,7 @@ if(resultSet.getRow()==0)return false;
 
             return testpre(studentId,pre_id);
         }catch (SQLException sqlException){
+            sqlException.printStackTrace();
             throw new IntegrityViolationException();
         }
 
@@ -612,21 +617,24 @@ if(resultSet.getRow()==0)return false;
         if(connection==null){
             connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
-        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
+        Statement statement1 = connection.createStatement();
+        resultSet=statement.executeQuery("select * from student_grade where student_id="+studentId+" and kind<>2 and section_id="+sectionId+";");
         while (resultSet.next()){
+
             if(resultSet.getRow()==0)return false;
         int sgi=resultSet.getInt("id");
         int kind=resultSet.getInt("kind");
+            ResultSet resultSet9;
         if(kind==0){
-            resultSet=statement.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
-            resultSet.next();
-            if(resultSet.getInt("grade")>=60)return true;
+            resultSet9=statement1.executeQuery("select grade from student_grade_hundred where student_grade_id="+sgi+";");
+            resultSet9.next();
+            if(resultSet9.getInt("grade")>=60)return true;
 
         }
         else if(kind==1) {
-            resultSet=statement.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
-            resultSet.next();
-            if(resultSet.getString("grade").equals("PASS"))return true;
+            resultSet9=statement1.executeQuery("select grade from student_grade_pf where student_grade_id="+sgi+";");
+            resultSet9.next();
+            if(resultSet9.getString("grade").equals("PASS"))return true;
 
         }
       }  return false;
