@@ -10,31 +10,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class mymajor implements MajorService{
-    ResultSet resultSet;
     Connection connection;
     @Override
-    public synchronized int addMajor(String name, int departmentId){
+    public int addMajor(String name, int departmentId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
-            PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");");
-            statement.execute();
-            Statement statement1 = connection.createStatement();
-            resultSet = statement1.executeQuery("select id from major where name='"+name+"';");
+            PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");",Statement.RETURN_GENERATED_KEYS);
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt("id");
+            return resultSet.getInt(1);
         }catch (SQLException sqlException) {
             throw new IntegrityViolationException();
         }
     }
 
     @Override
-    public synchronized void removeMajor(int majorId) {
+    public void removeMajor(int majorId) {
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from major where id="+majorId+";");
+            ResultSet resultSet = statement.executeQuery("select * from major where id="+majorId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from major where id="+majorId+";");
@@ -44,14 +42,14 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public synchronized List<Major> getAllMajors()  {
+    public List<Major> getAllMajors()  {
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
 
             List<Major>majors=new ArrayList<>();
-            resultSet=statement.executeQuery("select * from major;");
+            ResultSet resultSet=statement.executeQuery("select * from major;");
 
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
@@ -66,12 +64,12 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public synchronized Major getMajor(int majorId){
+    public Major getMajor(int majorId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
+            ResultSet resultSet=statement.executeQuery("select * from major where id ="+majorId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Major major=new Major();
@@ -84,7 +82,7 @@ public class mymajor implements MajorService{
         }
     }
 
-    public synchronized Department getDepartment(int departmentId) {//ok
+    public Department getDepartment(int departmentId) {//ok
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -102,7 +100,7 @@ public class mymajor implements MajorService{
     }
 
     @Override
-    public synchronized void addMajorCompulsoryCourse(int majorId, String courseId){//todo
+    public void addMajorCompulsoryCourse(int majorId, String courseId){//todo
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -117,7 +115,7 @@ public class mymajor implements MajorService{
 
     }
     @Override
-    public synchronized void addMajorElectiveCourse(int majorId, String courseId){//todo
+    public void addMajorElectiveCourse(int majorId, String courseId){//todo
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}

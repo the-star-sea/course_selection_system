@@ -22,18 +22,18 @@ import static cn.edu.sustech.cs307.dto.grade.PassOrFailGrade.PASS;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println(!DayOfWeek.MONDAY.toString().equals("MONDAY"));
-//        ServiceFactory serviceFactory= Config.getServiceFactory();
+        //System.out.println(!DayOfWeek.MONDAY.toString().equals("MONDAY"));
+        ServiceFactory serviceFactory= Config.getServiceFactory();
 //        UserService userService=serviceFactory.createService(UserService.class);
 //        MajorService majorService=serviceFactory.createService(MajorService.class);
 //        InstructorService instructorService=serviceFactory.createService(InstructorService.class);
 //        CourseService courseService=serviceFactory.createService(CourseService.class);
-//        DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
+          DepartmentService departmentService=serviceFactory.createService(DepartmentService.class);
 //        StudentService studentService=serviceFactory.createService(StudentService.class);
-//        SemesterService semesterService=serviceFactory.createService(SemesterService.class);
+        SemesterService semesterService=serviceFactory.createService(SemesterService.class);
 //        StudentService.EnrollResult w=studentService.enrollCourse(11718502,149);
 //
-////        departmentService.addDepartment("CSE");//1
+        //System.out.println(  departmentService.addDepartment("CSE3900"));
 ////        departmentService.addDepartment("MEE");//2
 ////        departmentService.addDepartment("ALE");//3
 ////        departmentService.addDepartment("WPE");//4
@@ -50,7 +50,8 @@ public class Main {
 ////        majorService.addMajor("EL", 5);//8
 ////        majorService.addMajor("SL", 5);//9
 ////
-////        semesterService.addSemester("2021Spring", java.sql.Date.valueOf("2021-01-18"), java.sql.Date.valueOf("2021-06-13"));
+      int x=semesterService.addSemester("2021Spring2", java.sql.Date.valueOf("2021-01-18"), java.sql.Date.valueOf("2021-06-13"));
+        System.out.println(x);
 ////        semesterService.addSemester("2020Fall", java.sql.Date.valueOf("2020-9-6"), java.sql.Date.valueOf("2021-1-16"));
 ////        semesterService.addSemester("2020Spring", java.sql.Date.valueOf("2020-2-9"), java.sql.Date.valueOf("2021-5-31"));
 //

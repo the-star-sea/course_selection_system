@@ -11,35 +11,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class mysemester implements SemesterService{
-    ResultSet resultSet;
     Connection connection;
     @Override
-    public synchronized int addSemester(String name, Date begin, Date end)  {
+    public int addSemester(String name, Date begin, Date end)  {
         if(begin.after(end))throw new IntegrityViolationException();
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             PreparedStatement statement = connection.prepareStatement("insert into semester(name,semester_begin ,semester_end )" +
-                    " values ('" + name + "',?,?);");
+                    " values ('" + name + "',?,?);",Statement.RETURN_GENERATED_KEYS);
             statement.setDate(1, begin);
             statement.setDate(2, end);
-            statement.execute();
-            Statement statement1 = connection.createStatement();
-            resultSet = statement1.executeQuery("select id from semester where name='" + name + "';");
+            statement.executeUpdate();
+            ResultSet resultSet=statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt("id");
+            return resultSet.getInt(1);
         }catch (SQLException exception){
             throw new IntegrityViolationException();
         }
     }
 
     @Override
-    public synchronized void removeSemester(int semesterId){
+    public void removeSemester(int semesterId){
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
         Statement statement = connection.createStatement();
-        resultSet = statement.executeQuery("select * from semester where id="+semesterId+";");
+        ResultSet resultSet = statement.executeQuery("select * from semester where id="+semesterId+";");
         resultSet.next();
         if (resultSet.getRow()==0)throw new EntityNotFoundException();
         statement.execute("delete from semester where id="+semesterId+";");
@@ -50,13 +48,13 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public synchronized List<Semester> getAllSemesters()  {
+    public List<Semester> getAllSemesters()  {
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<Semester> semesters = new ArrayList<>();
-            resultSet = statement.executeQuery("select * from semester;");
+            ResultSet resultSet = statement.executeQuery("select * from semester;");
             while (resultSet.next()) {
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
                 Semester semester = getSemester(resultSet.getInt("id"));
@@ -69,12 +67,12 @@ public class mysemester implements SemesterService{
     }
 
     @Override
-    public synchronized Semester getSemester(int semesterId){
+    public Semester getSemester(int semesterId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
+            ResultSet resultSet = statement.executeQuery("select * from semester where id =" + semesterId + ";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Semester semester=new Semester();

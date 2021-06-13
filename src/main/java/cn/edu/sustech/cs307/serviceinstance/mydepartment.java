@@ -11,32 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class mydepartment implements  DepartmentService {
-    ResultSet resultSet;
     Connection connection;
     @Override
-    public synchronized int addDepartment(String name)  {
+    public int addDepartment(String name)  {
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet=statement.executeQuery("select * from department where name='"+name+"';");
-            if(resultSet.getRow()!=0)throw new IntegrityViolationException();
-            statement.execute("insert into department(name) values ('"+name+"');");
-            resultSet=statement.executeQuery("select id from department where name='"+name+"';");
+            statement.executeUpdate("insert into department(name) values ('"+name+"');",Statement.RETURN_GENERATED_KEYS);
+            ResultSet resultSet=statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt("id");
+            return resultSet.getInt(1);
         }catch (SQLException sqlException) {
             throw new IntegrityViolationException();
         }
     }
 
     @Override
-    public synchronized void removeDepartment(int departmentId){
+    public void removeDepartment(int departmentId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
+            ResultSet resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
@@ -46,14 +43,14 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public synchronized List<Department> getAllDepartments()  {//ok
+    public List<Department> getAllDepartments()  {//ok
         try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
 
             List<Department>departments=new ArrayList<>();
-            resultSet=statement.executeQuery("select * from department;");
+            ResultSet resultSet=statement.executeQuery("select * from department;");
 
             while(resultSet.next()){
                 if (resultSet.getRow()==0)throw new EntityNotFoundException();
@@ -67,12 +64,12 @@ public class mydepartment implements  DepartmentService {
     }
 
     @Override
-    public synchronized Department getDepartment(int departmentId) {//ok
+    public Department getDepartment(int departmentId) {//ok
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
+            ResultSet resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             Department department = new Department();

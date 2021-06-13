@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class myuser implements UserService {
-    ResultSet resultSet;
+
     Connection connection;
     @Override
-    public synchronized void removeUser(int userId){
+    public void removeUser(int userId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from users where id="+userId+";");
+            ResultSet resultSet = statement.executeQuery("select * from users where id="+userId+";");
             resultSet.next();
             if (resultSet.getRow()==0){throw new EntityNotFoundException();}
             else{
@@ -33,13 +33,13 @@ public class myuser implements UserService {
         }
     }
     @Override
-    public synchronized List<User> getAllUsers()  {
+    public List<User> getAllUsers()  {
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
-            resultSet =statement.executeQuery("select * from users;");
+            ResultSet resultSet =statement.executeQuery("select * from users;");
             while(resultSet.next()){
                 if (resultSet.getRow()==0){
                     throw new EntityNotFoundException();
@@ -62,12 +62,12 @@ public class myuser implements UserService {
     }
 
     @Override
-    public synchronized User getUser(int userId) {
+    public User getUser(int userId) {
             try {
                 if(connection==null){
                     connection= SQLDataSource.getInstance().getSQLConnection();}
                 Statement statement = connection.createStatement();
-                resultSet =statement.executeQuery("select * from users where id ="+userId+";");
+                ResultSet resultSet =statement.executeQuery("select * from users where id ="+userId+";");
                 resultSet.next();
                 if (resultSet.getRow()==0){throw new EntityNotFoundException();}
                 else{
@@ -96,7 +96,7 @@ public class myuser implements UserService {
                 throw new EntityNotFoundException();
             }
     }
-    public synchronized Major getMajor(int majorId){
+    public Major getMajor(int majorId){
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -116,7 +116,7 @@ public class myuser implements UserService {
             throw new EntityNotFoundException();
         }
     }
-    public synchronized Department getDepartment(int departmentId) {//ok
+    public Department getDepartment(int departmentId) {//ok
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}

@@ -55,8 +55,8 @@ public final class ProjectJudge {
                     .filter(it -> searchCourseExpected.get(it).equals(searchCourseResult.get(it))).count());
             for(int i=0;i<searchCourseExpected.size();i++){
                 if(!searchCourseExpected.get(i).equals(searchCourseResult.get(i))){
-                    for(int j=6;j<searchCourseExpected.get(i).size();j++){
-//                  System.out.println(searchCourseExpected.get(i).get(j).course.equals(searchCourseResult.get(i).get(j).course));
+                    for(int j=0;j<searchCourseExpected.get(i).size();j++){
+                 System.out.println(searchCourseExpected.get(i).get(j).equals(searchCourseResult.get(i).get(j)));
 //                        System.out.println(searchCourseExpected.get(i).get(j).section.equals(searchCourseResult.get(i).get(j).section));
 //                        System.out.println(searchCourseExpected.get(i).get(j).sectionClasses.equals(searchCourseResult.get(i).get(j).sectionClasses));
 //                        CourseSectionClass c1= (CourseSectionClass) searchCourseExpected.get(i).get(j).sectionClasses.toArray()[0];
@@ -276,20 +276,20 @@ public final class ProjectJudge {
         importer.importMajorElectiveCourses(majorElectiveCourses);
         endTimeNs = System.nanoTime();
         System.out.printf("Import time usage: %.2fs\n", (endTimeNs - startTimeNs) / 1000000000.0);
-        // 2. Test searchCourse1
-//        EvalResult searchCourse1 = testSearchCourses(searchCourse1Dir);
-//        System.out.println("Test search course 1: " + searchCourse1.passCount.get());
-//        System.out.printf("Test search course 1 time: %.2fs\n", searchCourse1.elapsedTimeNs.get() / 1000000000.0);
-//        // 3. Test enrollCourse1
-//        EnrollEvalResult enrollCourse1 = testEnrollCourses(enrollCourse1Dir);
-//        System.out.println("Test enroll course 1: " + enrollCourse1.passCount.get());
-//        System.out.printf("Test enroll course 1 time: %.2fs\n", enrollCourse1.elapsedTimeNs.get() / 1000000000.0);
-//        // 4. Drop all success course
-//        EvalResult dropEnrolledCourse1 = testDropEnrolledCourses(enrollCourse1);
-//        System.out.println("Test drop enrolled course 1: " + dropEnrolledCourse1.passCount.get());
-//        System.out.printf("Test drop enrolled course 1 time: %.2fs\n",
-//                dropEnrolledCourse1.elapsedTimeNs.get() / 1000000000.0);
-        // 5. Import studentCourses.json
+         //2. Test searchCourse1
+        EvalResult searchCourse1 = testSearchCourses(searchCourse1Dir);
+        System.out.println("Test search course 1: " + searchCourse1.passCount.get());
+        System.out.printf("Test search course 1 time: %.2fs\n", searchCourse1.elapsedTimeNs.get() / 1000000000.0);
+        // 3. Test enrollCourse1
+        EnrollEvalResult enrollCourse1 = testEnrollCourses(enrollCourse1Dir);
+        System.out.println("Test enroll course 1: " + enrollCourse1.passCount.get());
+        System.out.printf("Test enroll course 1 time: %.2fs\n", enrollCourse1.elapsedTimeNs.get() / 1000000000.0);
+        // 4. Drop all success course
+        EvalResult dropEnrolledCourse1 = testDropEnrolledCourses(enrollCourse1);
+        System.out.println("Test drop enrolled course 1: " + dropEnrolledCourse1.passCount.get());
+        System.out.printf("Test drop enrolled course 1 time: %.2fs\n",
+                dropEnrolledCourse1.elapsedTimeNs.get() / 1000000000.0);
+         //5. Import studentCourses.json
         startTimeNs = System.nanoTime();
         System.out.println("Import student courses");
         importer.importStudentCourses(studentCourses);

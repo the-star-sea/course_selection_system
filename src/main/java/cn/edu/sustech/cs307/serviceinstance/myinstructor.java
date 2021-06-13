@@ -13,7 +13,7 @@ import java.util.List;
 public class myinstructor implements InstructorService{
     Connection connection;
     @Override
-    public synchronized void addInstructor(int userId, String firstName, String lastName){
+    public void addInstructor(int userId, String firstName, String lastName){
       try{
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
@@ -27,7 +27,7 @@ public class myinstructor implements InstructorService{
     }
 
     @Override
-    public synchronized List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) {
+    public List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) {
         try {
             if(connection==null){
                 connection= SQLDataSource.getInstance().getSQLConnection();}
