@@ -20,7 +20,9 @@ public class myuser implements UserService {
     public void removeUser(int userId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users where id="+userId+";");
             resultSet.next();
@@ -28,6 +30,7 @@ public class myuser implements UserService {
             else{
                 statement.execute("delete from users where id=" + userId + ";");
             }
+            connection.commit();
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
         }
@@ -36,7 +39,9 @@ public class myuser implements UserService {
     public List<User> getAllUsers()  {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             List<User>users=new ArrayList<>();
             ResultSet resultSet =statement.executeQuery("select * from users;");
@@ -55,6 +60,7 @@ public class myuser implements UserService {
                     }
                 }
             }
+            connection.commit();
             return users;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -65,7 +71,9 @@ public class myuser implements UserService {
     public User getUser(int userId) {
             try {
                 if(connection==null){
-                    connection= SQLDataSource.getInstance().getSQLConnection();}
+                    connection= SQLDataSource.getInstance().getSQLConnection();
+                    connection.setAutoCommit(false);
+                }
                 Statement statement = connection.createStatement();
                 ResultSet resultSet =statement.executeQuery("select * from users where id ="+userId+";");
                 resultSet.next();
@@ -84,10 +92,12 @@ public class myuser implements UserService {
                         student.id=userId;
                         student.fullName=name;
                         student.major=getMajor(resultSet.getInt("major_id"));
+                        connection.commit();
                         return student;}
                     Instructor instructor= new Instructor();
                     instructor.fullName=name;
                     instructor.id=userId;
+                    connection.commit();
                     return instructor ;
                 }
 

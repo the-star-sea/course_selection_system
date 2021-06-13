@@ -16,12 +16,19 @@ public class myinstructor implements InstructorService{
     public void addInstructor(int userId, String firstName, String lastName){
       try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setTransactionIsolation(4);
+                connection.setAutoCommit(false);
+
+            }
             Statement statement = connection.createStatement();
             String name=firstName+lastName;
 //            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
             statement.execute("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',1);");
+            connection.commit();
+            connection.setTransactionIsolation(2);
         }catch (SQLException sqlException) {
+          sqlException.printStackTrace();
           throw new IntegrityViolationException();
         }
     }
@@ -30,7 +37,9 @@ public class myinstructor implements InstructorService{
     public List<CourseSection> getInstructedCourseSections(int instructorId, int semesterId) {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
 
             List<CourseSection> courseSections = new ArrayList<>();
@@ -44,6 +53,7 @@ public class myinstructor implements InstructorService{
                 courseSection.leftCapacity = resultSet.getInt("leftcapcity");
                 courseSections.add(courseSection);
             }
+            connection.commit();
             return courseSections;
         } catch (SQLException sqlException) {
             throw new EntityNotFoundException();

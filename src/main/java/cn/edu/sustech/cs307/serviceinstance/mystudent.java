@@ -20,7 +20,9 @@ public class mystudent implements StudentService{
     public void addStudent(int userId, int majorId, String firstName, String lastName, Date enrolledDate) {
         try {
             if(connection==null){
-            connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             String name=firstName+lastName;
 //            if(name.matches("[ a-zA-Z]+"))name=firstName+" "+lastName;
             PreparedStatement statement = connection.prepareStatement("insert into users(id,firstname,lastname,kind) values ("+userId+",'"+firstName+"','"+lastName+"',0);" +
@@ -28,6 +30,7 @@ public class mystudent implements StudentService{
                     ",?,"+majorId+");");
             statement.setDate(1,enrolledDate);
             statement.execute();
+            connection.commit();
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
@@ -35,19 +38,23 @@ public class mystudent implements StudentService{
     public Course getCourseBySection(int sectionId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet8=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                     ";");
             resultSet8.next();
-            if (resultSet8.getRow()==0){throw new EntityNotFoundException();}else {
-            Course course=new Course();
-            course.grading= Course.CourseGrading.valueOf(resultSet8.getString("grading"));
-            course.id=resultSet8.getString("course_id");
-            course.credit=resultSet8.getInt("credit");
-            course.classHour=resultSet8.getInt("class_hour");
-            course.name=resultSet8.getString("name");
-            return course;}
+            if (resultSet8.getRow()==0){
+                throw new EntityNotFoundException();
+            }else {
+                Course course=new Course();
+                course.grading= Course.CourseGrading.valueOf(resultSet8.getString("grading"));
+                course.id=resultSet8.getString("course_id");
+                course.credit=resultSet8.getInt("credit");
+                course.classHour=resultSet8.getInt("class_hour");
+                course.name=resultSet8.getString("name");
+                return course;
+            }
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
         }
@@ -57,7 +64,9 @@ public class mystudent implements StudentService{
         String sql = null;
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
            sql="select distinct section_id,course_id,course_name from (select course.id course_id,course.name||'['||coursesection.name||']' course_name ,section_id,class.class_end class_end,class_begin class_begin, location,leftcapcity,dayofweek   from course,coursesection,users,class where course.id=coursesection.course_id and users.kind=1 and coursesection.id=class.section_id and class.instructor_id=users.id and coursesection.semester_id="+semesterId;
             List<CourseSearchEntry>courseSearchEntries=new ArrayList<>();
             if(searchCourseType==CourseType.PUBLIC){
@@ -90,6 +99,7 @@ public class mystudent implements StudentService{
 
             if(searchClassLocations!=null){
                 if(searchClassLocations.size()==0){
+                    connection.commit();
                     return courseSearchEntries;
                 }
                 sql+=" and (location like '%'||'";
@@ -109,7 +119,7 @@ public class mystudent implements StudentService{
             ArrayList<String>courses=new ArrayList<>();
             ArrayList<String>names=new ArrayList<>();
             while (resultSet.next()){
-                if(resultSet.getRow()==0)return courseSearchEntries;
+                if(resultSet.getRow()==0){connection.commit();return courseSearchEntries;}
                 sections.add(resultSet.getInt(1));
                 courses.add(resultSet.getString(2));
                 names.add(resultSet.getString(3));
@@ -169,6 +179,7 @@ public class mystudent implements StudentService{
                 courseSearchEntry.conflictCourseNames=getConflict(sections.get(i),sections1,names1);
                 courseSearchEntries.add(courseSearchEntry);
             }
+            connection.commit();
             return courseSearchEntries;
         }catch (SQLException sqlException){
           //System.out.println(sql);
@@ -314,36 +325,42 @@ public class mystudent implements StudentService{
     public EnrollResult enrollCourse(int studentId, int sectionId)  {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             String sql="select * from coursesection where id="+sectionId+";";
             ResultSet resultSet=statement.executeQuery(sql);
             resultSet.next();
-            if(resultSet.getRow()==0)return EnrollResult.COURSE_NOT_FOUND;
+            if(resultSet.getRow()==0){connection.commit();return EnrollResult.COURSE_NOT_FOUND;}
             int semester_id=resultSet.getInt("semester_id");
             int left=resultSet.getInt("leftcapcity");
             resultSet=statement.executeQuery("select distinct kind from student_grade where student_id="+studentId+" and section_id="+sectionId+";");
 
             String courseid=getCourseBySection(sectionId).id;
-resultSet.next();
+            resultSet.next();
             if(resultSet.getRow()>0) {
+                connection.commit();
                 return EnrollResult.ALREADY_ENROLLED;
 //                int kind=resultSet.getInt(1);
 //                if (kind == 2) return EnrollResult.ALREADY_ENROLLED;
 //                while(resultSet.next()){
 //                if (resultSet.getInt(1) == 2) return EnrollResult.ALREADY_ENROLLED;}
 
-            } if (passedCourse(studentId, courseid)) return EnrollResult.ALREADY_PASSED;
-            if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id))return EnrollResult.PREREQUISITES_NOT_FULFILLED;
-            if(enrolledcourse(studentId,courseid,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
-            if(conflict(studentId,sectionId,semester_id))return EnrollResult.COURSE_CONFLICT_FOUND;
-            if(left<=0)return EnrollResult.COURSE_IS_FULL;
+            }
+            if (passedCourse(studentId, courseid)) {connection.commit();return EnrollResult.ALREADY_PASSED;}
+            if(!passedPrerequisitesForCourse(studentId,getCourseBySection(sectionId).id)){connection.commit();return EnrollResult.PREREQUISITES_NOT_FULFILLED;}
+            if(enrolledcourse(studentId,courseid,semester_id)){connection.commit();return EnrollResult.COURSE_CONFLICT_FOUND;}
+            if(conflict(studentId,sectionId,semester_id)){connection.commit();return EnrollResult.COURSE_CONFLICT_FOUND;}
+            if(left<=0){connection.commit();return EnrollResult.COURSE_IS_FULL;}
             try{
                 statement.execute("insert into student_grade(student_id,section_id,kind)values (" +studentId+","+sectionId+
                         ",2);update coursesection set leftcapcity=leftcapcity-1 where id="+sectionId+";");
+                connection.commit();
                 return EnrollResult.SUCCESS;
             }
             catch (Exception exception){
+                connection.commit();
                 return EnrollResult.UNKNOWN_ERROR;
             }
         }catch (SQLException sqlException){
@@ -397,7 +414,9 @@ if(resultSet.getRow()==0)return false;
     public void dropCourse(int studentId, int sectionId) throws IllegalStateException{
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from student_grade where student_id=" + studentId + " and kind=2 and section_id= " + sectionId + ";");
             resultSet.next();
@@ -406,6 +425,7 @@ if(resultSet.getRow()==0)return false;
                 statement.execute("delete from student_grade where student_id=" + studentId + " and kind=2 and section_id= " + sectionId + ";");
                 statement.execute("update coursesection set leftcapcity=leftcapcity+1 where id="+sectionId+";");
             }
+            connection.commit();
         }catch (SQLException exception){
             throw new IllegalStateException();
         }
@@ -415,7 +435,9 @@ if(resultSet.getRow()==0)return false;
     public void addEnrolledCourseWithGrade(int studentId, int sectionId, @Nullable Grade grade){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             if(grade==null){
                 statement.execute("insert into student_grade(student_id,section_id) values (" +studentId+","+sectionId+
@@ -441,6 +463,7 @@ if(resultSet.getRow()==0)return false;
                 int id1=resultSetx2.getInt(1);
                 statement.execute("insert into student_grade_pf (student_grade_id,grade) values("+id1+",'"+((PassOrFailGrade) grade).name()+"');");
             }
+            connection.commit();
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
@@ -451,7 +474,9 @@ if(resultSet.getRow()==0)return false;
     public void setEnrolledCourseGrade(int studentId, int sectionId, Grade grade) {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             if(grade instanceof HundredMarkGrade){
                 statement.execute("update student_grade set kind=0 where student_id=" +studentId+" and section_id="+sectionId+ ";");
@@ -467,6 +492,7 @@ if(resultSet.getRow()==0)return false;
                 int id=resultSet.getInt("id");
                 statement.execute("update student_grade_pf set grade='"+((PassOrFailGrade) grade).name()+"' where student_grade_id="+id+";");
             }
+            connection.commit();
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
@@ -491,7 +517,9 @@ if(resultSet.getRow()==0)return false;
     public Map<Course, Grade> getEnrolledCoursesAndGrades(int studentId, @Nullable Integer semesterId)  {
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             Map<Course, Grade>maps=new HashMap<>();
             ResultSet resultSet;
@@ -504,6 +532,7 @@ if(resultSet.getRow()==0)return false;
                 Grade grade=getgrade(studentId,course.id);
                 maps.put(course,grade);
             }
+            connection.commit();
             return maps;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -514,7 +543,9 @@ if(resultSet.getRow()==0)return false;
     public CourseTable getCourseTable(int studentId, Date date) {
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             PreparedStatement preparedStatement1= connection.prepareStatement("select ?-semester_begin,id from semester where ? between semester_begin and semester_end; ");
             preparedStatement1.setDate(1,date);
             preparedStatement1.setDate(2,date);
@@ -553,7 +584,9 @@ if(resultSet.getRow()==0)return false;
                     courseTable.table.put(DayOfWeek.of(i),result);
                 }
 
-            }return courseTable;
+            }
+            connection.commit();
+            return courseTable;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
         }
@@ -563,16 +596,20 @@ if(resultSet.getRow()==0)return false;
     public boolean passedPrerequisitesForCourse(int studentId, String courseId) {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet=statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
             int pre_id=resultSet.getInt("prerequisite_id");
             if(pre_id == -1){
+                connection.commit();
                 return true;
             }
-
-            return testpre(studentId,pre_id);
+            boolean tp = testpre(studentId, pre_id);
+            connection.commit();
+            return tp;
         }catch (SQLException sqlException){
             sqlException.printStackTrace();
             throw new IntegrityViolationException();
@@ -688,13 +725,16 @@ if(resultSet.getRow()==0)return false;
     public Major getStudentMajor(int studentId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select major_id from student where id =" + studentId + ";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
 
             Major major=getMajor(resultSet.getInt("major_id"));
+            connection.commit();
             return major;
         }catch (SQLException exception){
             throw new EntityNotFoundException();

@@ -16,12 +16,16 @@ public class mydepartment implements  DepartmentService {
     public int addDepartment(String name)  {
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             statement.executeUpdate("insert into department(name) values ('"+name+"');",Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet=statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt(1);
+            int tmp=resultSet.getInt(1);
+            connection.commit();
+            return tmp;
         }catch (SQLException sqlException) {
             throw new IntegrityViolationException();
         }
@@ -31,12 +35,15 @@ public class mydepartment implements  DepartmentService {
     public void removeDepartment(int departmentId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from department where id="+departmentId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from department where id=" + departmentId + ";");
+            connection.commit();
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
         }
@@ -46,7 +53,9 @@ public class mydepartment implements  DepartmentService {
     public List<Department> getAllDepartments()  {//ok
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
 
             List<Department>departments=new ArrayList<>();
@@ -57,6 +66,7 @@ public class mydepartment implements  DepartmentService {
                 Department department=getDepartment(resultSet.getInt("id"));
                 departments.add(department);
             }
+            connection.commit();
             return departments;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -67,7 +77,9 @@ public class mydepartment implements  DepartmentService {
     public Department getDepartment(int departmentId) {//ok
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from department where id =" + departmentId + ";");
             resultSet.next();
@@ -75,6 +87,7 @@ public class mydepartment implements  DepartmentService {
             Department department = new Department();
             department.id = departmentId;
             department.name = resultSet.getString("name");
+            connection.commit();
             return department;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();

@@ -59,7 +59,9 @@ public class mycourse implements CourseService {
                 throw new IntegrityViolationException();
             }
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement=connection.createStatement();
             statement.executeUpdate("insert into prerequisite (kind)values(0) ;",Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet=statement.getGeneratedKeys();
@@ -86,6 +88,7 @@ public class mycourse implements CourseService {
                 stmt.setInt(7,prebas);
                 stmt.execute();
             }
+            connection.commit();
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         } catch (Exception e) {
@@ -101,12 +104,16 @@ public class mycourse implements CourseService {
                 throw new IntegrityViolationException();
             }
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             statement.executeUpdate("insert into coursesection(semester_id,name,course_id,totcapcity,leftcapcity) values ("+semesterId+",'"+sectionName+"','"+courseId+"',"+totalCapacity+","+totalCapacity+");",Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt(1);
+            int tmp=resultSet.getInt(1);
+            connection.commit();
+            return tmp;
         }catch (SQLException sqlException){
             throw new IntegrityViolationException();
         }
@@ -118,7 +125,9 @@ public class mycourse implements CourseService {
         }
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
                 PreparedStatement stmt=connection.prepareStatement(
                     "insert into class(instructor_id,section_id, class_begin, class_end,dayofweek ,weeklist,location) values (?,?,?,?,?,?,?);"
             ,Statement.RETURN_GENERATED_KEYS);
@@ -135,8 +144,11 @@ public class mycourse implements CourseService {
 
            ResultSet resultSet= stmt.getGeneratedKeys();
            resultSet.next();
-           return resultSet.getInt(1);
+            int tmp=resultSet.getInt(1);
+            connection.commit();
+            return tmp;
         }catch (SQLException e){
+            e.printStackTrace();
             throw new IntegrityViolationException();
         }
 
@@ -146,12 +158,15 @@ public class mycourse implements CourseService {
     public void removeCourse(String courseId) {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from course where id='"+courseId+"';");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from course where id='"+courseId+"';");
+            connection.commit();
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
         }
@@ -161,12 +176,15 @@ public class mycourse implements CourseService {
     public void removeCourseSection(int sectionId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from coursesection where id="+sectionId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from coursesection where id="+sectionId+";");
+            connection.commit();
         }catch (SQLException exception){
             throw new EntityNotFoundException();
         }
@@ -176,23 +194,27 @@ public class mycourse implements CourseService {
     public void removeCourseSectionClass(int classId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from class where id="+classId+";");
             resultSet.next();
             if (resultSet.getRow()==0)throw new EntityNotFoundException();
             statement.execute("delete from class where id="+classId+";");
+            connection.commit();
         }catch (SQLException exception){
             throw new EntityNotFoundException();
         }
-
     }
 
     @Override
     public List<Course> getAllCourses() {
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             List<Course>courses=new ArrayList<>();
             ResultSet resultSet=statement.executeQuery("select * from course;");
@@ -205,6 +227,7 @@ public class mycourse implements CourseService {
                 course.grading= Course.CourseGrading.valueOf(resultSet.getString("grading"));
                 courses.add(course);
             }
+            connection.commit();
             return courses;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -215,7 +238,9 @@ public class mycourse implements CourseService {
     public List<CourseSection> getCourseSectionsInSemester(String courseId, int semesterId) {
         try{
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             List<CourseSection>courseSections=new ArrayList<>();
             ResultSet resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where course_id='" +courseId+
@@ -229,6 +254,7 @@ public class mycourse implements CourseService {
                 courseSection.name=resultSet.getString("name");
                 courseSections.add(courseSection);
             }
+            connection.commit();
             return courseSections;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -239,7 +265,9 @@ public class mycourse implements CourseService {
     public Course getCourseBySection(int sectionId){
     try {
         if(connection==null){
-            connection= SQLDataSource.getInstance().getSQLConnection();}
+            connection= SQLDataSource.getInstance().getSQLConnection();
+            connection.setAutoCommit(false);
+        }
         Statement statement = connection.createStatement();
         ResultSet resultSet=statement.executeQuery("select * from course join coursesection c on course.id = c.course_id where c.id="+sectionId+
                 ";");
@@ -251,6 +279,7 @@ public class mycourse implements CourseService {
         course.credit=resultSet.getInt("credit");
         course.classHour=resultSet.getInt("class_hour");
         course.name=resultSet.getString("name");
+        connection.commit();
         return course;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -261,7 +290,9 @@ public class mycourse implements CourseService {
     public List<CourseSectionClass> getCourseSectionClasses(int sectionId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet=statement.executeQuery("select class_begin, class_end, c.id id, dayofweek, instructor_id, location, weeklist from coursesection join class c on coursesection.id = c.section_id where coursesection.id="+sectionId+";");
 
@@ -284,7 +315,9 @@ public class mycourse implements CourseService {
                 }
                 courseSectionClass.weekList= new HashSet<Short>(wa);
                 courseSectionClasses.add(courseSectionClass);
-            }return courseSectionClasses;
+            }
+            connection.commit();
+            return courseSectionClasses;
         }catch (SQLException sqlException){
             sqlException.printStackTrace();
             throw new EntityNotFoundException();
@@ -294,7 +327,8 @@ public class mycourse implements CourseService {
     public User getUser(int userId) {
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet1=statement.executeQuery("select * from users where id ="+userId+";");
             resultSet1.next();
@@ -358,7 +392,9 @@ public class mycourse implements CourseService {
     public CourseSection getCourseSectionByClass(int classId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             Statement statement = connection.createStatement();
             ResultSet resultSet=statement.executeQuery("select * from coursesection join class c on coursesection.id = c.section_id where c.id="+classId+";");
             resultSet.next();
@@ -368,6 +404,7 @@ public class mycourse implements CourseService {
             courseSection.name=resultSet.getString("name");
             courseSection.totalCapacity=resultSet.getInt("totcapcity");
             courseSection.leftCapacity=resultSet.getInt("leftcapcity");
+            connection.commit();
             return courseSection;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
@@ -378,7 +415,9 @@ public class mycourse implements CourseService {
     public List<Student> getEnrolledStudentsInSemester(String courseId, int semesterId) {
     try{
         if(connection==null){
-            connection= SQLDataSource.getInstance().getSQLConnection();}
+            connection= SQLDataSource.getInstance().getSQLConnection();
+            connection.setAutoCommit(false);
+        }
         Statement statement = connection.createStatement();
         List<Student> students=new ArrayList<>();
         ResultSet resultSet=statement.executeQuery(
@@ -389,6 +428,7 @@ public class mycourse implements CourseService {
             Student student= (Student) getUser(resultSet.getInt("student_id"));
             students.add(student);
         }
+        connection.commit();
         return students;
         }catch (SQLException sqlException){
             throw new EntityNotFoundException();
