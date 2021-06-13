@@ -15,12 +15,16 @@ public class mymajor implements MajorService{
     public int addMajor(String name, int departmentId){
         try {
             if(connection==null){
-                connection= SQLDataSource.getInstance().getSQLConnection();}
+                connection= SQLDataSource.getInstance().getSQLConnection();
+                connection.setAutoCommit(false);
+            }
             PreparedStatement statement=connection.prepareStatement("insert into major(name,department_id) values ('"+name+"',"+departmentId+");",Statement.RETURN_GENERATED_KEYS);
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
-            return resultSet.getInt(1);
+            int tmp=resultSet.getInt(1);
+            connection.commit();
+            return tmp;
         }catch (SQLException sqlException) {
             throw new IntegrityViolationException();
         }
